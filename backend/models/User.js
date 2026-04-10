@@ -1,10 +1,12 @@
+const mongoose = require("mongoose");
+
 const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
       required: true,
-      unique: true, // No two users can have the same username
-      trim: true, // Removes extra spaces
+      unique: true,
+      trim: true,
     },
     email: {
       type: String,
@@ -18,10 +20,10 @@ const userSchema = new mongoose.Schema(
     },
     isAcceptingMessages: {
       type: Boolean,
-      default: true, // Users can toggle this on or off in their dashboard
+      default: true,
     },
   },
-  { timestamps: true },
-); // Automatically adds "createdAt" and "updatedAt"
+  { timestamps: true }
+);
 
 module.exports = mongoose.model("User", userSchema);
