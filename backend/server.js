@@ -3,14 +3,25 @@ const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/auth");
 const aiRoutes = require("./routes/ai");
+const issueRoutes = require("./routes/issues");
+const messageRoutes = require("./routes/messages");
+const cors = require("cors");
+const path = require("path");
 
 dotenv.config();
 const app = express();
 
 // ✅ FIXED ORDER
+app.use(cors());
 app.use(express.json());
+
+// Serve static uploads
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 app.use("/api/ai", aiRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/issues", issueRoutes);
+app.use("/api/messages", messageRoutes);
 
 const PORT = 5000;
 

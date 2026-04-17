@@ -9,9 +9,9 @@ router.post("/register", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // Check if user already exists in the Users collection
-    let user = await User.findOne({ email });
-    if (user) return res.status(400).json({ message: "User already exists" });
+    // Check if user already exists in the Users collection (by email or username)
+    let user = await User.findOne({ $or: [{ email }, { username }] });
+    if (user) return res.status(400).json({ message: "User with that email or username already exists" });
 
     // Hashing the password (The "Blender" logic)
     const salt = await bcrypt.genSalt(10);
@@ -27,6 +27,7 @@ router.post("/register", async (req, res) => {
     await user.save();
     res.status(201).json({ message: "Account created! You can now log in." });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error during registration" });
   }
 });
@@ -59,6 +60,7 @@ router.post("/login", async (req, res) => {
       user: { id: user._id, username: user.username },
     });
   } catch (err) {
+    console.error(err);
     res.status(500).json({ message: "Server error during login" });
   }
 });
