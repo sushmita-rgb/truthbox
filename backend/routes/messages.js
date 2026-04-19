@@ -3,6 +3,7 @@ const router = express.Router();
 const Message = require("../models/Message");
 const Issue = require("../models/Issue");
 const auth = require("../middleware/authMiddleware");
+const requireTerms = require("../middleware/requireTerms");
 
 // Submit an anonymous message to an issue
 router.post("/:issueId", async (req, res) => {
@@ -31,7 +32,7 @@ router.post("/:issueId", async (req, res) => {
 });
 
 // Get all messages for the logged-in user
-router.get("/", auth, async (req, res) => {
+router.get("/", auth, requireTerms, async (req, res) => {
   try {
     // Populate the issue data to show what they are replying to
     const messages = await Message.find({ recipientId: req.user.id })

@@ -1,23 +1,38 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { Plus, Link as LinkIcon, LogOut, MessageCircle } from "lucide-react";
+import { Plus, Link as LinkIcon, MessageCircle, Settings, User as UserIcon } from "lucide-react";
 import api from "../api";
+import TermsModal from "../components/TermsModal";
+import SettingsModal from "../components/SettingsModal";
+import ProfileDropdown from "../components/ProfileDropdown";
 
 export default function Dashboard() {
   const [issues, setIssues] = useState([]);
   const [messages, setMessages] = useState([]);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [showTerms, setShowTerms] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
+  const [showDropdown, setShowDropdown] = useState(false);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (localStorage.getItem("termsAccepted") !== "true") {
+      setShowTerms(true);
+    }
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [issuesRes, messagesRes] = await Promise.all([
+        const [issuesRes, messagesRes, userRes] = await Promise.all([
           api.get("/issues"),
-          api.get("/messages")
+          api.get("/messages"),
+          api.get("/auth/me")
         ]);
         setIssues(issuesRes.data);
         setMessages(messagesRes.data);
+        setUser(userRes.data);
       } catch (err) {
         if (err.response?.status === 401) {
           localStorage.removeItem("token");
@@ -41,20 +56,55 @@ export default function Dashboard() {
     alert("Link copied to clipboard!");
   };
 
+  const handleAcceptTerms = async () => {
+    try {
+      await api.post("/auth/accept-terms");
+      localStorage.setItem("termsAccepted", "true");
+      setShowTerms(false);
+    } catch (err) {
+      alert("Failed to accept terms. Please try again.");
+    }
+  };
+
   if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
 
   return (
+    <>
+    {showTerms && <TermsModal onAccept={handleAcceptTerms} />}
     <div className="min-h-screen p-4 md:p-10 max-w-7xl mx-auto space-y-10 animate-fade-in-up">
       {/* Header */}
       <div className="flex justify-between items-center bg-white/5 p-6 rounded-3xl border border-white/10 shadow-xl">
         <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Dashboard</h1>
         <div className="flex gap-4">
-          <Link to="/create" className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium hover:scale-105 transition-transform">
+          <Link to="/create" className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium hover:scale-105 transition-transform mr-2">
             <Plus size={18}/> New Link
           </Link>
-          <button onClick={handleLogout} className="p-3 rounded-2xl glass hover:bg-white/10 text-neutral-400 hover:text-white transition-colors">
-            <LogOut size={20} />
+          
+          <button onClick={() => setShowSettings(true)} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-neutral-400 hover:text-white transition-colors flex items-center justify-center">
+            <Settings size={20} />
           </button>
+
+          <div className="relative">
+            <button 
+              onClick={() => setShowDropdown(!showDropdown)} 
+              className="w-12 h-12 rounded-xl overflow-hidden border-2 border-transparent hover:border-[#97ce23] transition-colors bg-black/40 flex items-center justify-center cursor-pointer shadow-lg"
+            >
+              {user?.avatar ? (
+                <img src={user.avatar.startsWith('/uploads') ? (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000') + user.avatar : user.avatar} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                <UserIcon size={20} className="text-[#97ce23]" />
+              )}
+            </button>
+            
+            {showDropdown && (
+               <ProfileDropdown 
+                  user={user} 
+                  onClose={() => setShowDropdown(false)} 
+                  onOpenSettings={() => setShowSettings(true)}
+                  onLogout={handleLogout} 
+               />
+            )}
+          </div>
         </div>
       </div>
 
@@ -105,5 +155,14 @@ export default function Dashboard() {
         </div>
       </div>
     </div>
+    {showSettings && user && (
+      <SettingsModal 
+        user={user} 
+        onClose={() => setShowSettings(false)} 
+        onUpdate={(updatedUser) => setUser(updatedUser)}
+        onLogout={handleLogout}
+      />
+    )}
+    </>
   );
 }

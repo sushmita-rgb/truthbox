@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Upload, Link as LinkIcon } from "lucide-react";
 import api from "../api";
+import TermsModal from "../components/TermsModal";
 
 export default function CreateIssue() {
   const [title, setTitle] = useState("");
@@ -10,7 +11,23 @@ export default function CreateIssue() {
   const [linkUrl, setLinkUrl] = useState("");
   const [method, setMethod] = useState("file"); // 'file' or 'link'
   const [loading, setLoading] = useState(false);
+  const [showTerms, setShowTerms] = useState(false);
   const navigate = useNavigate();
+
+  // If somehow they bypassed Dashboard without accepting terms
+  if (localStorage.getItem("termsAccepted") !== "true" && !showTerms) {
+    setShowTerms(true);
+  }
+
+  const handleAcceptTerms = async () => {
+    try {
+      await api.post("/auth/accept-terms");
+      localStorage.setItem("termsAccepted", "true");
+      setShowTerms(false);
+    } catch (err) {
+      alert("Failed to accept terms. Please try again.");
+    }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -37,6 +54,8 @@ export default function CreateIssue() {
   };
 
   return (
+    <>
+    {showTerms && <TermsModal onAccept={handleAcceptTerms} />}
     <div className="min-h-screen p-4 md:p-10 max-w-3xl mx-auto">
       <button onClick={() => navigate("/dashboard")} className="flex items-center gap-2 text-neutral-400 hover:text-white transition-colors mb-8">
         <ArrowLeft size={18} /> Back to Dashboard
@@ -98,5 +117,6 @@ export default function CreateIssue() {
         </form>
       </div>
     </div>
+    </>
   );
 }

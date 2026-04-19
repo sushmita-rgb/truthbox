@@ -5,6 +5,7 @@ const path = require("path");
 const fs = require("fs");
 const Issue = require("../models/Issue");
 const auth = require("../middleware/authMiddleware");
+const requireTerms = require("../middleware/requireTerms");
 
 // Ensure upload directory exists
 const uploadDir = path.join(__dirname, "../uploads");
@@ -25,7 +26,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage });
 
 // Create a new Issue
-router.post("/", auth, upload.single("file"), async (req, res) => {
+router.post("/", auth, requireTerms, upload.single("file"), async (req, res) => {
   try {
     const { title, description, linkUrl } = req.body;
     let fileUrl = null;
@@ -62,7 +63,7 @@ router.post("/", auth, upload.single("file"), async (req, res) => {
 });
 
 // Get user's issues
-router.get("/", auth, async (req, res) => {
+router.get("/", auth, requireTerms, async (req, res) => {
   try {
     const issues = await Issue.find({ userId: req.user.id }).sort({ createdAt: -1 });
     res.json(issues);

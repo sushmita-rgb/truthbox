@@ -15,6 +15,11 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", formData);
       localStorage.setItem("token", res.data.token);
+      if (res.data.user?.termsAccepted) {
+        localStorage.setItem("termsAccepted", "true");
+      } else {
+        localStorage.removeItem("termsAccepted");
+      }
       window.location.href = "/dashboard";
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");

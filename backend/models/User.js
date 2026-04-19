@@ -18,9 +18,20 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    avatar: {
+      type: String,
+      default: null,
+    },
     isAcceptingMessages: {
       type: Boolean,
       default: true,
+    },
+    termsAccepted: {
+      type: Boolean,
+      default: false,
+    },
+    termsAcceptedAt: {
+      type: Date,
     },
   },
   { timestamps: true }

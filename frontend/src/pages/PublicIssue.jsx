@@ -2,12 +2,20 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { Send, Shield, AlertTriangle } from "lucide-react";
 import api from "../api";
+import TermsModal from "../components/TermsModal";
 
 export default function PublicIssue() {
   const { id } = useParams();
   const [issue, setIssue] = useState(null);
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("loading"); // loading, ready, success, error
+  const [showTerms, setShowTerms] = useState(false);
+
+  useEffect(() => {
+    if (localStorage.getItem("anonymousTermsAccepted") !== "true") {
+      setShowTerms(true);
+    }
+  }, []);
 
   useEffect(() => {
     api.get(`/issues/public/${id}`)
@@ -42,7 +50,14 @@ export default function PublicIssue() {
   if (status === "loading" && !issue) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
   if (status === "error") return <div className="min-h-screen flex items-center justify-center"><div className="glass p-8 text-center text-red-400">Issue not found. It might have been deleted.</div></div>;
 
+  const handleAcceptTerms = async () => {
+    localStorage.setItem("anonymousTermsAccepted", "true");
+    setShowTerms(false);
+  };
+
   return (
+    <>
+    {showTerms && <TermsModal onAccept={handleAcceptTerms} />}
     <div className="min-h-screen flex flex-col items-center justify-center p-4 md:p-10 selection:bg-pink-500/30">
       
       <div className="w-full max-w-2xl mb-8 flex items-center gap-2 text-pink-400 justify-center">
@@ -111,5 +126,6 @@ export default function PublicIssue() {
         </div>
       </div>
     </div>
+    </>
   );
 }
