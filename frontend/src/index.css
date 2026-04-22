@@ -1,8 +1,15 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans: "Inter", sans-serif;
+  --font-heading: "Poppins", sans-serif;
+  --color-main: #1c1c1c;
+  --color-accent: #97ce23;
+}
+
 @layer utilities {
   .glass {
-    @apply bg-white/5 backdrop-blur-lg border border-white/10 shadow-xl;
+    @apply bg-main/80 backdrop-blur-lg border border-white/10 shadow-xl;
   }
 }
 
@@ -10,4 +17,39 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  background-color: var(--color-main);
+  color: white;
+  font-family: var(--font-sans);
 }
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+}
+
+/* Hide scrollbar completely */
+::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+/* Smooth scrolling for anchor links (if any) */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Animations */
+.fade-up-enter {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+}
+
+.fade-up-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+}
+

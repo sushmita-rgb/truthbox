@@ -18,8 +18,8 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage: storage });
 
-// 1. REGISTER API (Part of "Create Account" in User Flow)
-router.post("/register", async (req, res) => {
+// 1. SIGNUP API (Part of "Create Account" in User Flow)
+router.post("/signup", async (req, res) => {
   try {
     const { username, email, password } = req.body;
 

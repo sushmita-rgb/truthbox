@@ -1,37 +1,27 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { Plus, Link as LinkIcon, MessageCircle, Settings, User as UserIcon } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { Link as LinkIcon, MessageSquare, Copy, LogOut } from "lucide-react";
 import api from "../api";
-import TermsModal from "../components/TermsModal";
-import SettingsModal from "../components/SettingsModal";
-import ProfileDropdown from "../components/ProfileDropdown";
 
 export default function Dashboard() {
-  const [issues, setIssues] = useState([]);
-  const [messages, setMessages] = useState([]);
+  const [feedback, setFeedback] = useState([]);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [showTerms, setShowTerms] = useState(false);
-  const [showSettings, setShowSettings] = useState(false);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const navigate = useNavigate();
+  const [linkId, setLinkId] = useState(null);
 
-  useEffect(() => {
-    if (localStorage.getItem("termsAccepted") !== "true") {
-      setShowTerms(true);
-    }
-  }, []);
+  // ✅ NEW STATE
+  const [postContent, setPostContent] = useState("");
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [issuesRes, messagesRes, userRes] = await Promise.all([
-          api.get("/issues"),
-          api.get("/messages"),
+        const [feedbackRes, userRes] = await Promise.all([
+          api.get("/feedback/my-feedback"),
           api.get("/auth/me")
         ]);
-        setIssues(issuesRes.data);
-        setMessages(messagesRes.data);
+        setFeedback(feedbackRes.data);
         setUser(userRes.data);
       } catch (err) {
         if (err.response?.status === 401) {
@@ -50,119 +40,141 @@ export default function Dashboard() {
     navigate("/");
   };
 
+  // ✅ UPDATED FUNCTION
+  const createPostAndGenerateLink = async () => {
+    if (!postContent.trim()) {
+      alert("Please enter something");
+      return;
+    }
+
+    try {
+      const res = await api.post("/links/create-link", {
+        content: postContent
+      });
+
+      setLinkId(res.data.linkId);
+      setPostContent("");
+    } catch (err) {
+      alert("Failed to create post");
+    }
+  };
+
   const copyLink = (id) => {
-    const url = `${window.location.origin}/i/${id}`;
+    const url = `${window.location.origin}/feedback/${id}`;
     navigator.clipboard.writeText(url);
     alert("Link copied to clipboard!");
   };
 
-  const handleAcceptTerms = async () => {
-    try {
-      await api.post("/auth/accept-terms");
-      localStorage.setItem("termsAccepted", "true");
-      setShowTerms(false);
-    } catch (err) {
-      alert("Failed to accept terms. Please try again.");
-    }
-  };
-
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading)
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-main text-white font-sans">
+        Loading...
+      </div>
+    );
 
   return (
-    <>
-    {showTerms && <TermsModal onAccept={handleAcceptTerms} />}
-    <div className="min-h-screen p-4 md:p-10 max-w-7xl mx-auto space-y-10 animate-fade-in-up">
-      {/* Header */}
-      <div className="flex justify-between items-center bg-white/5 p-6 rounded-3xl border border-white/10 shadow-xl">
-        <h1 className="text-3xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">Dashboard</h1>
-        <div className="flex gap-4">
-          <Link to="/create" className="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-medium hover:scale-105 transition-transform mr-2">
-            <Plus size={18}/> New Link
-          </Link>
-          
-          <button onClick={() => setShowSettings(true)} className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 text-neutral-400 hover:text-white transition-colors flex items-center justify-center">
-            <Settings size={20} />
-          </button>
+    <div className="min-h-screen bg-main text-white font-sans p-6 md:p-12">
+      <div className="max-w-5xl mx-auto space-y-10">
 
-          <div className="relative">
-            <button 
-              onClick={() => setShowDropdown(!showDropdown)} 
-              className="w-12 h-12 rounded-xl overflow-hidden border-2 border-transparent hover:border-[#97ce23] transition-colors bg-black/40 flex items-center justify-center cursor-pointer shadow-lg"
-            >
-              {user?.avatar ? (
-                <img src={user.avatar.startsWith('/uploads') ? (import.meta.env.VITE_API_URL ? import.meta.env.VITE_API_URL.replace('/api', '') : 'http://localhost:5000') + user.avatar : user.avatar} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <UserIcon size={20} className="text-[#97ce23]" />
-              )}
-            </button>
-            
-            {showDropdown && (
-               <ProfileDropdown 
-                  user={user} 
-                  onClose={() => setShowDropdown(false)} 
-                  onOpenSettings={() => setShowSettings(true)}
-                  onLogout={handleLogout} 
-               />
-            )}
+        {/* Header */}
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white/5 p-8 rounded-3xl border border-white/10 shadow-xl">
+          <div>
+            <h1 className="text-3xl font-bold font-heading mb-1">
+              Welcome, {user?.username}
+            </h1>
+            <p className="text-gray-400">View your anonymous feedback</p>
           </div>
+          <button
+            onClick={handleLogout}
+            className="flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 text-gray-300 hover:text-white transition-colors"
+          >
+            <LogOut size={18} /> Logout
+          </button>
         </div>
-      </div>
 
-      <div className="grid md:grid-cols-2 gap-10">
-        {/* Links Created */}
-        <div className="space-y-6">
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-indigo-300"><LinkIcon size={20}/> Your Custom Links</h2>
-          {issues.length === 0 ? (
-            <div className="p-8 glass rounded-3xl text-center text-neutral-500">No links created yet.</div>
-          ) : (
-            <div className="space-y-4">
-              {issues.map(issue => (
-                <div key={issue._id} className="glass p-6 rounded-3xl flex justify-between items-start group">
-                  <div>
-                    <h3 className="font-bold text-lg">{issue.title}</h3>
-                    <p className="text-sm text-neutral-400 mt-1 truncate max-w-[250px]">{issue.description || 'No description'}</p>
-                    {issue.fileType !== 'none' && (
-                      <span className="inline-block mt-3 text-xs px-2 py-1 bg-white/10 rounded-lg text-indigo-300">{issue.fileType.toUpperCase()} attached</span>
-                    )}
-                  </div>
-                  <button onClick={() => copyLink(issue._id)} className="px-4 py-2 bg-indigo-500/20 text-indigo-300 hover:bg-indigo-500/40 rounded-xl text-sm font-medium transition-colors border border-indigo-500/30">
-                    Copy Link
-                  </button>
-                </div>
-              ))}
+        {/* ✅ Create Post Section */}
+        <div className="glass p-10 rounded-3xl text-center space-y-6">
+          <h2 className="text-2xl font-bold font-heading">Create Post</h2>
+
+          <textarea
+            value={postContent}
+            onChange={(e) => setPostContent(e.target.value)}
+            placeholder="Write something..."
+            className="w-full p-4 rounded-xl bg-black/40 border border-white/10 text-white outline-none"
+            rows={4}
+          />
+
+          <button
+            onClick={createPostAndGenerateLink}
+            className="px-10 py-4 rounded-xl bg-accent text-main font-bold text-lg hover:scale-105 transition-transform"
+          >
+            Post & Generate Link
+          </button>
+        </div>
+
+        {/* Link Generation Section */}
+        <div className="glass p-10 rounded-3xl text-center space-y-6">
+          <div className="mx-auto w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mb-4">
+            <LinkIcon className="w-8 h-8 text-accent" />
+          </div>
+          <h2 className="text-2xl font-bold font-heading">
+            Your Feedback Link
+          </h2>
+
+          {linkId ? (
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-6">
+              <div className="px-6 py-4 bg-black/40 rounded-xl font-mono text-gray-300 w-full sm:w-auto text-center border border-white/10">
+                {window.location.origin}/feedback/{linkId}
+              </div>
+              <button
+                onClick={() => copyLink(linkId)}
+                className="flex items-center justify-center gap-2 px-8 py-4 bg-accent text-main font-bold rounded-xl hover:scale-105 transition-transform w-full sm:w-auto"
+              >
+                <Copy size={20} /> Copy
+              </button>
             </div>
+          ) : (
+            <p className="text-gray-500">
+              Create a post to generate your unique link
+            </p>
           )}
         </div>
 
-        {/* Received Messages */}
+        {/* Feedback Messages */}
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold flex items-center gap-2 text-purple-300"><MessageCircle size={20}/> Received Feedback</h2>
-          {messages.length === 0 ? (
-            <div className="p-8 glass rounded-3xl text-center text-neutral-500">No messages received yet. Share your links!</div>
+          <h2 className="text-2xl font-bold font-heading flex items-center gap-3">
+            <MessageSquare size={24} className="text-accent" />
+            Received Feedback
+          </h2>
+
+          {feedback.length === 0 ? (
+            <div className="p-12 glass rounded-3xl text-center text-gray-500">
+              No messages received yet. Share your link to get started!
+            </div>
           ) : (
-            <div className="space-y-4">
-              {messages.map(msg => (
-                <div key={msg._id} className="glass p-6 rounded-3xl relative overflow-hidden">
-                  <div className="absolute top-0 left-0 w-1 h-full bg-gradient-to-b from-indigo-500 to-purple-500"></div>
-                  <p className="text-neutral-200 text-lg leading-relaxed">{msg.content}</p>
-                  <p className="text-xs text-neutral-500 mt-4 flex items-center gap-2">
-                    Reply to: <span className="px-2 py-1 bg-white/5 rounded-md border border-white/5">{msg.issueId?.title || "Deleted Link"}</span>
+            <div className="grid md:grid-cols-2 gap-6">
+              {feedback.map((msg) => (
+                <div
+                  key={msg._id}
+                  className="glass p-8 rounded-3xl relative overflow-hidden group"
+                >
+                  <div className="absolute top-0 left-0 w-2 h-full bg-accent"></div>
+                  <p className="text-gray-200 text-lg leading-relaxed">
+                    {msg.message}
+                  </p>
+                  <p className="text-sm text-gray-500 mt-6 flex items-center justify-between">
+                    <span>Anonymous</span>
+                    <span>
+                      {new Date(msg.createdAt).toLocaleDateString()}
+                    </span>
                   </p>
                 </div>
               ))}
             </div>
           )}
         </div>
+
       </div>
     </div>
-    {showSettings && user && (
-      <SettingsModal 
-        user={user} 
-        onClose={() => setShowSettings(false)} 
-        onUpdate={(updatedUser) => setUser(updatedUser)}
-        onLogout={handleLogout}
-      />
-    )}
-    </>
   );
 }
