@@ -32,6 +32,29 @@ const linkSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
+    // User-facing title for the feedback page
+    title: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    // Short description shown on the feedback page
+    description: {
+      type: String,
+      default: "",
+      trim: true,
+    },
+    // Brand accent used across the feedback page
+    accentColor: {
+      type: String,
+      default: "#97ce23",
+    },
+    // Which template was used to create the link
+    templateKey: {
+      type: String,
+      default: "custom",
+      trim: true,
+    },
     // Original filename for display
     fileName: {
       type: String,

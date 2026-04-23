@@ -24,14 +24,27 @@ function AnimatedRoutes() {
   );
 }
 
+function AppShell() {
+  const location = useLocation();
+  const isDashboard = location.pathname === "/dashboard";
+
+  return (
+    <>
+      {!isDashboard && <BubbleCanvas />}
+      {!isDashboard && (
+        <div className="fixed inset-0 z-[1] bg-[radial-gradient(circle_at_top,rgba(151,206,35,0.14),transparent_34%),linear-gradient(180deg,rgba(6,10,6,0.28),rgba(6,10,6,0.58))]" />
+      )}
+      <div className="relative z-10 min-h-screen text-white font-sans selection:bg-accent/30">
+        <AnimatedRoutes />
+      </div>
+    </>
+  );
+}
+
 function App() {
   return (
     <Router>
-      {/* BubbleCanvas sits behind everything, on every page */}
-      <BubbleCanvas />
-      <div className="relative z-10 min-h-screen text-white font-sans selection:bg-accent/30 bg-main/90">
-        <AnimatedRoutes />
-      </div>
+      <AppShell />
     </Router>
   );
 }

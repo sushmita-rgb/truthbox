@@ -1,6 +1,11 @@
 const jwt = require("jsonwebtoken");
 
 module.exports = function (req, res, next) {
+  const jwtSecret = process.env.JWT_SECRET;
+  if (!jwtSecret) {
+    return res.status(500).json({ message: "Server misconfiguration: missing JWT secret." });
+  }
+
   // Get token from header
   const token = req.header("Authorization");
 
@@ -13,7 +18,7 @@ module.exports = function (req, res, next) {
   try {
     const decoded = jwt.verify(
       token.replace("Bearer ", ""),
-      process.env.JWT_SECRET || "secret_key"
+      jwtSecret
     );
     req.user = decoded; // add user to request payload
     next();

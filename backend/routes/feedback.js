@@ -3,6 +3,7 @@ const router = express.Router();
 const Feedback = require("../models/Feedback");
 const Link = require("../models/Link");
 const authMiddleware = require("../middleware/authMiddleware");
+const requireTerms = require("../middleware/requireTerms");
 
 // POST /api/feedback/send-feedback/:linkId
 router.post("/send-feedback/:linkId", async (req, res) => {
@@ -37,7 +38,7 @@ router.post("/send-feedback/:linkId", async (req, res) => {
 });
 
 // GET /api/feedback/my-feedback (Protected)
-router.get("/my-feedback", authMiddleware, async (req, res) => {
+router.get("/my-feedback", authMiddleware, requireTerms, async (req, res) => {
   try {
     const userId = req.user.id;
     

@@ -31,7 +31,7 @@ export default function BubbleCanvas() {
       { r: 220, g: 255, b: 120 },  // yellow-lime
     ];
 
-    const BUBBLE_COUNT = 22;
+    const BUBBLE_COUNT = 28;
 
     const bubbles = Array.from({ length: BUBBLE_COUNT }, () => {
       // Mix of small (20–50), medium (50–100), large (100–180)
@@ -56,7 +56,7 @@ export default function BubbleCanvas() {
         dy: (Math.random() - 0.5) * 0.4,
         color,
         // Clearly visible: 0.12–0.28 range
-        alpha: isWhite ? 0.10 + Math.random() * 0.16 : 0.13 + Math.random() * 0.20,
+        alpha: isWhite ? 0.18 + Math.random() * 0.20 : 0.22 + Math.random() * 0.24,
         phase: Math.random() * Math.PI * 2,
         speed: 0.004 + Math.random() * 0.005,
       };
@@ -93,7 +93,7 @@ export default function BubbleCanvas() {
 
         // Outer soft glow — wider & brighter
         const glow = ctx.createRadialGradient(b.x, b.y, b.r * 0.2, b.x, b.y, b.r * 2.0);
-        glow.addColorStop(0, `rgba(${r},${g},${bl},${b.alpha * 0.55})`);
+        glow.addColorStop(0, `rgba(${r},${g},${bl},${b.alpha * 0.72})`);
         glow.addColorStop(1, `rgba(${r},${g},${bl},0)`);
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r * 2.0, 0, Math.PI * 2);
@@ -107,7 +107,7 @@ export default function BubbleCanvas() {
         );
         grad.addColorStop(0, `rgba(${r},${g},${bl},${b.alpha * 2.0})`);
         grad.addColorStop(0.5, `rgba(${r},${g},${bl},${b.alpha * 1.0})`);
-        grad.addColorStop(1, `rgba(${r},${g},${bl},${b.alpha * 0.15})`);
+        grad.addColorStop(1, `rgba(${r},${g},${bl},${b.alpha * 0.24})`);
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
         ctx.fillStyle = grad;
@@ -116,8 +116,8 @@ export default function BubbleCanvas() {
         // Rim stroke
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-        ctx.strokeStyle = `rgba(${r},${g},${bl},${b.alpha * 1.5})`;
-        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = `rgba(${r},${g},${bl},${b.alpha * 1.8})`;
+        ctx.lineWidth = 1.35;
         ctx.stroke();
 
         // Top-left shine

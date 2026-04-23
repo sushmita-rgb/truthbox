@@ -1,19 +1,19 @@
 const express = require("express");
 const router = express.Router();
 const Link = require("../models/Link");
+const Feedback = require("../models/Feedback");
 const authMiddleware = require("../middleware/authMiddleware");
+const requireTerms = require("../middleware/requireTerms");
 const { nanoid } = require("nanoid");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Ensure uploads directory exists
 const uploadsDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadsDir)) {
   fs.mkdirSync(uploadsDir, { recursive: true });
 }
 
-// Multer storage config
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, uploadsDir);
@@ -37,40 +37,66 @@ const fileFilter = (req, file, cb) => {
     "video/quicktime",
     "application/pdf",
   ];
+
   if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
-  } else {
-    cb(new Error("Unsupported file type"), false);
+    return;
   }
+
+  cb(new Error("Unsupported file type"), false);
 };
 
 const upload = multer({
   storage,
   fileFilter,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+  limits: { fileSize: 50 * 1024 * 1024 },
 });
 
-// POST /api/links/create-link (Protected)
+const normalizeAccentColor = (value) => {
+  if (typeof value !== "string") return "#97ce23";
+  const trimmed = value.trim();
+  return /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/.test(trimmed) ? trimmed : "#97ce23";
+};
+
+const buildResponseCounts = async (userId) => {
+  const counts = await Feedback.aggregate([
+    { $match: { receiverId: userId } },
+    { $group: { _id: "$linkId", count: { $sum: 1 } } },
+  ]);
+
+  return counts.reduce((acc, item) => {
+    acc[item._id] = item.count;
+    return acc;
+  }, {});
+};
+
 router.post(
   "/create-link",
   authMiddleware,
+  requireTerms,
   upload.single("file"),
   async (req, res) => {
     try {
       const userId = req.user.id;
-      const { postType = "text", content = "" } = req.body;
+      const {
+        postType = "text",
+        content = "",
+        title = "",
+        description = "",
+        accentColor,
+        templateKey = "custom",
+      } = req.body;
 
-      // Validate based on type
       if (postType === "text" && !content.trim()) {
         return res.status(400).json({ message: "Text content is required" });
       }
+
       if (postType === "url" && !content.trim()) {
         return res.status(400).json({ message: "URL is required" });
       }
+
       if (["image", "pdf", "video"].includes(postType) && !req.file) {
-        return res
-          .status(400)
-          .json({ message: "File upload is required for this post type" });
+        return res.status(400).json({ message: "File upload is required for this post type" });
       }
 
       const linkId = nanoid(8);
@@ -81,6 +107,10 @@ router.post(
         isActive: true,
         postType,
         content: content || "",
+        title: title.trim(),
+        description: description.trim(),
+        accentColor: normalizeAccentColor(accentColor),
+        templateKey: templateKey.trim() || "custom",
         fileUrl: req.file ? `/uploads/${req.file.filename}` : "",
         fileName: req.file ? req.file.originalname : "",
       });
@@ -92,6 +122,10 @@ router.post(
         linkId: newLink.linkId,
         url: `/feedback/${newLink.linkId}`,
         postType: newLink.postType,
+        title: newLink.title,
+        description: newLink.description,
+        accentColor: newLink.accentColor,
+        templateKey: newLink.templateKey,
       });
     } catch (error) {
       console.error("Error creating link:", error);
@@ -100,21 +134,110 @@ router.post(
   }
 );
 
-// GET /api/links/:linkId — fetch post info for feedback page
+router.get("/my-links", authMiddleware, requireTerms, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const [links, responseCounts] = await Promise.all([
+      Link.find({ userId }).sort({ createdAt: -1 }).lean(),
+      buildResponseCounts(userId),
+    ]);
+
+    const enrichedLinks = links.map((link) => ({
+      ...link,
+      responseCount: responseCounts[link.linkId] || 0,
+    }));
+
+    res.json(enrichedLinks);
+  } catch (error) {
+    console.error("Error fetching links:", error);
+    res.status(500).json({ message: "Server error fetching links" });
+  }
+});
+
+router.get("/analytics", authMiddleware, requireTerms, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const [links, feedbacks, responseCounts] = await Promise.all([
+      Link.find({ userId }).sort({ createdAt: -1 }).lean(),
+      Feedback.find({ receiverId: userId }).sort({ createdAt: -1 }).lean(),
+      buildResponseCounts(userId),
+    ]);
+
+    const totalLinks = links.length;
+    const activeLinks = links.filter((link) => link.isActive).length;
+    const totalResponses = feedbacks.length;
+    const responsesThisWeek = feedbacks.filter(
+      (item) => Date.now() - new Date(item.createdAt).getTime() < 7 * 24 * 60 * 60 * 1000
+    ).length;
+
+    const responseByType = links.reduce((acc, link) => {
+      acc[link.postType] = (acc[link.postType] || 0) + (responseCounts[link.linkId] || 0);
+      return acc;
+    }, {});
+
+    const dailyResponses = Array.from({ length: 7 }, (_, index) => {
+      const date = new Date();
+      date.setHours(0, 0, 0, 0);
+      date.setDate(date.getDate() - (6 - index));
+      const nextDate = new Date(date);
+      nextDate.setDate(nextDate.getDate() + 1);
+
+      const count = feedbacks.filter((item) => {
+        const createdAt = new Date(item.createdAt);
+        return createdAt >= date && createdAt < nextDate;
+      }).length;
+
+      return {
+        label: date.toLocaleDateString(undefined, { weekday: "short" }),
+        value: count,
+      };
+    });
+
+    const topLink =
+      links
+        .map((link) => ({
+          ...link,
+          responseCount: responseCounts[link.linkId] || 0,
+        }))
+        .sort((a, b) => b.responseCount - a.responseCount)[0] || null;
+
+    res.json({
+      summary: {
+        totalLinks,
+        activeLinks,
+        totalResponses,
+        responsesThisWeek,
+      },
+      responseByType,
+      dailyResponses,
+      topLink,
+    });
+  } catch (error) {
+    console.error("Error fetching analytics:", error);
+    res.status(500).json({ message: "Server error fetching analytics" });
+  }
+});
+
 router.get("/:linkId", async (req, res) => {
   try {
     const link = await Link.findOne({
       linkId: req.params.linkId,
       isActive: true,
     });
+
     if (!link) {
       return res.status(404).json({ message: "Link not found or inactive" });
     }
+
     res.status(200).json({
       postType: link.postType,
       content: link.content,
       fileUrl: link.fileUrl,
       fileName: link.fileName,
+      title: link.title,
+      description: link.description,
+      accentColor: link.accentColor,
+      templateKey: link.templateKey,
     });
   } catch (error) {
     console.error("Error fetching link:", error);

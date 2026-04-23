@@ -11,6 +11,11 @@ const path = require("path");
 dotenv.config();
 const app = express();
 
+if (!process.env.JWT_SECRET) {
+  console.error("Missing JWT_SECRET environment variable.");
+  process.exit(1);
+}
+
 // ✅ FIXED ORDER
 app.use(cors());
 app.use(express.json());
@@ -23,7 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/links", linkRoutes);
 app.use("/api/feedback", feedbackRoutes);
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 const mongoURI =
   process.env.MONGO_URI || "mongodb://localhost:27017/truthbox";
@@ -38,5 +43,5 @@ app.get("/", (req, res) => {
 });
 
 app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:5000`);
+  console.log(`Server is running on http://localhost:${PORT}`);
 });

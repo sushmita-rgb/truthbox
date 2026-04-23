@@ -6,17 +6,70 @@ const jwt = require("jsonwebtoken");
 const authMiddleware = require("../middleware/authMiddleware");
 const multer = require("multer");
 const path = require("path");
+const fs = require("fs");
+
+const uploadsDir = path.join(__dirname, "../uploads");
+if (!fs.existsSync(uploadsDir)) {
+  fs.mkdirSync(uploadsDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    cb(null, "uploads/");
+    cb(null, uploadsDir);
   },
   filename: function (req, file, cb) {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
     cb(null, "avatar-" + uniqueSuffix + path.extname(file.originalname));
   },
 });
-const upload = multer({ storage: storage });
+
+const avatarFileFilter = (req, file, cb) => {
+  const allowedMimeTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/gif",
+    "image/webp",
+    "image/svg+xml",
+  ];
+
+  if (!allowedMimeTypes.includes(file.mimetype)) {
+    cb(new Error("Unsupported avatar file type"), false);
+    return;
+  }
+
+  cb(null, true);
+};
+
+const upload = multer({
+  storage,
+  fileFilter: avatarFileFilter,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB
+});
+
+const uploadAvatar = (req, res, next) => {
+  upload.single("avatar")(req, res, (err) => {
+    if (!err) {
+      next();
+      return;
+    }
+
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        res.status(400).json({ message: "Avatar file size must be 5MB or less." });
+        return;
+      }
+      res.status(400).json({ message: "Invalid avatar upload." });
+      return;
+    }
+
+    if (err.message === "Unsupported avatar file type") {
+      res.status(400).json({ message: err.message });
+      return;
+    }
+
+    res.status(500).json({ message: "Server error uploading avatar" });
+  });
+};
 
 // 1. SIGNUP API (Part of "Create Account" in User Flow)
 router.post("/signup", async (req, res) => {
@@ -50,6 +103,11 @@ router.post("/signup", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { username, password } = req.body;
+    const jwtSecret = process.env.JWT_SECRET;
+
+    if (!jwtSecret) {
+      return res.status(500).json({ message: "Server misconfiguration: missing JWT secret." });
+    }
 
     // Validate credentials against the Database
     const user = await User.findOne({ username });
@@ -64,7 +122,7 @@ router.post("/login", async (req, res) => {
     // Generate the JWT token (The digital access pass)
     const token = jwt.sign(
       { id: user._id, username: user.username },
-      process.env.JWT_SECRET || "secret_key", // Use a secret from your .env
+      jwtSecret,
       { expiresIn: "1h" },
     );
 
@@ -117,11 +175,11 @@ router.put("/profile", authMiddleware, async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     // Validate existence of other users with the requested username/email
-    if (username !== user.username) {
+    if (username && username !== user.username) {
       const existingUser = await User.findOne({ username });
       if (existingUser) return res.status(400).json({ message: "Username already taken" });
     }
-    if (email !== user.email) {
+    if (email && email !== user.email) {
       const existingEmail = await User.findOne({ email });
       if (existingEmail) return res.status(400).json({ message: "Email already taken" });
     }
@@ -130,15 +188,60 @@ router.put("/profile", authMiddleware, async (req, res) => {
     user.email = email || user.email;
     await user.save();
 
-    res.json(user);
+    const safeUser = await User.findById(user._id).select("-password");
+    res.json(safeUser);
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error updating profile" });
   }
 });
 
-// 6. UPLOAD AVATAR
-router.post("/avatar", authMiddleware, upload.single("avatar"), async (req, res) => {
+// 6. CHANGE PASSWORD
+router.put("/change-password", authMiddleware, async (req, res) => {
+  try {
+    const { currentPassword, newPassword, confirmPassword } = req.body;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return res.status(400).json({ message: "Current password, new password, and confirmation are required." });
+    }
+
+    if (newPassword !== confirmPassword) {
+      return res.status(400).json({ message: "New password and confirmation do not match." });
+    }
+
+    const passwordPolicy = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z\d]).{8,}$/;
+    if (!passwordPolicy.test(newPassword)) {
+      return res.status(400).json({
+        message: "New password must be at least 8 characters and include uppercase, lowercase, number, and special character.",
+      });
+    }
+
+    const user = await User.findById(req.user.id);
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const isCurrentPasswordValid = await bcrypt.compare(currentPassword, user.password);
+    if (!isCurrentPasswordValid) {
+      return res.status(400).json({ message: "Current password is incorrect." });
+    }
+
+    const isSamePassword = await bcrypt.compare(newPassword, user.password);
+    if (isSamePassword) {
+      return res.status(400).json({ message: "New password must be different from the current password." });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+    await user.save();
+
+    res.json({ message: "Password updated successfully." });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error updating password" });
+  }
+});
+
+// 7. UPLOAD AVATAR
+router.post("/avatar", authMiddleware, uploadAvatar, async (req, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user) return res.status(404).json({ message: "User not found" });
