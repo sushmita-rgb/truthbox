@@ -16,6 +16,27 @@ const linkSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
+    // Post type: 'text' | 'image' | 'pdf' | 'video' | 'url'
+    postType: {
+      type: String,
+      enum: ["text", "image", "pdf", "video", "url"],
+      default: "text",
+    },
+    // For text and url types
+    content: {
+      type: String,
+      default: "",
+    },
+    // For image, pdf, video types (stored filename)
+    fileUrl: {
+      type: String,
+      default: "",
+    },
+    // Original filename for display
+    fileName: {
+      type: String,
+      default: "",
+    },
   },
   { timestamps: true }
 );

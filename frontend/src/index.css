@@ -3,13 +3,14 @@
 @theme {
   --font-sans: "Inter", sans-serif;
   --font-heading: "Poppins", sans-serif;
-  --color-main: #1c1c1c;
+  --color-main: #141414;
   --color-accent: #97ce23;
 }
 
 @layer utilities {
   .glass {
-    @apply bg-main/80 backdrop-blur-lg border border-white/10 shadow-xl;
+    @apply backdrop-blur-2xl border border-white/10 shadow-2xl;
+    background: rgba(255, 255, 255, 0.03);
   }
 }
 
@@ -17,7 +18,7 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: var(--color-main);
+  background-color: #141414;
   color: white;
   font-family: var(--font-sans);
 }
@@ -26,30 +27,26 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
 }
 
-/* Hide scrollbar completely */
-::-webkit-scrollbar {
-  display: none;
+/* Hide scrollbar */
+::-webkit-scrollbar { display: none; }
+* { -ms-overflow-style: none; scrollbar-width: none; }
+html { scroll-behavior: smooth; }
+
+/* Keyframes */
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-* {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
 }
 
-/* Smooth scrolling for anchor links (if any) */
-html {
-  scroll-behavior: smooth;
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-12px); }
 }
 
-/* Animations */
-.fade-up-enter {
-  opacity: 0;
-  transform: translateY(30px);
-  transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+.animate-float {
+  animation: float-slow 6s ease-in-out infinite;
 }
-
-.fade-up-enter-active {
-  opacity: 1;
-  transform: translateY(0);
-}
-
