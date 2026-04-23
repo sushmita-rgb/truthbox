@@ -12,7 +12,6 @@ import {
   Film,
   Globe,
   Image as ImageIcon,
-  LayoutGrid,
   Link as LinkIcon,
   LogOut,
   Menu,
@@ -95,9 +94,6 @@ const card = {
 };
 
 const stagger = { show: { transition: { staggerChildren: 0.08 } } };
-
-const buildDailyLabel = (value) =>
-  new Date(value).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 
 export default function Dashboard() {
   const [feedback, setFeedback] = useState([]);
