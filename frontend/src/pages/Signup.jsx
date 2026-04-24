@@ -7,6 +7,15 @@ export default function Signup() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const selectedTemplateRaw = localStorage.getItem("truthbox.selectedTemplate");
+  let selectedTemplate = null;
+  if (selectedTemplateRaw) {
+    try {
+      selectedTemplate = JSON.parse(selectedTemplateRaw);
+    } catch (err) {
+      selectedTemplate = null;
+    }
+  }
 
   const handleSignup = async (e) => {
     e.preventDefault();
@@ -31,6 +40,14 @@ export default function Signup() {
         </Link>
         
         <p className="text-gray-400 mb-8">Start receiving anonymous feedback today.</p>
+
+        {selectedTemplate && (
+          <div className="mb-6 rounded-2xl border border-accent/20 bg-accent/10 p-4">
+            <p className="text-xs uppercase tracking-[0.2em] text-accent">Template selected</p>
+            <p className="mt-2 text-sm font-semibold text-white">{selectedTemplate.title}</p>
+            <p className="mt-1 text-sm text-gray-400">{selectedTemplate.summary}</p>
+          </div>
+        )}
 
         {error && <div className="p-4 mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>}
 

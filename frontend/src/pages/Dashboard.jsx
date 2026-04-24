@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
@@ -113,6 +113,10 @@ export default function Dashboard() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showProfileCard, setShowProfileCard] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [feedbackSearch, setFeedbackSearch] = useState("");
+  const [feedbackRange, setFeedbackRange] = useState("all");
+  const [feedbackLinkFilter, setFeedbackLinkFilter] = useState("all");
   const [branding, setBranding] = useState({
     title: "",
     description: "",
@@ -128,6 +132,30 @@ export default function Dashboard() {
 
   const activeType = POST_TYPES.find((type) => type.id === postType);
   const latestLink = links[0] || null;
+  const feedbackLinkOptions = useMemo(
+    () =>
+      links.map((link) => ({
+        value: link.linkId,
+        label: link.title || link.templateKey || link.linkId,
+      })),
+    [links]
+  );
+  const filteredFeedback = useMemo(() => {
+    const now = Date.now();
+    return feedback.filter((item) => {
+      const matchesSearch =
+        item.message.toLowerCase().includes(feedbackSearch.toLowerCase()) ||
+        item.linkId.toLowerCase().includes(feedbackSearch.toLowerCase());
+      const matchesRange =
+        feedbackRange === "all"
+          ? true
+          : feedbackRange === "7d"
+          ? now - new Date(item.createdAt).getTime() <= 7 * 24 * 60 * 60 * 1000
+          : now - new Date(item.createdAt).getTime() <= 30 * 24 * 60 * 60 * 1000;
+      const matchesLink = feedbackLinkFilter === "all" ? true : item.linkId === feedbackLinkFilter;
+      return matchesSearch && matchesRange && matchesLink;
+    });
+  }, [feedback, feedbackSearch, feedbackRange, feedbackLinkFilter]);
 
   const loadCollections = async () => {
     const [fbRes, linksRes, analyticsRes] = await Promise.all([
@@ -139,6 +167,28 @@ export default function Dashboard() {
     setFeedback(fbRes.data);
     setLinks(linksRes.data);
     setAnalytics(analyticsRes.data);
+  };
+
+  const restoreSelectedTemplate = () => {
+    const storedTemplate = localStorage.getItem("truthbox.selectedTemplate");
+    if (!storedTemplate) return;
+
+    try {
+      const template = JSON.parse(storedTemplate);
+      if (!template?.id) return;
+
+      setSelectedTemplate(template);
+      setPostType(template.postType || "text");
+      setContent(template.content || "");
+      setBranding({
+        title: template.title || "",
+        description: template.summary || "",
+        accentColor: template.accent || "#97ce23",
+        templateKey: template.id || "custom",
+      });
+    } catch (err) {
+      console.warn("Unable to load selected template from storage:", err);
+    }
   };
 
   const loadDashboard = async () => {
@@ -153,6 +203,7 @@ export default function Dashboard() {
       }
 
       await loadCollections();
+      restoreSelectedTemplate();
     } catch (err) {
       if (err.response?.status === 401) {
         localStorage.removeItem("token");
@@ -174,6 +225,7 @@ export default function Dashboard() {
       setShowTermsModal(false);
       setUser((prev) => (prev ? { ...prev, termsAccepted: true } : prev));
       await loadCollections();
+      restoreSelectedTemplate();
     } catch (err) {
       alert(err.response?.data?.message || "Failed to accept terms. Please try again.");
     }
@@ -220,6 +272,17 @@ export default function Dashboard() {
     clearFile();
   };
 
+  const clearSelectedTemplate = () => {
+    localStorage.removeItem("truthbox.selectedTemplate");
+    setSelectedTemplate(null);
+    setBranding({
+      title: "",
+      description: "",
+      accentColor: "#97ce23",
+      templateKey: "custom",
+    });
+  };
+
   const handleSubmit = async () => {
     if (postType === "text" && !content.trim()) return alert("Please enter the prompt you want reviewed.");
     if (postType === "url" && !content.trim()) return alert("Please enter the URL you want reviewed.");
@@ -254,10 +317,83 @@ export default function Dashboard() {
     }
   };
 
-  const copyLink = (id) => {
-    navigator.clipboard.writeText(`${window.location.origin}/feedback/${id}`);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2500);
+  const copyTextToClipboard = async (text) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+
+      const tempInput = document.createElement("textarea");
+      tempInput.value = text;
+      tempInput.setAttribute("readonly", "");
+      tempInput.style.position = "fixed";
+      tempInput.style.opacity = "0";
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      const copied = document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      return copied;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const copyLink = async (id) => {
+    const copiedSuccessfully = await copyTextToClipboard(`${window.location.origin}/feedback/${id}`);
+    if (copiedSuccessfully) {
+      setCopied(true);
+      alert("Link copied to your clipboard.");
+      setTimeout(() => setCopied(false), 2500);
+      return;
+    }
+
+    alert("Unable to copy the link right now. Please copy it manually.");
+  };
+
+  const toggleLinkStatus = async (linkId) => {
+    try {
+      await api.patch(`/links/${linkId}/toggle`);
+      await loadCollections();
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to update the link status.");
+    }
+  };
+
+  const deleteLink = async (linkId) => {
+    const confirmed = window.confirm("Delete this link and all of its feedback?");
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/links/${linkId}`);
+      await loadCollections();
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to delete the link.");
+    }
+  };
+
+  const exportFeedbackCsv = () => {
+    const rows = filteredFeedback.map((item) => [
+      new Date(item.createdAt).toISOString(),
+      item.linkId,
+      links.find((link) => link.linkId === item.linkId)?.title || "",
+      item.message.replaceAll('"', '""'),
+    ]);
+
+    const csv = [
+      ["Created At", "Link ID", "Link Title", "Message"],
+      ...rows,
+    ]
+      .map((row) => row.map((cell) => `"${String(cell)}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `truthbox-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
   };
 
   const handleLogout = () => {
@@ -311,9 +447,9 @@ export default function Dashboard() {
               className="fixed top-0 left-0 z-40 h-full w-[290px] border-r border-white/10 bg-[#090909] p-5 flex flex-col"
             >
               <div className="flex items-center justify-between mb-8">
-                <h1 className="text-2xl font-extrabold font-heading">
+                <Link to="/" className="text-2xl font-extrabold font-heading leading-none">
                   Truth<span className="text-accent">Box</span>
-                </h1>
+                </Link>
                 <button
                   onClick={() => setSidebarOpen(false)}
                   className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors"
@@ -441,6 +577,22 @@ export default function Dashboard() {
                     Faster setup
                   </div>
                 </div>
+
+                {selectedTemplate && (
+                  <div className="flex flex-col gap-3 rounded-3xl border border-accent/20 bg-accent/10 p-4 md:flex-row md:items-center md:justify-between">
+                    <div>
+                      <p className="text-xs uppercase tracking-[0.2em] text-accent">Selected template</p>
+                      <p className="mt-2 font-semibold text-white">{selectedTemplate.title}</p>
+                      <p className="text-sm text-gray-400">{selectedTemplate.summary}</p>
+                    </div>
+                    <button
+                      onClick={clearSelectedTemplate}
+                      className="rounded-2xl border border-white/10 bg-black/40 px-4 py-2 text-xs font-semibold text-gray-300 hover:bg-white/5"
+                    >
+                      Clear selection
+                    </button>
+                  </div>
+                )}
 
                 <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
                   {TEMPLATE_PRESETS.map((template) => (
@@ -861,11 +1013,11 @@ export default function Dashboard() {
                             </p>
                           </div>
                           <div className="h-12 w-12 rounded-2xl border border-white/10" style={{ background: `${linkColor}18` }} />
-                        </div>
+                      </div>
 
-                        <div className="mt-5 rounded-2xl border border-white/10 bg-black/40 p-4">
-                          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Share URL</p>
-                          <div className="mt-2 flex flex-col gap-3 sm:flex-row">
+                      <div className="mt-5 rounded-2xl border border-white/10 bg-black/40 p-4">
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Share URL</p>
+                        <div className="mt-2 flex flex-col gap-3 sm:flex-row">
                             <div className="flex-1 truncate rounded-xl border border-white/10 bg-black px-4 py-3 font-mono text-xs text-gray-300">
                               {window.location.origin}/feedback/{link.linkId}
                             </div>
@@ -878,6 +1030,21 @@ export default function Dashboard() {
                               Copy
                             </button>
                           </div>
+                        </div>
+
+                        <div className="mt-4 flex flex-wrap gap-3">
+                          <button
+                            onClick={() => toggleLinkStatus(link.linkId)}
+                            className="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold text-gray-200 transition-colors hover:bg-white/10"
+                          >
+                            {link.isActive ? "Deactivate" : "Reactivate"}
+                          </button>
+                          <button
+                            onClick={() => deleteLink(link.linkId)}
+                            className="rounded-xl border border-red-500/20 bg-red-500/10 px-4 py-2 text-xs font-semibold text-red-300 transition-colors hover:bg-red-500/20"
+                          >
+                            Delete
+                          </button>
                         </div>
                       </motion.div>
                     );
@@ -909,23 +1076,82 @@ export default function Dashboard() {
                   </button>
                 </motion.div>
               ) : (
-                <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
-                  {feedback.map((message) => (
-                    <motion.div
-                      key={message._id}
-                      variants={card}
-                      whileHover={{ y: -4 }}
-                      className="rounded-3xl p-6 relative overflow-hidden border border-white/10 transition-all cursor-default bg-[#111111]"
-                    >
-                      <div className="absolute top-0 left-0 w-1 h-full bg-accent rounded-l-3xl" />
-                      <p className="text-gray-200 text-sm leading-relaxed pl-3">{message.message}</p>
-                      <div className="flex items-center justify-between mt-5 pl-3">
-                        <span className="text-xs bg-white/5 px-3 py-1 rounded-full text-gray-500">Anonymous</span>
-                        <span className="text-xs text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</span>
+                <>
+                  <motion.div variants={card} className="rounded-3xl border border-white/10 bg-[#111111] p-5 space-y-4">
+                    <div className="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+                      <div>
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Filters</p>
+                        <h3 className="mt-2 text-xl font-bold">Search and narrow your responses</h3>
                       </div>
+                      <button
+                        onClick={exportFeedbackCsv}
+                        className="inline-flex items-center gap-2 rounded-2xl bg-accent px-5 py-3 text-sm font-bold text-black"
+                      >
+                        <Copy size={15} />
+                        Export CSV
+                      </button>
+                    </div>
+
+                    <div className="grid gap-3 lg:grid-cols-[1.2fr_0.9fr_0.9fr]">
+                      <input
+                        value={feedbackSearch}
+                        onChange={(e) => setFeedbackSearch(e.target.value)}
+                        placeholder="Search feedback text or link id..."
+                        className="rounded-2xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-accent/50"
+                      />
+                      <select
+                        value={feedbackRange}
+                        onChange={(e) => setFeedbackRange(e.target.value)}
+                        className="rounded-2xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-accent/50"
+                      >
+                        <option value="all">All time</option>
+                        <option value="7d">Last 7 days</option>
+                        <option value="30d">Last 30 days</option>
+                      </select>
+                      <select
+                        value={feedbackLinkFilter}
+                        onChange={(e) => setFeedbackLinkFilter(e.target.value)}
+                        className="rounded-2xl border border-white/10 bg-black/50 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-accent/50"
+                      >
+                        <option value="all">All links</option>
+                        {feedbackLinkOptions.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </motion.div>
+
+                  {filteredFeedback.length === 0 ? (
+                    <motion.div variants={card} className="p-16 rounded-3xl border border-white/10 text-center bg-[#111111]">
+                      <MessageSquare size={48} className="mx-auto mb-4 text-gray-700" />
+                      <p className="text-gray-400 font-semibold">No messages match your filters</p>
+                      <p className="text-gray-600 text-sm mt-1">Try a wider date range or clear the search field.</p>
                     </motion.div>
-                  ))}
-                </div>
+                  ) : (
+                    <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+                      {filteredFeedback.map((message) => {
+                        const linkTitle = links.find((link) => link.linkId === message.linkId)?.title || message.linkId;
+                        return (
+                          <motion.div
+                            key={message._id}
+                            variants={card}
+                            whileHover={{ y: -4 }}
+                            className="rounded-3xl p-6 relative overflow-hidden border border-white/10 transition-all cursor-default bg-[#111111]"
+                          >
+                            <div className="absolute top-0 left-0 w-1 h-full bg-accent rounded-l-3xl" />
+                            <p className="text-gray-200 text-sm leading-relaxed pl-3">{message.message}</p>
+                            <div className="flex flex-wrap items-center justify-between gap-3 mt-5 pl-3">
+                              <span className="text-xs bg-white/5 px-3 py-1 rounded-full text-gray-500">{linkTitle}</span>
+                              <span className="text-xs text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</span>
+                            </div>
+                          </motion.div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </>
               )}
             </motion.div>
           )}

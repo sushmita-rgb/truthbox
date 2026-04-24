@@ -218,6 +218,54 @@ router.get("/analytics", authMiddleware, requireTerms, async (req, res) => {
   }
 });
 
+router.patch("/:linkId/toggle", authMiddleware, requireTerms, async (req, res) => {
+  try {
+    const link = await Link.findOne({
+      linkId: req.params.linkId,
+      userId: req.user.id,
+    });
+
+    if (!link) {
+      return res.status(404).json({ message: "Link not found" });
+    }
+
+    link.isActive = !link.isActive;
+    await link.save();
+
+    res.json({
+      message: link.isActive ? "Link reactivated" : "Link deactivated",
+      linkId: link.linkId,
+      isActive: link.isActive,
+    });
+  } catch (error) {
+    console.error("Error toggling link status:", error);
+    res.status(500).json({ message: "Server error updating link status" });
+  }
+});
+
+router.delete("/:linkId", authMiddleware, requireTerms, async (req, res) => {
+  try {
+    const link = await Link.findOneAndDelete({
+      linkId: req.params.linkId,
+      userId: req.user.id,
+    });
+
+    if (!link) {
+      return res.status(404).json({ message: "Link not found" });
+    }
+
+    await Feedback.deleteMany({
+      receiverId: req.user.id,
+      linkId: req.params.linkId,
+    });
+
+    res.json({ message: "Link deleted successfully", linkId: req.params.linkId });
+  } catch (error) {
+    console.error("Error deleting link:", error);
+    res.status(500).json({ message: "Server error deleting link" });
+  }
+});
+
 router.get("/:linkId", async (req, res) => {
   try {
     const link = await Link.findOne({
