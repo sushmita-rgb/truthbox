@@ -33,6 +33,11 @@ const userSchema = new mongoose.Schema(
     termsAcceptedAt: {
       type: Date,
     },
+    plan: {
+      type: String,
+      enum: ["free", "pro", "ultra"],
+      default: "free",
+    },
   },
   { timestamps: true }
 );

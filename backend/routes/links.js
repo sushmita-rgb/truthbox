@@ -2,12 +2,16 @@ const express = require("express");
 const router = express.Router();
 const Link = require("../models/Link");
 const Feedback = require("../models/Feedback");
+const User = require("../models/User");
 const authMiddleware = require("../middleware/authMiddleware");
 const requireTerms = require("../middleware/requireTerms");
 const { nanoid } = require("nanoid");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+
+// ── Plan limits ──────────────────────────────────────────────────────────────
+const PLAN_LIMITS = { free: 5, pro: 20, ultra: Infinity };
 
 const uploadsDir = path.join(__dirname, "../uploads");
 if (!fs.existsSync(uploadsDir)) {
@@ -70,6 +74,24 @@ const buildResponseCounts = async (userId) => {
   }, {});
 };
 
+router.get("/usage", authMiddleware, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const user = await User.findById(userId).select("plan");
+    const plan = user?.plan || "free";
+    const limit = PLAN_LIMITS[plan];
+    const used = await Link.countDocuments({ userId });
+    res.json({
+      plan,
+      used,
+      limit: limit === Infinity ? null : limit,
+      percentage: limit === Infinity ? 0 : Math.min(100, Math.round((used / limit) * 100)),
+    });
+  } catch (err) {
+    res.status(500).json({ message: "Server error fetching usage" });
+  }
+});
+
 router.post(
   "/create-link",
   authMiddleware,
@@ -86,6 +108,22 @@ router.post(
         accentColor,
         templateKey = "custom",
       } = req.body;
+
+      // ── Plan limit check ──────────────────────────────────────────────────
+      const user = await User.findById(userId).select("plan");
+      const plan = user?.plan || "free";
+      const limit = PLAN_LIMITS[plan];
+      const used = await Link.countDocuments({ userId });
+      if (used >= limit) {
+        return res.status(403).json({
+          code: "PLAN_LIMIT_REACHED",
+          message: `You've reached the ${plan} plan limit of ${limit} links.`,
+          plan,
+          used,
+          limit,
+        });
+      }
+      // ─────────────────────────────────────────────────────────────────────
 
       if (postType === "text" && !content.trim()) {
         return res.status(400).json({ message: "Text content is required" });

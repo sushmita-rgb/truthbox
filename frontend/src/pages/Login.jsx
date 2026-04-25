@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
+import TruthBoxLogo from "../components/TruthBoxLogo";
 
 export default function Login() {
   const [formData, setFormData] = useState({ username: "", password: "" });
@@ -26,8 +27,8 @@ export default function Login() {
   return (
     <div className="min-h-screen bg-main/45 flex items-center justify-center p-4 font-sans">
       <div className="glass p-8 md:p-12 rounded-3xl w-full max-w-md animate-fade-in-up">
-        <Link to="/" className="inline-block mb-8">
-          <h2 className="text-3xl font-extrabold font-heading text-white">Truth<span className="text-accent">Box</span></h2>
+        <Link to="/" className="flex justify-center mb-4">
+          <TruthBoxLogo className="h-20 w-auto" showTagline={false} />
         </Link>
         <p className="text-gray-400 mb-8">Enter your details to access your dashboard.</p>
 

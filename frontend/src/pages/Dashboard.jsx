@@ -27,6 +27,7 @@ import api from "../api";
 import ProfileDropdown from "../components/ProfileDropdown";
 import SettingsModal from "../components/SettingsModal";
 import TermsModal from "../components/TermsModal";
+import PricingModal from "../components/PricingModal";
 
 const BACKEND_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
 
@@ -123,6 +124,9 @@ export default function Dashboard() {
     accentColor: "#97ce23",
     templateKey: "custom",
   });
+  // ── Plan / usage state
+  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [usage, setUsage] = useState({ plan: "free", used: 0, limit: 5, percentage: 0 });
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -158,15 +162,16 @@ export default function Dashboard() {
   }, [feedback, feedbackSearch, feedbackRange, feedbackLinkFilter]);
 
   const loadCollections = async () => {
-    const [fbRes, linksRes, analyticsRes] = await Promise.all([
+    const [fbRes, linksRes, analyticsRes, usageRes] = await Promise.all([
       api.get("/feedback/my-feedback"),
       api.get("/links/my-links"),
       api.get("/links/analytics"),
+      api.get("/links/usage"),
     ]);
-
     setFeedback(fbRes.data);
     setLinks(linksRes.data);
     setAnalytics(analyticsRes.data);
+    setUsage(usageRes.data);
   };
 
   const restoreSelectedTemplate = () => {
@@ -311,7 +316,14 @@ export default function Dashboard() {
       await loadCollections();
       setActiveNav("links");
     } catch (err) {
-      alert(err.response?.data?.message || "Unable to create the feedback request.");
+      // If the server says the plan limit is reached, open the upgrade modal
+      if (err.response?.data?.code === "PLAN_LIMIT_REACHED") {
+        const { plan, used, limit } = err.response.data;
+        setUsage((prev) => ({ ...prev, plan, used, limit }));
+        setShowPricingModal(true);
+      } else {
+        alert(err.response?.data?.message || "Unable to create the feedback request.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -428,6 +440,14 @@ export default function Dashboard() {
           onLogout={handleLogout}
         />
       )}
+      {showPricingModal && (
+        <PricingModal
+          onClose={() => setShowPricingModal(false)}
+          currentPlan={usage.plan}
+          used={usage.used}
+          limit={usage.limit}
+        />
+      )}
 
       <AnimatePresence>
         {sidebarOpen && (
@@ -534,6 +554,23 @@ export default function Dashboard() {
           </div>
 
           <div className="relative flex items-center gap-3">
+            {/* Upgrade button — always visible */}
+            <button
+              onClick={() => setShowPricingModal(true)}
+              className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:-translate-y-0.5"
+              style={{
+                background: "linear-gradient(135deg, #97ce23, #c8f563)",
+                color: "#000",
+                boxShadow: "0 0 18px rgba(151,206,35,0.35)",
+              }}
+            >
+              <Zap size={13} />
+              Upgrade
+              {/* Mini usage bar */}
+              <span className="ml-1 opacity-70 font-normal">
+                {usage.used}/{usage.limit ?? "∞"}
+              </span>
+            </button>
             <button className="w-11 h-11 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors">
               <Bell size={18} className="text-gray-300" />
             </button>

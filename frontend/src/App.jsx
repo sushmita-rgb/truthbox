@@ -7,17 +7,17 @@ import Signup from "./pages/Signup";
 import Dashboard from "./pages/Dashboard";
 import FeedbackPage from "./pages/FeedbackPage";
 import PageTransition from "./components/PageTransition";
-import BubbleCanvas from "./components/BubbleCanvas";
+import CloudCanvas from "./components/CloudCanvas";
 
 function AnimatedRoutes() {
   const location = useLocation();
   return (
     <AnimatePresence mode="wait">
       <Routes location={location} key={location.pathname}>
-        <Route path="/"              element={<PageTransition><Home /></PageTransition>} />
-        <Route path="/login"         element={<PageTransition><Login /></PageTransition>} />
-        <Route path="/signup"        element={<PageTransition><Signup /></PageTransition>} />
-        <Route path="/dashboard"     element={<PageTransition><Dashboard /></PageTransition>} />
+        <Route path="/"               element={<PageTransition><Home /></PageTransition>} />
+        <Route path="/login"          element={<PageTransition><Login /></PageTransition>} />
+        <Route path="/signup"         element={<PageTransition><Signup /></PageTransition>} />
+        <Route path="/dashboard"      element={<PageTransition><Dashboard /></PageTransition>} />
         <Route path="/feedback/:linkId" element={<PageTransition><FeedbackPage /></PageTransition>} />
       </Routes>
     </AnimatePresence>
@@ -25,15 +25,20 @@ function AnimatedRoutes() {
 }
 
 function AppShell() {
-  const location = useLocation();
-  const isDashboard = location.pathname === "/dashboard";
-
   return (
     <>
-      {!isDashboard && <BubbleCanvas />}
-      {!isDashboard && (
-        <div className="fixed inset-0 z-[1] bg-[radial-gradient(circle_at_top,rgba(151,206,35,0.14),transparent_34%),linear-gradient(180deg,rgba(6,10,6,0.28),rgba(6,10,6,0.58))]" />
-      )}
+      {/* Global cloud canvas — visible on every page */}
+      <CloudCanvas />
+
+      {/* Subtle dark vignette overlay so clouds don't compete with text */}
+      <div className="fixed inset-0 z-[1] pointer-events-none"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 0%, rgba(151,206,35,0.04) 0%, transparent 55%), " +
+            "linear-gradient(180deg, rgba(5,5,5,0.10) 0%, rgba(5,5,5,0.25) 100%)",
+        }}
+      />
+
       <div className="relative z-10 min-h-screen text-white font-sans selection:bg-accent/30">
         <AnimatedRoutes />
       </div>

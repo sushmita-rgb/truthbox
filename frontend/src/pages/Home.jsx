@@ -1,11 +1,14 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
+import TruthBoxLogo from "../components/TruthBoxLogo";
 import {
   ArrowRight,
+  Check,
   CheckCircle2,
   ChevronRight,
   Copy,
+  Crown,
   Globe,
   LayoutTemplate,
   Lock,
@@ -14,6 +17,8 @@ import {
   Sparkles,
   Shield,
   Wand2,
+  X,
+  Zap,
 } from "lucide-react";
 import heroArt from "../assets/hero.png";
 
@@ -176,16 +181,8 @@ export default function Home() {
 
       <header className="relative z-10 w-full border-b border-white/10">
         <div className="flex w-full items-center justify-between px-6 py-6 lg:px-12 2xl:px-20">
-          <Link to="/" className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/5 shadow-lg">
-              <Sparkles className="text-accent" size={19} />
-            </div>
-            <div>
-              <h1 className="text-2xl font-extrabold leading-none">
-                Truth<span className="text-accent">Box</span>
-              </h1>
-              <p className="text-xs text-gray-500">Anonymous feedback, upgraded</p>
-            </div>
+          <Link to="/" className="flex items-center">
+            <TruthBoxLogo className="h-16 w-auto" showTagline={false} />
           </Link>
 
           <div className="hidden items-center gap-3 md:flex">
@@ -194,6 +191,9 @@ export default function Home() {
             </a>
             <a href="#templates" className="text-sm text-gray-300 transition-colors hover:text-white">
               Templates
+            </a>
+            <a href="#pricing" className="text-sm text-gray-300 transition-colors hover:text-white">
+              Pricing
             </a>
             <Link
               to="/login"
@@ -466,37 +466,171 @@ export default function Home() {
           }
         />
 
-        <section className="w-full px-6 pb-24 pt-6 lg:px-12 2xl:px-20">
+        {/* ── Pricing Section ───────────────────────────────────────────── */}
+        <section id="pricing" className="w-full px-6 pb-28 pt-10 lg:px-12 2xl:px-20">
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.22 }}
-            transition={{ duration: 0.66, ease: [0.22, 1, 0.36, 1] }}
-            className="rounded-[2rem] border border-white/10 bg-black/45 p-8 text-center md:p-12"
+            viewport={{ once: true, amount: 0.15 }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="text-center mb-14"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Ready</p>
-            <h3 className="mx-auto mt-4 max-w-4xl text-3xl font-extrabold md:text-5xl">
-              Launch a more serious-looking product today.
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Pricing</p>
+            <h3 className="mx-auto mt-4 max-w-3xl text-4xl font-extrabold md:text-5xl">
+              Simple plans, honest prices.
             </h3>
-            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-gray-400 md:text-base">
-              Every section now reveals as you scroll, and the zigzag flow keeps the page visually dynamic.
+            <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-gray-400">
+              Start free. Upgrade when you're ready to scale your feedback operation.
             </p>
-            <div className="mt-8 flex flex-wrap justify-center gap-4">
-              <Link
-                to="/signup"
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-4 text-sm font-bold text-main transition-all hover:-translate-y-0.5"
-              >
-                Start building
-                <ArrowRight size={16} />
-              </Link>
-              <Link
-                to="/login"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-              >
-                Sign in
-              </Link>
-            </div>
           </motion.div>
+
+          <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+            {[
+              {
+                id: "free",
+                name: "Free",
+                price: "$0",
+                period: "forever",
+                icon: Sparkles,
+                color: "#6b7280",
+                links: "5 links",
+                features: [
+                  "5 feedback links",
+                  "All post types",
+                  "Anonymous responses",
+                  "Basic dashboard",
+                ],
+                locked: ["Analytics", "CSV export", "Priority support"],
+                cta: "Get started free",
+                ctaStyle: "border border-white/10 bg-white/5 text-white hover:bg-white/10",
+                badge: null,
+                glow: null,
+              },
+              {
+                id: "pro",
+                name: "Pro",
+                price: "$10",
+                period: "per month",
+                icon: Zap,
+                color: "#97ce23",
+                links: "20 links",
+                features: [
+                  "20 feedback links",
+                  "All post types",
+                  "Anonymous responses",
+                  "Full analytics dashboard",
+                  "CSV export",
+                  "Priority support",
+                ],
+                locked: ["Custom branding"],
+                cta: "Upgrade to Pro",
+                ctaStyle: "bg-accent text-black font-bold hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.45)]",
+                badge: "Most Popular",
+                glow: "0 0 60px rgba(151,206,35,0.20)",
+              },
+              {
+                id: "ultra",
+                name: "Pro Ultra",
+                price: "$20",
+                period: "per month",
+                icon: Crown,
+                color: "#ffffff",
+                links: "Unlimited",
+                features: [
+                  "Unlimited feedback links",
+                  "All post types",
+                  "Anonymous responses",
+                  "Full analytics dashboard",
+                  "CSV export",
+                  "Priority support",
+                  "Custom branding",
+                  "Early access to features",
+                ],
+                locked: [],
+                cta: "Upgrade to Ultra",
+                ctaStyle: "bg-white text-black font-bold hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(255,255,255,0.25)]",
+                badge: "Best Value",
+                glow: "0 0 60px rgba(255,255,255,0.10)",
+              },
+            ].map((plan, i) => {
+              const Icon = plan.icon;
+              return (
+                <motion.div
+                  key={plan.id}
+                  initial={{ opacity: 0, y: 32 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.15 }}
+                  transition={{ duration: 0.5, ease: "easeOut", delay: i * 0.1 }}
+                  className="relative rounded-[1.75rem] border p-7 flex flex-col gap-5"
+                  style={{
+                    borderColor: plan.id === "pro" ? "rgba(151,206,35,0.4)" : plan.id === "ultra" ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)",
+                    background: plan.id === "pro" ? "rgba(151,206,35,0.05)" : "rgba(255,255,255,0.02)",
+                    boxShadow: plan.glow || "none",
+                  }}
+                >
+                  {/* Badge */}
+                  {plan.badge && (
+                    <div
+                      className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold"
+                      style={{ background: plan.color, color: plan.id === "ultra" ? "#000" : "#000" }}
+                    >
+                      {plan.badge}
+                    </div>
+                  )}
+
+                  {/* Icon + name */}
+                  <div className="flex items-center gap-3">
+                    <div
+                      className="w-11 h-11 rounded-2xl flex items-center justify-center"
+                      style={{ background: `${plan.color}18`, border: `1px solid ${plan.color}30` }}
+                    >
+                      <Icon size={20} style={{ color: plan.color }} />
+                    </div>
+                    <div>
+                      <p className="font-bold text-white text-lg">{plan.name}</p>
+                      <p className="text-xs text-gray-500">{plan.links}</p>
+                    </div>
+                  </div>
+
+                  {/* Price */}
+                  <div className="border-b border-white/8 pb-5">
+                    <span className="text-4xl font-extrabold text-white">{plan.price}</span>
+                    <span className="text-sm text-gray-500 ml-2">/{plan.period}</span>
+                  </div>
+
+                  {/* Features */}
+                  <ul className="space-y-2.5 flex-1">
+                    {plan.features.map((f) => (
+                      <li key={f} className="flex items-center gap-2.5 text-sm text-gray-300">
+                        <Check size={15} style={{ color: plan.color, flexShrink: 0 }} />
+                        {f}
+                      </li>
+                    ))}
+                    {plan.locked.map((f) => (
+                      <li key={f} className="flex items-center gap-2.5 text-sm text-gray-600">
+                        <X size={15} className="text-gray-700 shrink-0" />
+                        <span className="line-through">{f}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  {/* CTA */}
+                  <Link
+                    to="/signup"
+                    className={`w-full py-3.5 rounded-2xl text-sm text-center transition-all inline-flex items-center justify-center gap-2 ${plan.ctaStyle}`}
+                  >
+                    {plan.cta}
+                    <ArrowRight size={15} />
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+
+          <p className="text-center text-xs text-gray-600 mt-10">
+            All plans include anonymous responses. No credit card required for Free.
+            Questions? <a href="mailto:support@truthbox.app" className="text-accent hover:underline">Contact us</a>.
+          </p>
         </section>
       </main>
     </div>
