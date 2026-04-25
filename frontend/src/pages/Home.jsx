@@ -1,5 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { motion } from "framer-motion";
 import {
   ArrowRight,
   CheckCircle2,
@@ -40,7 +41,7 @@ const STEPS = [
     description: "Choose a template, add branding, and publish a feedback page in seconds.",
     icon: Wand2,
   },
-    {
+  {
     title: "Share anywhere",
     description: "Send it by bio link, DM, QR code, or embed it in your content.",
     icon: Globe,
@@ -84,7 +85,7 @@ const TEMPLATES = [
     headline: "Is this product message sharp enough?",
     prompt: "Would you immediately understand the value if you saw this in your feed?",
     response: "The benefit is clear, but the CTA can be more direct.",
-    note: "I’m testing whether this launch message is clear enough.",
+    note: "I'm testing whether this launch message is clear enough.",
   },
   {
     id: "brand",
@@ -98,6 +99,51 @@ const TEMPLATES = [
     note: "Review my profile image and the impression it creates.",
   },
 ];
+
+const reveal = {
+  hidden: (direction) => ({
+    opacity: 0,
+    x: direction * 88,
+    y: 30,
+    filter: "blur(8px)",
+  }),
+  show: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    filter: "blur(0px)",
+    transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+function ZigzagSection({ id, flip = false, left, right }) {
+  return (
+    <section id={id} className="w-full px-6 py-16 lg:px-12 2xl:px-20 xl:py-24">
+      <div className="grid min-h-[82vh] items-center gap-10 xl:grid-cols-[1fr_1fr]">
+        <motion.div
+          custom={flip ? 1 : -1}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.24 }}
+          variants={reveal}
+          className={flip ? "xl:order-2" : ""}
+        >
+          {left}
+        </motion.div>
+        <motion.div
+          custom={flip ? -1 : 1}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.24 }}
+          variants={reveal}
+          className={flip ? "xl:order-1" : ""}
+        >
+          {right}
+        </motion.div>
+      </div>
+    </section>
+  );
+}
 
 export default function Home() {
   const navigate = useNavigate();
@@ -166,263 +212,274 @@ export default function Home() {
       </header>
 
       <main className="relative z-10 w-full">
-        <section className="grid min-h-[calc(100vh-88px)] w-full items-start gap-10 px-6 pb-14 pt-8 lg:px-12 2xl:px-20 xl:grid-cols-[1.1fr_0.9fr] xl:items-center">
-          <div className="space-y-8">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-gray-300">
-              <MousePointerClick size={14} className="text-accent" />
-              Built for honest, anonymous feedback
-            </div>
+        <ZigzagSection
+          left={
+            <div className="space-y-8">
+              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-gray-300">
+                <MousePointerClick size={14} className="text-accent" />
+                Built for honest, anonymous feedback
+              </div>
 
-            <div className="space-y-5">
-              <h2 className="max-w-4xl text-5xl font-extrabold leading-[1.02] tracking-tight md:text-7xl xl:text-[5.4rem]">
-                Make feedback feel
-                <span className="text-accent"> premium</span>,
-                not basic.
-              </h2>
-              <p className="max-w-2xl text-lg leading-8 text-gray-300 md:text-xl">
-                TruthBox helps creators, students, and builders collect anonymous feedback through
-                branded links, useful templates, and a dashboard that actually tells them what to do next.
-              </p>
-            </div>
+              <div className="space-y-5">
+                <h2 className="max-w-3xl text-5xl font-extrabold leading-[1.02] tracking-tight md:text-7xl xl:text-[5.2rem]">
+                  Make feedback feel
+                  <span className="text-accent"> premium</span>,
+                  not basic.
+                </h2>
+                <p className="max-w-2xl text-lg leading-8 text-gray-300 md:text-xl">
+                  TruthBox helps creators, students, and builders collect anonymous feedback through
+                  branded links, useful templates, and a dashboard that actually tells them what to do next.
+                </p>
+              </div>
 
-            <div className="flex flex-wrap gap-4">
-              <Link
-                to="/signup"
-                className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-4 text-sm font-bold text-main transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.35)]"
-              >
-                Create your first link
-                <ArrowRight size={16} />
-              </Link>
-              <a
-                href="#demo"
-                className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-              >
-                Try the live demo
-                <ChevronRight size={16} />
-              </a>
-            </div>
+              <div className="flex flex-wrap gap-4">
+                <Link
+                  to="/signup"
+                  className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-4 text-sm font-bold text-main transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.35)]"
+                >
+                  Create your first link
+                  <ArrowRight size={16} />
+                </Link>
+                <a
+                  href="#live-demo"
+                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                >
+                  Try the live demo
+                  <ChevronRight size={16} />
+                </a>
+              </div>
 
-            <div className="grid gap-4 sm:grid-cols-3">
-              {statTiles.map((tile) => (
-                <div key={tile.label} className="rounded-3xl border border-white/10 bg-black/35 px-5 py-4 backdrop-blur-xl">
-                  <p className="text-2xl font-extrabold text-white">{tile.value}</p>
-                  <p className="text-sm text-gray-500">{tile.label}</p>
-                </div>
-              ))}
+              <div className="grid gap-4 sm:grid-cols-3">
+                {statTiles.map((tile) => (
+                  <div key={tile.label} className="rounded-3xl border border-white/10 bg-black/35 px-5 py-4 backdrop-blur-xl">
+                    <p className="text-2xl font-extrabold text-white">{tile.value}</p>
+                    <p className="text-sm text-gray-500">{tile.label}</p>
+                  </div>
+                ))}
+              </div>
             </div>
-
-            <div className="grid gap-4 md:grid-cols-3">
+          }
+          right={
+            <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-1">
               {FEATURE_COLUMNS.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={feature.title} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+                  <div key={feature.title} className="rounded-[1.6rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
                     <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-accent">
                       <Icon size={22} />
                     </div>
-                    <h3 className="text-lg font-bold">{feature.title}</h3>
+                    <h3 className="text-xl font-bold">{feature.title}</h3>
                     <p className="mt-2 text-sm leading-7 text-gray-400">{feature.description}</p>
                   </div>
                 );
               })}
             </div>
-          </div>
+          }
+        />
 
-          <div id="demo" className="relative w-full">
-            <div className="absolute -left-8 top-8 h-28 w-28 rounded-full bg-accent/20 blur-3xl" />
-            <div className="absolute -right-6 bottom-12 h-36 w-36 rounded-full bg-white/10 blur-3xl" />
+        <ZigzagSection
+          id="live-demo"
+          flip
+          left={
+            <div className="space-y-5">
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Live Demo</p>
+              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl">
+                See the feedback page update as you pick templates.
+              </h3>
+              <p className="max-w-xl text-base leading-8 text-gray-400 md:text-lg">
+                This block is fully active: selecting template chips updates the preview instantly,
+                and your selected template is carried into signup and dashboard.
+              </p>
+            </div>
+          }
+          right={
+            <div className="relative w-full">
+              <div className="absolute -left-8 top-8 h-28 w-28 rounded-full bg-accent/20 blur-3xl" />
+              <div className="absolute -right-6 bottom-12 h-36 w-36 rounded-full bg-white/10 blur-3xl" />
 
-            <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[rgba(10,10,10,0.82)] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-              <div className="grid gap-0 border-b border-white/10 bg-white/5 md:grid-cols-[0.95fr_1.05fr]">
-                <div className="p-6">
-                  <div className="mb-4 flex items-center gap-3">
-                    <div className="h-12 w-12 rounded-2xl border border-white/10 bg-black/50 p-2">
-                      <img src={heroArt} alt="TruthBox preview" className="h-full w-full object-contain" />
-                    </div>
-                    <div>
-                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Live preview</p>
-                      <h3 className="text-lg font-bold">How a feedback page feels</h3>
-                    </div>
-                  </div>
-
-                  <div className="space-y-4 rounded-3xl border border-white/10 bg-black/45 p-4">
-                    <div className="flex items-center justify-between gap-3">
+              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[rgba(10,10,10,0.82)] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
+                <div className="grid gap-0 border-b border-white/10 bg-white/5 md:grid-cols-[0.95fr_1.05fr]">
+                  <div className="p-6">
+                    <div className="mb-4 flex items-center gap-3">
+                      <div className="h-12 w-12 rounded-2xl border border-white/10 bg-black/50 p-2">
+                        <img src={heroArt} alt="TruthBox preview" className="h-full w-full object-contain" />
+                      </div>
                       <div>
-                        <p className="text-sm font-semibold text-white">{activeTemplate.headline}</p>
-                        <p className="text-xs text-gray-500">Anonymous response preview</p>
-                      </div>
-                      <div className="rounded-full px-3 py-1 text-xs font-semibold" style={{ background: `${activeTemplate.accent}20`, color: activeTemplate.accent }}>
-                        {activeTemplate.title}
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Live preview</p>
+                        <h3 className="text-2xl font-bold leading-tight">How a feedback page feels</h3>
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-black/60 p-4 text-sm text-gray-300">
-                      {activeTemplate.prompt}
-                    </div>
+                    <div className="space-y-4 rounded-3xl border border-white/10 bg-black/45 p-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <div>
+                          <p className="text-3xl font-bold leading-tight text-white">{activeTemplate.headline}</p>
+                          <p className="text-sm text-gray-500">Anonymous response preview</p>
+                        </div>
+                        <div className="rounded-full px-3 py-1 text-xs font-semibold" style={{ background: `${activeTemplate.accent}20`, color: activeTemplate.accent }}>
+                          {activeTemplate.title}
+                        </div>
+                      </div>
 
-                    <textarea
-                      value={demoNote}
-                      onChange={(e) => setDemoNote(e.target.value)}
-                      className="min-h-28 w-full rounded-2xl border border-white/10 bg-black/50 p-4 text-sm text-white outline-none transition-colors placeholder:text-gray-600 focus:border-accent/50"
-                      placeholder="Write your response here..."
-                    />
+                      <div className="rounded-2xl border border-white/10 bg-black/60 p-4 text-sm text-gray-300">
+                        {activeTemplate.prompt}
+                      </div>
 
-                    <div className="rounded-2xl border p-4" style={{ background: `${activeTemplate.accent}10`, borderColor: `${activeTemplate.accent}26` }}>
-                      <p className="text-xs uppercase tracking-[0.2em]" style={{ color: activeTemplate.accent }}>
-                        Example reply
-                      </p>
-                      <p className="mt-2 text-sm leading-relaxed text-gray-200">{activeTemplate.response}</p>
+                      <textarea
+                        value={demoNote}
+                        onChange={(e) => setDemoNote(e.target.value)}
+                        className="min-h-28 w-full rounded-2xl border border-white/10 bg-black/50 p-4 text-sm text-white outline-none transition-colors placeholder:text-gray-600 focus:border-accent/50"
+                        placeholder="Write your response here..."
+                      />
+
+                      <div className="rounded-2xl border p-4" style={{ background: `${activeTemplate.accent}10`, borderColor: `${activeTemplate.accent}26` }}>
+                        <p className="text-xs uppercase tracking-[0.2em]" style={{ color: activeTemplate.accent }}>
+                          Example reply
+                        </p>
+                        <p className="mt-2 text-sm leading-relaxed text-gray-200">{activeTemplate.response}</p>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                <div className="border-t border-white/10 p-6 md:border-l md:border-t-0">
-                  <div className="mb-4 flex flex-wrap gap-2">
-                    {TEMPLATES.map((template) => {
-                      const active = template.id === activeTemplate.id;
-                      return (
+                  <div className="border-t border-white/10 p-6 md:border-l md:border-t-0">
+                    <div className="mb-4 flex flex-wrap gap-2">
+                      {TEMPLATES.map((template) => {
+                        const active = template.id === activeTemplate.id;
+                        return (
+                          <button
+                            key={template.id}
+                            onClick={() => handleTemplateSelect(template)}
+                            className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
+                              active
+                                ? "bg-accent text-main"
+                                : "border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
+                            }`}
+                          >
+                            {template.title}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    <div className="space-y-4">
+                      <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
+                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Selected template</p>
+                        <h4 className="mt-3 text-xl font-bold">{activeTemplate.title}</h4>
+                        <p className="mt-2 text-sm leading-7 text-gray-400">{activeTemplate.summary}</p>
+                      </div>
+
+                      <div className="grid gap-3">
+                        <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
+                          <p className="text-xs uppercase tracking-[0.18em] text-gray-500">Current note</p>
+                          <p className="mt-2 text-sm text-gray-200">{demoNote}</p>
+                        </div>
                         <button
-                          key={template.id}
-                          onClick={() => handleTemplateSelect(template)}
-                          className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
-                            active
-                              ? "bg-accent text-main"
-                              : "border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
-                          }`}
+                          onClick={continueWithTemplate}
+                          className="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-4 text-sm font-bold text-main"
+                          style={{ background: activeTemplate.accent }}
                         >
-                          {template.title}
+                          Use this template
+                          <Copy size={15} />
                         </button>
-                      );
-                    })}
-                  </div>
-
-                  <div className="space-y-4">
-                    <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
-                      <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Selected template</p>
-                      <h4 className="mt-3 text-xl font-bold">{activeTemplate.title}</h4>
-                      <p className="mt-2 text-sm leading-7 text-gray-400">{activeTemplate.summary}</p>
-                    </div>
-
-                    <div className="grid gap-3">
-                      <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
-                        <p className="text-xs uppercase tracking-[0.18em] text-gray-500">Current note</p>
-                        <p className="mt-2 text-sm text-gray-200">{demoNote}</p>
                       </div>
-                      <button
-                        onClick={continueWithTemplate}
-                        className="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-4 text-sm font-bold text-main"
-                        style={{ background: activeTemplate.accent }}
-                      >
-                        Use this template
-                        <Copy size={15} />
-                      </button>
                     </div>
                   </div>
                 </div>
               </div>
             </div>
-          </div>
-        </section>
+          }
+        />
 
-        <section id="how-it-works" className="w-full px-6 py-20 lg:px-12 2xl:px-20">
-          <div className="mb-10 flex flex-col gap-3">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">How it works</p>
-            <h3 className="max-w-3xl text-3xl font-extrabold md:text-4xl">Three steps from idea to insight</h3>
-            <p className="max-w-2xl text-gray-400">
-              The experience should feel polished for the creator and effortless for the person leaving feedback.
-            </p>
-          </div>
-
-          <div className="grid gap-5 lg:grid-cols-3">
-            {STEPS.map((step, index) => {
-              const Icon = step.icon;
-              return (
-                <div key={step.title} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                  <div className="mb-5 flex items-center justify-between">
-                    <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-accent">
-                      <Icon size={22} />
-                    </div>
-                    <span className="text-sm text-gray-600">0{index + 1}</span>
-                  </div>
-                  <h4 className="text-xl font-bold">{step.title}</h4>
-                  <p className="mt-3 text-sm leading-7 text-gray-400">{step.description}</p>
-                </div>
-              );
-            })}
-          </div>
-        </section>
-
-        <section id="templates" className="w-full px-6 py-10 lg:px-12 2xl:px-20">
-          <div className="mb-10 flex flex-col gap-3">
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Templates</p>
-            <h3 className="max-w-4xl text-3xl font-extrabold md:text-4xl">Start with a strong prompt instead of a blank screen</h3>
-            <p className="max-w-2xl text-gray-400">
-              People use the app faster when they can choose a ready-made use case instead of inventing wording from scratch.
-            </p>
-          </div>
-
-          <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
-            {TEMPLATES.map((item) => (
-              <button
-                key={item.id}
-                onClick={() => handleTemplateSelect(item)}
-                className={`rounded-[1.75rem] border p-6 text-left transition-all hover:-translate-y-1 hover:bg-white/10 ${
-                  activeTemplate.id === item.id
-                    ? "border-accent/60 bg-accent/10 shadow-[0_0_0_1px_rgba(151,206,35,0.3)]"
-                    : "border-white/10 bg-[#111111]"
-                }`}
-              >
-                <div className="mb-6 flex items-center justify-between">
-                  <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.accent }} />
-                  <LayoutTemplate size={18} style={{ color: item.accent }} />
-                </div>
-                <h4 className="text-xl font-bold">{item.title}</h4>
-                <p className="mt-3 text-sm leading-7 text-gray-400">{item.summary}</p>
-                <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: item.accent }}>
-                  {activeTemplate.id === item.id ? "Selected" : "Use template"}
-                  <ChevronRight size={15} />
-                </div>
-              </button>
-            ))}
-          </div>
-        </section>
-
-        <section className="w-full px-6 pb-24 pt-4 lg:px-12 2xl:px-20">
-          <div className="rounded-[2rem] border border-white/10 bg-[linear-gradient(135deg,rgba(151,206,35,0.16),rgba(255,255,255,0.04))] p-8 md:p-12">
-            <div className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
-              <div className="space-y-5">
-                <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Built to grow</p>
-                <h3 className="max-w-3xl text-3xl font-extrabold md:text-5xl">Make the product look like something people want to keep using.</h3>
-                <p className="max-w-2xl text-gray-300 leading-8">
-                  The homepage should persuade, the dashboard should guide, and each feedback page should feel branded enough to share without embarrassment.
-                </p>
-              </div>
-
-              <div className="grid gap-4">
-                {FEATURE_COLUMNS.map((feature) => {
-                  const Icon = feature.icon;
-                  return (
-                    <div key={feature.title} className="flex items-start gap-4 rounded-3xl border border-white/10 bg-black/35 p-5">
-                      <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-accent/15 text-accent">
-                        <Icon size={20} />
-                      </div>
-                      <div>
-                        <h4 className="font-bold">{feature.title}</h4>
-                        <p className="mt-1 text-sm leading-6 text-gray-400">{feature.description}</p>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
+        <ZigzagSection
+          id="how-it-works"
+          left={
+            <div className="space-y-5">
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">How it works</p>
+              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl">
+                Three steps from idea to insight.
+              </h3>
+              <p className="max-w-xl text-base leading-8 text-gray-400 md:text-lg">
+                Every step is simple by itself, but together they create a feedback loop that feels professional.
+              </p>
             </div>
-          </div>
-        </section>
+          }
+          right={
+            <div className="grid gap-5 lg:grid-cols-3 xl:grid-cols-1">
+              {STEPS.map((step, index) => {
+                const Icon = step.icon;
+                return (
+                  <div key={step.title} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
+                    <div className="mb-5 flex items-center justify-between">
+                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-accent">
+                        <Icon size={22} />
+                      </div>
+                      <span className="text-sm text-gray-600">0{index + 1}</span>
+                    </div>
+                    <h4 className="text-xl font-bold">{step.title}</h4>
+                    <p className="mt-3 text-sm leading-7 text-gray-400">{step.description}</p>
+                  </div>
+                );
+              })}
+            </div>
+          }
+        />
 
-        <section className="w-full px-6 pb-24 pt-4 lg:px-12 2xl:px-20">
-          <div className="rounded-[2rem] border border-white/10 bg-black/45 p-8 md:p-12 text-center">
+        <ZigzagSection
+          id="templates"
+          flip
+          left={
+            <div className="space-y-5">
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Templates</p>
+              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl">
+                Start with a strong prompt instead of a blank screen.
+              </h3>
+              <p className="max-w-xl text-base leading-8 text-gray-400 md:text-lg">
+                Select any card and it becomes active immediately in the live preview and onboarding flow.
+              </p>
+            </div>
+          }
+          right={
+            <div className="grid gap-5 md:grid-cols-2">
+              {TEMPLATES.map((item) => (
+                <button
+                  key={item.id}
+                  onClick={() => handleTemplateSelect(item)}
+                  className={`rounded-[1.75rem] border p-6 text-left transition-all hover:-translate-y-1 hover:bg-white/10 ${
+                    activeTemplate.id === item.id
+                      ? "border-accent/60 bg-accent/10 shadow-[0_0_0_1px_rgba(151,206,35,0.3)]"
+                      : "border-white/10 bg-[#111111]"
+                  }`}
+                >
+                  <div className="mb-6 flex items-center justify-between">
+                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.accent }} />
+                    <LayoutTemplate size={18} style={{ color: item.accent }} />
+                  </div>
+                  <h4 className="text-xl font-bold">{item.title}</h4>
+                  <p className="mt-3 text-sm leading-7 text-gray-400">{item.summary}</p>
+                  <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: item.accent }}>
+                    {activeTemplate.id === item.id ? "Selected" : "Use template"}
+                    <ChevronRight size={15} />
+                  </div>
+                </button>
+              ))}
+            </div>
+          }
+        />
+
+        <section className="w-full px-6 pb-24 pt-6 lg:px-12 2xl:px-20">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.22 }}
+            transition={{ duration: 0.66, ease: [0.22, 1, 0.36, 1] }}
+            className="rounded-[2rem] border border-white/10 bg-black/45 p-8 text-center md:p-12"
+          >
             <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Ready</p>
-            <h3 className="mt-4 text-3xl font-extrabold md:text-5xl">Launch a more serious-looking product today.</h3>
-            <p className="mx-auto mt-4 max-w-2xl text-gray-400 leading-7">
-              We’ve got the first five upgrades mapped out: the new homepage, interactive demo, templates, analytics, and link branding.
+            <h3 className="mx-auto mt-4 max-w-4xl text-3xl font-extrabold md:text-5xl">
+              Launch a more serious-looking product today.
+            </h3>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-7 text-gray-400 md:text-base">
+              Every section now reveals as you scroll, and the zigzag flow keeps the page visually dynamic.
             </p>
             <div className="mt-8 flex flex-wrap justify-center gap-4">
               <Link
@@ -439,7 +496,7 @@ export default function Home() {
                 Sign in
               </Link>
             </div>
-          </div>
+          </motion.div>
         </section>
       </main>
     </div>
