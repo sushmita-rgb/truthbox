@@ -35,9 +35,10 @@ const feedbackStorage = new CloudinaryStorage({
 
     return {
       folder: "Verit/feedback",
-      resource_type: resourceType,
+      resource_type: file.mimetype === "application/pdf" ? "raw" : "auto",
+      public_id: file.originalname.split('.')[0] + "_" + Date.now(),
       use_filename: true,
-      unique_filename: true,
+      unique_filename: false,
     };
   },
 });
