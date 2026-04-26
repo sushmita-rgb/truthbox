@@ -131,6 +131,15 @@ router.post(
 
       const linkId = nanoid(8);
 
+      if (req.file) {
+        console.log("[DEBUG] File Uploaded:", {
+          path: req.file.path,
+          mimetype: req.file.mimetype,
+          size: req.file.size,
+          originalname: req.file.originalname
+        });
+      }
+
       const newLink = new Link({
         userId,
         linkId,

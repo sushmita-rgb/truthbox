@@ -26,9 +26,18 @@ const feedbackStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
 
+    let resourceType = "auto";
+    if (file.mimetype.startsWith("video/")) {
+      resourceType = "video";
+    } else if (file.mimetype === "application/pdf") {
+      resourceType = "raw";
+    }
+
     return {
       folder: "Verit/feedback",
-      resource_type: "auto",
+      resource_type: resourceType,
+      use_filename: true,
+      unique_filename: true,
     };
   },
 });
