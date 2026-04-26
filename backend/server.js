@@ -29,9 +29,9 @@ const globalLimiter = rateLimit({
 const cookieParser = require("cookie-parser");
 
 // ✅ FIXED ORDER
-const frontendOrigin = process.env.FRONTEND_URL || "http://localhost:5173";
+const frontendOrigin = process.env.FRONTEND_URL || "https://verit-chi.vercel.app";
 app.use(cors({
-  origin: [frontendOrigin, "http://localhost:5173", "http://localhost:5174"],
+  origin: [frontendOrigin, "https://verit-chi.vercel.app", "http://localhost:5173", "http://localhost:5174"],
   credentials: true
 }));
 app.use(cookieParser());

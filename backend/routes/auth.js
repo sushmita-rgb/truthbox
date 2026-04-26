@@ -221,7 +221,13 @@ router.post("/login", async (req, res) => {
     );
 
     // Return the token to the Frontend as shown in the diagram
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 3600000 });
+    const isProd = process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT === "production";
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: isProd, 
+      sameSite: isProd ? "none" : "lax", 
+      maxAge: 3600000 
+    });
     res.json({
       token,
       user: { id: user._id, username: user.username, email: user.email, termsAccepted: user.termsAccepted, avatar: user.avatar },
@@ -249,7 +255,13 @@ router.post("/admin-login", async (req, res) => {
         { expiresIn: "8h" }
       );
       
-      res.cookie("admin_token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 8 * 3600000 });
+      const isProd = process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT === "production";
+      res.cookie("admin_token", token, { 
+        httpOnly: true, 
+        secure: isProd, 
+        sameSite: isProd ? "none" : "lax", 
+        maxAge: 8 * 3600000 
+      });
       return res.json({ message: "Admin logged in successfully", role: "admin" });
     }
     
@@ -262,7 +274,12 @@ router.post("/admin-login", async (req, res) => {
 
 // 3. LOGOUT API
 router.post("/logout", (req, res) => {
-  res.clearCookie("token", { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict" });
+  const isProd = process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT === "production";
+  res.clearCookie("token", { 
+    httpOnly: true, 
+    secure: isProd, 
+    sameSite: isProd ? "none" : "lax" 
+  });
   res.json({ message: "Logged out successfully" });
 });
 
