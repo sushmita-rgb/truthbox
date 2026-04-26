@@ -103,6 +103,8 @@ export default function FeedbackPage() {
 
   useEffect(() => {
     api.get(`/links/${linkId}`).then((r) => setPostData(r.data)).catch(() => {});
+    // Increment view count
+    api.post(`/links/${linkId}/view`).catch(() => {});
   }, [linkId]);
 
   useEffect(() => {
@@ -142,8 +144,8 @@ export default function FeedbackPage() {
       {showTerms && <TermsModal onAccept={handleAcceptTerms} />}
       <div className="relative z-10 w-full max-w-lg">
         <Link to="/" className="mb-10 inline-block transition-transform hover:scale-105">
-          <h1 className="text-center text-4xl font-extrabold tracking-tight font-heading">
-            Truth<span className="text-accent">Box</span>
+          <h1 className="text-center text-4xl font-black tracking-tight font-heading">
+            Verit
           </h1>
         </Link>
 

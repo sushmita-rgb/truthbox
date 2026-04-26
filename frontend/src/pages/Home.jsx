@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import VeritLogo from "../components/VeritLogo";
 import Footer from "../components/Footer";
 import {
@@ -13,6 +13,7 @@ import {
   Globe,
   LayoutTemplate,
   Lock,
+  Menu,
   MessageSquare,
   MousePointerClick,
   Sparkles,
@@ -155,6 +156,13 @@ export default function Home() {
   const navigate = useNavigate();
   const [activeTemplate, setActiveTemplate] = useState(TEMPLATES[0]);
   const [demoNote, setDemoNote] = useState(TEMPLATES[0].note);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const menuLinks = [
+    { name: "How it works", href: "#how-it-works" },
+    { name: "Templates", href: "#templates" },
+    { name: "Pricing", href: "#pricing" },
+  ];
 
   const statTiles = useMemo(
     () => [
@@ -180,36 +188,105 @@ export default function Home() {
     <div className="relative min-h-screen overflow-hidden">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(151,206,35,0.18),transparent_30%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.08),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.58))]" />
 
-      <header className="relative z-10 w-full border-b border-white/10">
-        <div className="flex w-full items-center justify-between px-6 py-6 lg:px-12 2xl:px-20">
+      <header className="relative z-[100] w-full border-b border-white/10">
+        <div className="flex w-full items-center justify-between px-6 py-4 lg:py-6 lg:px-12 2xl:px-20">
           <Link to="/" className="flex items-center">
-            <VeritLogo className="h-16 w-auto" showTagline={false} />
+            <VeritLogo className="h-12 lg:h-16 w-auto" showTagline={false} />
           </Link>
 
-          <div className="hidden items-center gap-3 md:flex">
-            <a href="#how-it-works" className="text-sm text-gray-300 transition-colors hover:text-white">
-              How it works
-            </a>
-            <a href="#templates" className="text-sm text-gray-300 transition-colors hover:text-white">
-              Templates
-            </a>
-            <a href="#pricing" className="text-sm text-gray-300 transition-colors hover:text-white">
-              Pricing
-            </a>
+          {/* Desktop Nav */}
+          <div className="hidden items-center gap-8 md:flex">
+            {menuLinks.map((link) => (
+              <a key={link.name} href={link.href} className="text-sm font-medium text-gray-400 transition-colors hover:text-white">
+                {link.name}
+              </a>
+            ))}
             <Link
               to="/login"
-              className="rounded-full border border-white/10 px-4 py-2 text-sm text-gray-300 transition-colors hover:bg-white/5 hover:text-white"
+              className="text-sm font-bold text-gray-300 transition-colors hover:text-white"
             >
               Sign in
             </Link>
             <Link
               to="/signup"
-              className="rounded-full bg-accent px-5 py-2 text-sm font-bold text-main transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.35)]"
+              className="rounded-full bg-accent px-6 py-2.5 text-sm font-black text-main transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.35)]"
             >
               Get started
             </Link>
           </div>
+
+          {/* Mobile Actions */}
+          <div className="flex items-center gap-4 md:hidden">
+            <Link
+              to="/login"
+              className="text-sm font-bold text-gray-300"
+            >
+              Sign in
+            </Link>
+            <button 
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="p-2 bg-white/5 rounded-xl border border-white/10 text-white"
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
+          </div>
         </div>
+
+        {/* Mobile Menu Side Drawer */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <>
+              {/* Backdrop */}
+              <motion.div
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                onClick={() => setIsMenuOpen(false)}
+                className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm md:hidden"
+              />
+              
+              {/* Drawer */}
+              <motion.div
+                initial={{ x: "100%" }}
+                animate={{ x: 0 }}
+                exit={{ x: "100%" }}
+                transition={{ type: "spring", damping: 25, stiffness: 200 }}
+                className="fixed top-0 right-0 z-[120] h-full w-[280px] border-l border-white/10 bg-black/40 p-8 pt-24 backdrop-blur-2xl md:hidden"
+                style={{
+                  background: "linear-gradient(180deg, rgba(20,20,20,0.8), rgba(0,0,0,0.9))",
+                }}
+              >
+                <button 
+                  onClick={() => setIsMenuOpen(false)}
+                  className="absolute top-6 right-6 p-2 text-gray-400 hover:text-white"
+                >
+                  <X size={24} />
+                </button>
+
+                <div className="flex flex-col gap-8">
+                  {menuLinks.map((link) => (
+                    <a 
+                      key={link.name} 
+                      href={link.href} 
+                      onClick={() => setIsMenuOpen(false)}
+                      className="text-sm font-bold tracking-widest uppercase text-gray-400 hover:text-accent transition-colors"
+                    >
+                      {link.name}
+                    </a>
+                  ))}
+                  <div className="h-px bg-white/5 my-2" />
+                  <Link
+                    to="/signup"
+                    onClick={() => setIsMenuOpen(false)}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-4 text-sm font-black text-main shadow-glow"
+                  >
+                    Get started <ArrowRight size={16} />
+                  </Link>
+                </div>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
       </header>
 
       <main className="relative z-10 w-full">

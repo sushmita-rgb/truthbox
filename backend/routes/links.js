@@ -15,6 +15,20 @@ const PLAN_LIMITS = { free: 5, pro: 20, ultra: Infinity };
 
 const { uploadFeedback } = require("../config/cloudinary");
 
+// ── Increment view count (Public) ────────────────────────────────────────────
+router.post("/:linkId/view", async (req, res) => {
+  try {
+    await Link.findOneAndUpdate(
+      { linkId: req.params.linkId },
+      { $inc: { views: 1 } }
+    );
+    res.status(200).json({ success: true });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ── Upload Middlewares ────────────────────────────────────────────────────────
 const uploadFeedbackMiddleware = (req, res, next) => {
   uploadFeedback.single("file")(req, res, (err) => {
     if (!err) {

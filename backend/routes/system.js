@@ -39,6 +39,41 @@ router.post("/support", async (req, res) => {
   }
 });
 
+const Announcement = require("../models/Announcement");
+
+// ... existing routes ...
+
+// GET /api/system/announcement (Public)
+router.get("/announcement", async (req, res) => {
+  try {
+    const latest = await Announcement.findOne({ isActive: true }).sort({ createdAt: -1 });
+    res.json(latest);
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// POST /api/system/broadcast (Admin)
+router.post("/broadcast", async (req, res) => {
+  try {
+    const { message, type } = req.body;
+    
+    // Deactivate old ones
+    await Announcement.updateMany({ isActive: true }, { isActive: false });
+    
+    const newBroadcast = new Announcement({
+      message,
+      type: type || "info",
+      isActive: true
+    });
+    
+    await newBroadcast.save();
+    res.json({ message: "Broadcast sent successfully", broadcast: newBroadcast });
+  } catch (err) {
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
 // GET /api/system/config
 router.get("/config", async (req, res) => {
   try {

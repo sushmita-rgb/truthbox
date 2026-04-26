@@ -58,13 +58,22 @@ router.post("/send-otp", async (req, res) => {
       to: email,
       subject: "Your Verit Verification Code",
       html: `
-        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border-radius: 16px;">
-          <h1 style="color: #97ce23; margin-bottom: 20px;">Verit</h1>
-          <p style="font-size: 16px; color: #aaa;">Your verification code is:</p>
-          <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px; padding: 20px; background: #111; border-radius: 8px; text-align: center; margin: 20px 0;">
-            ${code}
+        <div style="font-family: 'Inter', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #000000; color: #ffffff; padding: 40px; border: 1px solid #1c1c1c; border-radius: 24px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #97ce23; font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -1px;">VERIT</h1>
+            <p style="color: #555; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Authentic. Private. Powerful.</p>
           </div>
-          <p style="font-size: 14px; color: #666;">This code expires in 10 minutes.</p>
+          <div style="background: #0a0a0a; padding: 30px; border-radius: 20px; border: 1px solid #1c1c1c;">
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">Verify your identity</h2>
+            <p style="font-size: 14px; color: #999; line-height: 1.6;">Use the code below to complete your verification. This code is valid for 10 minutes.</p>
+            <div style="font-size: 42px; font-weight: 900; color: #97ce23; letter-spacing: 8px; padding: 30px; background: #000; border: 1px solid #97ce2322; border-radius: 16px; text-align: center; margin: 25px 0; font-family: monospace;">
+              ${code}
+            </div>
+            <p style="font-size: 12px; color: #444; text-align: center; margin: 0;">If you didn't request this, you can safely ignore this email.</p>
+          </div>
+          <div style="text-align: center; margin-top: 30px;">
+            <p style="font-size: 11px; color: #333;">&copy; 2026 Verit. Built for the future of communication.</p>
+          </div>
         </div>
       `
     });
@@ -134,13 +143,22 @@ router.post("/forgot-password", async (req, res) => {
       to: email,
       subject: "Verit Password Reset",
       html: `
-        <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border-radius: 16px;">
-          <h1 style="color: #97ce23; margin-bottom: 20px;">Password Reset</h1>
-          <p style="font-size: 16px; color: #aaa;">You requested a password reset. Your code is:</p>
-          <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px; padding: 20px; background: #111; border-radius: 8px; text-align: center; margin: 20px 0;">
-            ${code}
+        <div style="font-family: 'Inter', Helvetica, Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #000000; color: #ffffff; padding: 40px; border: 1px solid #1c1c1c; border-radius: 24px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #97ce23; font-size: 28px; font-weight: 900; margin: 0; letter-spacing: -1px;">VERIT</h1>
+            <p style="color: #555; font-size: 10px; text-transform: uppercase; letter-spacing: 2px; margin-top: 5px;">Security Center</p>
           </div>
-          <p style="font-size: 14px; color: #666;">This code expires in 10 minutes. If you didn't request this, safely ignore this email.</p>
+          <div style="background: #0a0a0a; padding: 30px; border-radius: 20px; border: 1px solid #1c1c1c;">
+            <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 10px;">Reset your password</h2>
+            <p style="font-size: 14px; color: #999; line-height: 1.6;">You requested to reset your password. Use the secure code below to proceed.</p>
+            <div style="font-size: 42px; font-weight: 900; color: #ff4d4d; letter-spacing: 8px; padding: 30px; background: #000; border: 1px solid #ff4d4d22; border-radius: 16px; text-align: center; margin: 25px 0; font-family: monospace;">
+              ${code}
+            </div>
+            <p style="font-size: 12px; color: #444; text-align: center; margin: 0;">If you didn't request this reset, your account is still secure. No action is needed.</p>
+          </div>
+          <div style="text-align: center; margin-top: 30px;">
+            <p style="font-size: 11px; color: #333;">&copy; 2026 Verit. Security Alerts.</p>
+          </div>
         </div>
       `
     });

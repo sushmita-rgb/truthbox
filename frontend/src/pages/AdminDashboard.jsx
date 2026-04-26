@@ -150,25 +150,68 @@ export default function AdminDashboard() {
             </div>
           </div>
 
-          {/* Top Countries Map (List) */}
-          <div className="glass rounded-3xl p-6 border border-white/5">
-            <div className="flex items-center gap-2 mb-6">
-              <Globe size={18} className="text-blue-400" />
-              <h3 className="text-lg font-bold">Top Countries</h3>
+          {/* Broadcast & Geo Stack */}
+          <div className="space-y-6">
+            {/* Broadcast Form */}
+            <div className="glass rounded-3xl p-6 border border-white/5 bg-brand/5">
+              <div className="flex items-center gap-2 mb-4">
+                <Bell size={18} className="text-brand" />
+                <h3 className="text-lg font-bold text-white">Broadcast</h3>
+              </div>
+              <textarea 
+                placeholder="Message for all users..."
+                className="w-full h-24 rounded-xl border border-white/10 bg-black/40 p-3 text-sm text-white outline-none focus:border-brand/50 resize-none mb-3"
+                id="broadcastMsg"
+              />
+              <div className="flex gap-2 mb-3">
+                {['info', 'warning', 'success', 'brand'].map(t => (
+                  <button 
+                    key={t}
+                    onClick={() => window.broadcastType = t}
+                    className="px-2 py-1 rounded-md bg-white/5 border border-white/10 text-[10px] text-gray-400 uppercase font-bold hover:border-brand/50 transition-colors"
+                  >
+                    {t}
+                  </button>
+                ))}
+              </div>
+              <button 
+                onClick={async () => {
+                  const msg = document.getElementById('broadcastMsg').value;
+                  if (!msg) return;
+                  try {
+                    await api.post('/system/broadcast', { message: msg, type: window.broadcastType || 'info' });
+                    alert("Broadcast sent!");
+                    document.getElementById('broadcastMsg').value = '';
+                  } catch (err) {
+                    alert("Failed to send broadcast");
+                  }
+                }}
+                className="w-full py-3 rounded-xl bg-brand text-black font-bold text-sm shadow-glow"
+              >
+                Send to All Users
+              </button>
             </div>
-            <div className="space-y-4">
-              {charts?.geoData?.map((geo, idx) => (
-                <div key={idx} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-gray-500 font-mono text-xs">0{idx + 1}</span>
-                    <span className="font-medium text-gray-200">{geo._id || "Unknown"}</span>
+
+            {/* Top Countries Map (List) */}
+            <div className="glass rounded-3xl p-6 border border-white/5">
+              <div className="flex items-center gap-2 mb-6">
+                <Globe size={18} className="text-blue-400" />
+                <h3 className="text-lg font-bold">Top Countries</h3>
+              </div>
+              <div className="space-y-4">
+                {charts?.geoData?.map((geo, idx) => (
+                  <div key={idx} className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="text-gray-500 font-mono text-xs">0{idx + 1}</span>
+                      <span className="font-medium text-gray-200">{geo._id || "Unknown"}</span>
+                    </div>
+                    <span className="text-sm text-gray-400">{geo.count} responses</span>
                   </div>
-                  <span className="text-sm text-gray-400">{geo.count} responses</span>
-                </div>
-              ))}
-              {(!charts?.geoData || charts.geoData.length === 0) && (
-                <p className="text-sm text-gray-500 text-center py-10">No geo data yet.</p>
-              )}
+                ))}
+                {(!charts?.geoData || charts.geoData.length === 0) && (
+                  <p className="text-sm text-gray-500 text-center py-10">No geo data yet.</p>
+                )}
+              </div>
             </div>
           </div>
         </div>

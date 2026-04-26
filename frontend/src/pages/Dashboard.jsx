@@ -172,17 +172,21 @@ export default function Dashboard() {
     });
   }, [feedback, feedbackSearch, feedbackRange, feedbackLinkFilter]);
 
+  const [announcement, setAnnouncement] = useState(null);
+
   const loadCollections = async () => {
-    const [fbRes, linksRes, analyticsRes, usageRes] = await Promise.all([
+    const [fbRes, linksRes, analyticsRes, usageRes, announceRes] = await Promise.all([
       api.get("/feedback/my-feedback"),
       api.get("/links/my-links"),
       api.get("/links/analytics"),
       api.get("/links/usage"),
+      api.get("/system/announcement").catch(() => ({ data: null })),
     ]);
     setFeedback(fbRes.data);
     setLinks(linksRes.data);
     setAnalytics(analyticsRes.data);
     setUsage(usageRes.data);
+    setAnnouncement(announceRes?.data);
   };
 
   const restoreSelectedTemplate = () => {
@@ -625,6 +629,44 @@ export default function Dashboard() {
           </div>
         </header>
 
+        {/* Announcement Banner */}
+        <AnimatePresence>
+          {announcement && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="px-6 py-2 border-b border-white/5 overflow-hidden"
+              style={{
+                backgroundColor: 
+                  announcement.type === "warning" ? "#ef444422" : 
+                  announcement.type === "success" ? "#22c55e22" : 
+                  announcement.type === "brand" ? "#97ce2322" : "#ffffff11"
+              }}
+            >
+              <div className="flex items-center justify-between gap-4 max-w-[1400px] mx-auto">
+                <div className="flex items-center gap-3">
+                  <div 
+                    className="w-2 h-2 rounded-full" 
+                    style={{ 
+                      backgroundColor: 
+                        announcement.type === "warning" ? "#ef4444" : 
+                        announcement.type === "success" ? "#22c55e" : 
+                        announcement.type === "brand" ? "#97ce23" : "#ffffff"
+                    }} 
+                  />
+                  <p className="text-xs font-medium text-gray-200">
+                    {announcement.message}
+                  </p>
+                </div>
+                <button onClick={() => setAnnouncement(null)} className="p-1 hover:bg-white/5 rounded-md transition-colors">
+                  <X size={12} className="text-gray-500" />
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         {/* Bento Grid */}
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth">
           <div className="max-w-[1400px] mx-auto grid grid-cols-1 xl:grid-cols-4 gap-6">
@@ -963,7 +1005,12 @@ export default function Dashboard() {
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="rounded-lg px-2 py-1 text-[10px] font-bold text-black uppercase" style={{ background: linkColor }}>{link.postType}</span>
-                                    <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-gray-400">{responseCount} responses</span>
+                                    <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-gray-400 flex items-center gap-1">
+                                      <MessageSquare size={10} /> {responseCount} responses
+                                    </span>
+                                    <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-gray-400 flex items-center gap-1">
+                                      <BarChart3 size={10} /> {link.views || 0} views
+                                    </span>
                                   </div>
                                   <h3 className="mt-3 text-lg font-bold text-white">{link.title || link.templateKey || "Untitled link"}</h3>
                                   <p className="mt-1 text-xs leading-5 text-gray-400 line-clamp-2">{link.description || "No description."}</p>
@@ -1028,7 +1075,7 @@ export default function Dashboard() {
                             const showBlur = message.isToxic && !isRevealed;
 
                             return (
-                              <div key={message._id} className="rounded-3xl p-6 relative overflow-hidden border border-white/5 bg-surface shadow-glow hover:-translate-y-1 transition-transform flex flex-col">
+                              <div key={message._id} className="rounded-2xl md:rounded-3xl p-5 md:p-6 relative overflow-hidden border border-white/5 bg-surface shadow-glow hover:-translate-y-1 transition-transform flex flex-col">
                                 <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-brand'} rounded-l-3xl`} />
                                 
                                 <div className="flex-1 relative">
