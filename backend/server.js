@@ -5,6 +5,7 @@ const authRoutes = require("./routes/auth");
 const aiRoutes = require("./routes/ai");
 const linkRoutes = require("./routes/links");
 const feedbackRoutes = require("./routes/feedback");
+const paymentRoutes = require("./routes/payment");
 const cors = require("cors");
 const path = require("path");
 
@@ -27,11 +28,10 @@ app.use("/api/ai", aiRoutes);
 app.use("/api/auth", authRoutes);
 app.use("/api/links", linkRoutes);
 app.use("/api/feedback", feedbackRoutes);
+app.use("/api/payment", paymentRoutes);
 
 const PORT = process.env.PORT || 5000;
-
-const mongoURI =
-  process.env.MONGO_URI || "mongodb://localhost:27017/truthbox";
+const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/truthbox";
 
 mongoose
   .connect(mongoURI)

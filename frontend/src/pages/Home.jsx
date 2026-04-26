@@ -489,7 +489,8 @@ export default function Home() {
               {
                 id: "free",
                 name: "Free",
-                price: "$0",
+                price: "₹0",
+                subPrice: null,
                 period: "forever",
                 icon: Sparkles,
                 color: "#6b7280",
@@ -502,6 +503,7 @@ export default function Home() {
                 ],
                 locked: ["Analytics", "CSV export", "Priority support"],
                 cta: "Get started free",
+                href: "/signup",
                 ctaStyle: "border border-white/10 bg-white/5 text-white hover:bg-white/10",
                 badge: null,
                 glow: null,
@@ -509,7 +511,8 @@ export default function Home() {
               {
                 id: "pro",
                 name: "Pro",
-                price: "$10",
+                price: "₹499",
+                subPrice: "≈ $6",
                 period: "per month",
                 icon: Zap,
                 color: "#97ce23",
@@ -523,7 +526,8 @@ export default function Home() {
                   "Priority support",
                 ],
                 locked: ["Custom branding"],
-                cta: "Upgrade to Pro",
+                cta: "Get Pro — ₹499/mo",
+                href: "/signup?plan=pro",
                 ctaStyle: "bg-accent text-black font-bold hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.45)]",
                 badge: "Most Popular",
                 glow: "0 0 60px rgba(151,206,35,0.20)",
@@ -531,7 +535,8 @@ export default function Home() {
               {
                 id: "ultra",
                 name: "Pro Ultra",
-                price: "$20",
+                price: "₹999",
+                subPrice: "≈ $12",
                 period: "per month",
                 icon: Crown,
                 color: "#ffffff",
@@ -547,7 +552,8 @@ export default function Home() {
                   "Early access to features",
                 ],
                 locked: [],
-                cta: "Upgrade to Ultra",
+                cta: "Get Ultra — ₹999/mo",
+                href: "/signup?plan=ultra",
                 ctaStyle: "bg-white text-black font-bold hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(255,255,255,0.25)]",
                 badge: "Best Value",
                 glow: "0 0 60px rgba(255,255,255,0.10)",
@@ -572,7 +578,7 @@ export default function Home() {
                   {plan.badge && (
                     <div
                       className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold"
-                      style={{ background: plan.color, color: plan.id === "ultra" ? "#000" : "#000" }}
+                      style={{ background: plan.color, color: "#000" }}
                     >
                       {plan.badge}
                     </div>
@@ -596,6 +602,9 @@ export default function Home() {
                   <div className="border-b border-white/8 pb-5">
                     <span className="text-4xl font-extrabold text-white">{plan.price}</span>
                     <span className="text-sm text-gray-500 ml-2">/{plan.period}</span>
+                    {plan.subPrice && (
+                      <p className="text-xs text-gray-600 mt-1">{plan.subPrice} approx.</p>
+                    )}
                   </div>
 
                   {/* Features */}
@@ -616,7 +625,7 @@ export default function Home() {
 
                   {/* CTA */}
                   <Link
-                    to="/signup"
+                    to={plan.href}
                     className={`w-full py-3.5 rounded-2xl text-sm text-center transition-all inline-flex items-center justify-center gap-2 ${plan.ctaStyle}`}
                   >
                     {plan.cta}

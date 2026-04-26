@@ -5,8 +5,10 @@ import {
   ArrowRight,
   BarChart3,
   Bell,
+  Check,
   CheckCircle,
   Copy,
+  Crown,
   FileText,
   FileUp,
   Film,
@@ -44,6 +46,7 @@ const NAV = [
   { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "links", label: "My Links", icon: LinkIcon },
   { id: "feedback", label: "Feedback", icon: MessageSquare },
+  { id: "plans", label: "Plans", icon: Crown },
 ];
 
 const TEMPLATE_PRESETS = [
@@ -209,6 +212,14 @@ export default function Dashboard() {
 
       await loadCollections();
       restoreSelectedTemplate();
+
+      // Auto-open PricingModal if user arrived via a plan CTA from the landing page
+      const planIntent = localStorage.getItem("truthbox.planIntent");
+      if (planIntent && ["pro", "ultra"].includes(planIntent)) {
+        localStorage.removeItem("truthbox.planIntent");
+        setActiveNav("plans");
+        setShowPricingModal(true);
+      }
     } catch (err) {
       if (err.response?.status === 401) {
         localStorage.removeItem("token");
@@ -446,6 +457,11 @@ export default function Dashboard() {
           currentPlan={usage.plan}
           used={usage.used}
           limit={usage.limit}
+          onUpgradeSuccess={async (updatedUser) => {
+            // Refresh user data and usage after a successful payment
+            if (updatedUser) setUser(updatedUser);
+            await loadCollections();
+          }}
         />
       )}
 
@@ -546,6 +562,7 @@ export default function Dashboard() {
                 {activeNav === "analytics" && "Analytics Dashboard"}
                 {activeNav === "links" && "My Links"}
                 {activeNav === "feedback" && "Received Feedback"}
+                {activeNav === "plans" && "Plans & Billing"}
               </h2>
               <p className="text-sm text-gray-500">
                 Signed in as <span className="text-accent">{user?.username}</span>
@@ -1190,6 +1207,204 @@ export default function Dashboard() {
                   )}
                 </>
               )}
+            </motion.div>
+          )}
+          {activeNav === "plans" && (
+            <motion.div
+              key="plans"
+              variants={stagger}
+              initial="hidden"
+              animate="show"
+              exit={{ opacity: 0, y: -10 }}
+              className="max-w-5xl mx-auto space-y-8"
+            >
+              {/* Current plan status banner */}
+              <motion.div
+                variants={card}
+                className="rounded-3xl border border-white/10 bg-[#111111] p-7 flex flex-col md:flex-row md:items-center gap-6"
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  <div
+                    className="w-14 h-14 rounded-2xl flex items-center justify-center shrink-0"
+                    style={{
+                      background: usage.plan === "ultra" ? "rgba(255,255,255,0.08)" : usage.plan === "pro" ? "rgba(151,206,35,0.12)" : "rgba(107,114,128,0.12)",
+                      border: `1px solid ${usage.plan === "ultra" ? "rgba(255,255,255,0.2)" : usage.plan === "pro" ? "rgba(151,206,35,0.3)" : "rgba(107,114,128,0.2)"}`,
+                    }}
+                  >
+                    {usage.plan === "ultra" ? <Crown size={24} className="text-white" /> : usage.plan === "pro" ? <Zap size={24} className="text-accent" /> : <Sparkles size={24} className="text-gray-400" />}
+                  </div>
+                  <div>
+                    <p className="text-xs uppercase tracking-[0.22em] text-gray-500 font-semibold">Current Plan</p>
+                    <p className="text-2xl font-extrabold text-white mt-0.5">
+                      {usage.plan === "ultra" ? "Pro Ultra" : usage.plan === "pro" ? "Pro" : "Free"}
+                    </p>
+                    <p className="text-sm text-gray-400 mt-0.5">
+                      {usage.used} / {usage.limit ?? "∞"} links used
+                    </p>
+                  </div>
+                </div>
+
+                {/* Usage bar */}
+                <div className="flex-1 max-w-xs">
+                  <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${usage.percentage ?? 0}%` }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      className="h-full rounded-full"
+                      style={{ background: "linear-gradient(90deg, #97ce23, #c8f563)" }}
+                    />
+                  </div>
+                  <p className="text-xs text-gray-600 mt-2">{usage.percentage ?? 0}% of limit used</p>
+                </div>
+
+                {usage.plan === "free" && (
+                  <button
+                    onClick={() => setShowPricingModal(true)}
+                    className="shrink-0 flex items-center gap-2 px-5 py-3 rounded-xl text-sm font-bold text-black transition-all hover:-translate-y-0.5"
+                    style={{ background: "linear-gradient(135deg,#97ce23,#c8f563)", boxShadow: "0 0 24px rgba(151,206,35,0.4)" }}
+                  >
+                    <Zap size={15} /> Upgrade plan
+                  </button>
+                )}
+              </motion.div>
+
+              {/* Plan cards */}
+              <div>
+                <p className="text-xs uppercase tracking-[0.25em] text-gray-500 font-semibold mb-5">All Plans</p>
+                <div className="grid gap-5 md:grid-cols-3">
+                  {[
+                    {
+                      id: "free",
+                      name: "Free",
+                      price: "₹0",
+                      period: "forever",
+                      icon: Sparkles,
+                      color: "#6b7280",
+                      glow: null,
+                      links: 5,
+                      features: ["5 feedback links", "All post types", "Anonymous responses", "Basic dashboard"],
+                      locked: ["Analytics", "CSV export", "Priority support", "Custom branding"],
+                    },
+                    {
+                      id: "pro",
+                      name: "Pro",
+                      price: "₹499",
+                      period: "per month",
+                      icon: Zap,
+                      color: "#97ce23",
+                      glow: "0 0 50px rgba(151,206,35,0.18)",
+                      badge: "Most Popular",
+                      links: 20,
+                      features: ["20 feedback links", "All post types", "Analytics dashboard", "CSV export", "Priority support"],
+                      locked: ["Custom branding"],
+                    },
+                    {
+                      id: "ultra",
+                      name: "Pro Ultra",
+                      price: "₹999",
+                      period: "per month",
+                      icon: Crown,
+                      color: "#ffffff",
+                      glow: "0 0 50px rgba(255,255,255,0.10)",
+                      badge: "Best Value",
+                      links: "Unlimited",
+                      features: ["Unlimited feedback links", "All post types", "Analytics dashboard", "CSV export", "Priority support", "Custom branding", "Early access"],
+                      locked: [],
+                    },
+                  ].map((plan, i) => {
+                    const Icon = plan.icon;
+                    const isCurrent = plan.id === usage.plan;
+                    return (
+                      <motion.div
+                        key={plan.id}
+                        variants={card}
+                        className={`relative rounded-2xl border p-6 flex flex-col gap-4 transition-all ${
+                          isCurrent
+                            ? "border-accent/40 bg-accent/5"
+                            : "border-white/10 bg-[#111111] hover:border-white/20"
+                        }`}
+                        style={{ boxShadow: plan.glow || "none" }}
+                      >
+                        {isCurrent && (
+                          <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold bg-accent text-black">
+                            Current Plan
+                          </div>
+                        )}
+                        {plan.badge && !isCurrent && (
+                          <div
+                            className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 rounded-full text-xs font-bold"
+                            style={{ background: plan.color, color: "#000" }}
+                          >
+                            {plan.badge}
+                          </div>
+                        )}
+
+                        <div className="flex items-center gap-3">
+                          <div
+                            className="w-10 h-10 rounded-xl flex items-center justify-center"
+                            style={{ background: `${plan.color}18`, border: `1px solid ${plan.color}30` }}
+                          >
+                            <Icon size={18} style={{ color: plan.color }} />
+                          </div>
+                          <div>
+                            <p className="font-bold text-white">{plan.name}</p>
+                            <p className="text-xs text-gray-500">{plan.links} links</p>
+                          </div>
+                        </div>
+
+                        <div>
+                          <span className="text-3xl font-extrabold text-white">{plan.price}</span>
+                          <span className="text-sm text-gray-500 ml-1">/{plan.period}</span>
+                        </div>
+
+                        <ul className="space-y-1.5 flex-1">
+                          {plan.features.map((f) => (
+                            <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
+                              <Check size={13} className="mt-0.5 shrink-0" style={{ color: plan.color }} />
+                              {f}
+                            </li>
+                          ))}
+                          {plan.locked.map((f) => (
+                            <li key={f} className="flex items-start gap-2 text-sm text-gray-600 line-through">
+                              <X size={13} className="mt-0.5 shrink-0 text-gray-700" />
+                              {f}
+                            </li>
+                          ))}
+                        </ul>
+
+                        {isCurrent ? (
+                          <div className="w-full py-3 rounded-xl border border-white/10 text-center text-sm text-gray-500 font-semibold">
+                            Active plan
+                          </div>
+                        ) : plan.id === "free" ? (
+                          <div className="w-full py-3 rounded-xl border border-white/10 text-center text-sm text-gray-600">
+                            Your starting plan
+                          </div>
+                        ) : (
+                          <button
+                            onClick={() => setShowPricingModal(true)}
+                            className={`w-full py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 hover:-translate-y-0.5 ${
+                              plan.id === "ultra"
+                                ? "bg-white text-black hover:shadow-[0_0_24px_rgba(255,255,255,0.2)]"
+                                : "text-black hover:shadow-[0_0_24px_rgba(151,206,35,0.4)]"
+                            }`}
+                            style={plan.id !== "ultra" ? { background: plan.color } : {}}
+                          >
+                            {plan.id === "ultra" ? <Crown size={14} /> : <Zap size={14} />}
+                            Subscribe — {plan.price}/mo
+                          </button>
+                        )}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <p className="text-center text-xs text-gray-600 pb-4">
+                Plans renew monthly. Cancel anytime. Questions?{" "}
+                <a href="mailto:support@truthbox.app" className="text-accent hover:underline">Contact support</a>
+              </p>
             </motion.div>
           )}
         </AnimatePresence>

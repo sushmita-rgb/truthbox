@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api";
 import TruthBoxLogo from "../components/TruthBoxLogo";
+import { Zap, Crown } from "lucide-react";
 
 export default function Login() {
   const [formData, setFormData] = useState({ username: "", password: "" });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const planIntent = searchParams.get("plan"); // "pro" | "ultra" | null
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -16,6 +19,10 @@ export default function Login() {
     try {
       const res = await api.post("/auth/login", formData);
       localStorage.setItem("token", res.data.token);
+      // Store plan intent so Dashboard can auto-open PricingModal
+      if (planIntent) {
+        localStorage.setItem("truthbox.planIntent", planIntent);
+      }
       window.location.href = "/dashboard";
     } catch (err) {
       setError(err.response?.data?.message || "Login failed");
@@ -30,44 +37,79 @@ export default function Login() {
         <Link to="/" className="flex justify-center mb-4">
           <TruthBoxLogo className="h-20 w-auto" showTagline={false} />
         </Link>
-        <p className="text-gray-400 mb-8">Enter your details to access your dashboard.</p>
 
-        {error && <div className="p-4 mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">{error}</div>}
+        {/* Plan intent badge */}
+        {planIntent && (
+          <div className="mb-6 rounded-2xl border border-accent/30 bg-accent/10 p-4 flex items-center gap-3">
+            {planIntent === "ultra" ? (
+              <Crown size={18} className="text-white shrink-0" />
+            ) : (
+              <Zap size={18} className="text-accent shrink-0" />
+            )}
+            <div>
+              <p className="text-xs uppercase tracking-[0.2em] text-accent font-semibold">Almost there</p>
+              <p className="mt-0.5 text-sm font-bold text-white">
+                {planIntent === "ultra" ? "Pro Ultra — ₹999/mo" : "Pro — ₹499/mo"}
+              </p>
+              <p className="text-xs text-gray-400 mt-0.5">
+                Sign in to complete your subscription.
+              </p>
+            </div>
+          </div>
+        )}
+
+        <p className="text-gray-400 mb-8">
+          {planIntent
+            ? "Sign in to complete your purchase."
+            : "Enter your details to access your dashboard."}
+        </p>
+
+        {error && (
+          <div className="p-4 mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+            {error}
+          </div>
+        )}
 
         <form onSubmit={handleLogin} className="space-y-5">
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               required
               className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
               placeholder="Your username"
               value={formData.username}
-              onChange={(e) => setFormData({...formData, username: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, username: e.target.value })}
             />
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-            <input 
-              type="password" 
+            <input
+              type="password"
               required
               className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
               placeholder="••••••••"
               value={formData.password}
-              onChange={(e) => setFormData({...formData, password: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, password: e.target.value })}
             />
           </div>
-          
-          <button 
+
+          <button
             disabled={loading}
             className="w-full py-4 mt-2 rounded-2xl bg-accent text-main font-bold hover:shadow-[0_0_30px_rgba(151,206,35,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
           >
-            {loading ? "Signing in..." : "Sign In"}
+            {loading ? "Signing in..." : planIntent ? "Sign in & continue to checkout" : "Sign In"}
           </button>
         </form>
 
         <p className="mt-8 text-center text-sm text-gray-400">
-          Don't have an account? <Link to="/signup" className="text-accent font-medium hover:text-[#a5e027]">Sign Up</Link>
+          Don&apos;t have an account?{" "}
+          <Link
+            to={planIntent ? `/signup?plan=${planIntent}` : "/signup"}
+            className="text-accent font-medium hover:text-[#a5e027]"
+          >
+            Sign Up
+          </Link>
         </p>
       </div>
     </div>
