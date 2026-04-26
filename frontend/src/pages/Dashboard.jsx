@@ -374,7 +374,7 @@ export default function Dashboard() {
   };
 
   const copyLink = async (id) => {
-    const shareUrl = `${BACKEND_URL}/api/share/${id}`;
+    const shareUrl = `${window.location.origin}/feedback/${id}`;
     const copiedSuccessfully = await copyTextToClipboard(shareUrl);
     if (copiedSuccessfully) {
       setCopied(true);
