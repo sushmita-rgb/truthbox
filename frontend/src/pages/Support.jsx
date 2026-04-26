@@ -4,7 +4,29 @@ import { ArrowLeft, MessageCircle, HelpCircle, Send, CheckCircle } from "lucide-
 import api from "../api";
 import Footer from "../components/Footer";
 
-// ... (rest of the code)
+const FAQ = [
+  {
+    q: "Is TruthBox really anonymous?",
+    a: "Yes! We do not store any identifying information about the person sending feedback. Only the content of the message is shared with the link owner."
+  },
+  {
+    q: "How do I create a link?",
+    a: "Once you log in, go to your dashboard and click 'Create New Link'. You can customize the link title and share it anywhere."
+  },
+  {
+    q: "Can I delete a link?",
+    a: "Absolutely. You can manage and delete your links at any time from your dashboard."
+  },
+  {
+    q: "How many links can I create?",
+    a: "Free accounts can create up to 5 links. For more, check out our Pro and Ultra plans in the pricing section."
+  },
+  {
+    q: "What is TruthBox Ultra?",
+    a: "Ultra is our top-tier plan for influencers and businesses, offering unlimited links, priority support, and advanced analytics."
+  }
+];
+
 export default function Support() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [submitting, setSubmitting] = useState(false);

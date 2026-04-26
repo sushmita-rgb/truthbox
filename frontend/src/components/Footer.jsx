@@ -1,10 +1,12 @@
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import VeritLogo from "./VeritLogo";
 import { Send, Globe, Mail } from "lucide-react";
 
 export default function Footer() {
+  const location = useLocation();
+
   return (
-    <footer className="relative z-10 bg-black border-t border-white/5 pt-16 pb-8 mt-auto">
+    <footer className="relative z-10 bg-transparent border-t border-white/5 pt-16 pb-8 mt-auto">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           
@@ -14,9 +16,15 @@ export default function Footer() {
               The world's most professional anonymous feedback platform. Built for growth, safety, and real human connection.
             </p>
             <div className="flex items-center gap-4">
-              <a href="#" className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all"><Send size={18} /></a>
-              <a href="#" className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all"><Globe size={18} /></a>
-              <a href="mailto:support@Verit.app" className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all"><Mail size={18} /></a>
+              <Link to="/dashboard" className={`p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all ${location.pathname === '/dashboard' ? 'ring-2 ring-white text-white bg-white/10' : ''}`} title="Dashboard">
+                <Send size={18} />
+              </Link>
+              <Link to="/" className={`p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all ${location.pathname === '/' ? 'ring-2 ring-white text-white bg-white/10' : ''}`} title="Home">
+                <Globe size={18} />
+              </Link>
+              <Link to="/support" className={`p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all ${location.pathname === '/support' ? 'ring-2 ring-white text-white bg-white/10' : ''}`} title="Support">
+                <Mail size={18} />
+              </Link>
             </div>
           </div>
 
