@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import { Shield, Users, Link as LinkIcon, MessageSquare, Zap, Crown, TrendingUp, AlertTriangle, Globe, Trash2, Power } from "lucide-react";
+import { Shield, Users, Link as LinkIcon, MessageSquare, Zap, Crown, TrendingUp, AlertTriangle, Globe, Trash2, Power, Bell } from "lucide-react";
 import VeritLogo from "../components/VeritLogo";
 
 export default function AdminDashboard() {
