@@ -29,6 +29,8 @@ const feedbackStorage = new CloudinaryStorage({
     let resourceType = "auto";
     if (file.mimetype.startsWith("video/")) {
       resourceType = "video";
+    } else if (file.mimetype === "application/pdf") {
+      resourceType = "raw";
     }
 
     return {
