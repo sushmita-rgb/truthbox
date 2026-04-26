@@ -1,81 +1,48 @@
-# ⚖️ Verit | Authentic Anonymous Feedback
+# ⚖️ Verit: The Future of Authentic Feedback
 
-**Verit** is a premium, privacy-first anonymous feedback platform designed for creators, builders, and professionals. Built with a high-end "Bento Grid" aesthetic, Verit allows users to receive honest, unfiltered thoughts through secure, customizable links.
+**Where Privacy Meets Professionalism.**
 
-![Verit Preview](https://res.cloudinary.com/ddni2vnua/image/upload/v1714123456/verit_preview.png)
-
----
-
-## 🚀 The Tech Stack
-
-### Frontend
-- **React 19 & Vite**: Ultra-fast, modern component architecture.
-- **Tailwind CSS 4**: Sophisticated styling with glassmorphism and premium color palettes.
-- **Framer Motion**: Immersive page transitions and interactive animations.
-- **Lucide React**: Clean, professional iconography.
-- **html2canvas**: High-fidelity Instagram Story graphic generation.
-
-### Backend
-- **Node.js & Express**: Scalable API architecture.
-- **MongoDB Atlas**: Secure, cloud-hosted document database.
-- **Mongoose**: Robust data modeling.
-- **JWT & Bcrypt**: Industry-standard security and authentication.
+Verit is not just another anonymous messaging app. It is a high-end, AI-powered platform designed for creators, builders, and professionals who value **honest insights** without the noise of toxicity. Built with a stunning "Bento Grid" aesthetic, Verit transforms feedback into a premium experience.
 
 ---
 
-## 🧠 Integrated Power Tools
+## ✨ Why Verit?
 
-Verit integrates the world's best APIs to provide a seamless, safe experience:
+In a world of surface-level interactions, Verit provides a safe space for **candid conversations**. Whether you're a designer looking for brutal honesty, a builder seeking user feedback, or a student sharing secrets, Verit gives you the tools to listen without fear.
 
-1.  **Google Gemini AI**: Every message is scanned in real-time for toxicity and harassment, ensuring a safe community.
-2.  **Razorpay**: A tiered subscription system (Pro & Ultra) for power users, processed through India's leading payment gateway.
-3.  **Cloudinary**: Secure, anonymous hosting for image and video attachments within feedback.
-4.  **Resend**: Instant transactional emails and high-speed OTP verification.
-5.  **Geo-Mapping**: Automatic detection of feedback origin (Country/City) using IP intelligence.
+### 🧠 AI-Powered Safety
+We believe anonymity should never mean abuse. Verit is integrated with **Google Gemini AI**, which scans every incoming message in real-time. Harmful content is filtered out before it even reaches your inbox, keeping your experience positive and constructive.
 
----
+### 🍱 Bento Grid Dashboard
+Manage your links and feedback with a world-class interface. Our **Bento Grid** dashboard provides a visual, organized view of your interactions, making feedback management feel like a high-end design tool.
 
-## 🛠️ Installation & Setup
+### 📸 Instagram Story Integration
+Going viral is built-in. Generate high-fidelity, designer-grade graphics with integrated **QR codes** to share directly on your Instagram Stories. Your followers can reply instantly just by scanning.
 
-### 1. Clone the repository
-```bash
-git clone https://github.com/sushmita-rgb/truthbox.git
-cd truthbox
-```
-
-### 2. Backend Setup
-Create a `.env` file in the `/backend` folder:
-```env
-PORT=5000
-MONGO_URI=your_mongodb_atlas_uri
-JWT_SECRET=your_secret
-RAZORPAY_KEY_ID=your_key
-RAZORPAY_KEY_SECRET=your_secret
-CLOUDINARY_CLOUD_NAME=your_name
-CLOUDINARY_API_KEY=your_key
-CLOUDINARY_API_SECRET=your_secret
-RESEND_API_KEY=your_key
-GEMINI_API_KEY=your_key
-ADMIN_EMAIL=admin@verit.app
-ADMIN_PASSWORD=admin123
-```
-
-### 3. Run Locally
-```bash
-# In backend folder
-npm install
-npm run dev
-
-# In frontend folder
-npm install
-npm run dev
-```
+### 💎 Tiered Subscriptions
+From casual users to power creators, Verit scales with you. 
+- **Free:** Start your journey with core features.
+- **Pro:** Unlock higher limits and detailed analytics.
+- **Ultra:** The ultimate feedback command center with unlimited links and custom branding.
 
 ---
 
-## 📄 License
-This project is for private use and development. Rebranding from TruthBox to Verit completed on April 26, 2026.
+## 🛠️ Built with Elite Technology
+
+Verit is forged with a state-of-the-art tech stack to ensure speed, security, and beauty:
+
+- **React 19 & Tailwind 4**: For a lightning-fast, glassmorphism-infused UI.
+- **Google Gemini**: Advanced AI for intelligent content moderation.
+- **MongoDB Atlas**: Enterprise-grade cloud data security.
+- **Razorpay**: Seamless, secure premium upgrades.
+- **Cloudinary**: High-speed hosting for media attachments.
+- **Framer Motion**: For liquid-smooth screen transitions.
 
 ---
 
-**Developed with ❤️ for the future of authentic communication.**
+## 🛡️ Privacy First
+Verit is built on a foundation of trust. We do not track respondents, we do not sell data, and we use industry-standard encryption to keep your "Truths" safe.
+
+---
+
+**Step into the light. Experience the truth. Experience Verit.** 🚀✨⚖️
