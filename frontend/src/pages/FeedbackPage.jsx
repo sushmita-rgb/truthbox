@@ -7,6 +7,12 @@ import TermsModal from "../components/TermsModal";
 
 const BACKEND = "https://truthbox-production.up.railway.app";
 
+const getFullUrl = (url) => {
+  if (!url) return "";
+  if (url.startsWith("http")) return url;
+  return `${BACKEND}${url}`;
+};
+
 function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
   if (!postType || postType === "text") {
     return content ? (
@@ -42,7 +48,7 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
           <ImageIcon size={13} />
           Shared Image
         </div>
-        <img src={`${BACKEND}${fileUrl}`} alt={fileName || "image"} className="w-full max-h-[360px] bg-black/30 object-contain" />
+        <img src={getFullUrl(fileUrl)} alt={fileName || "image"} className="w-full max-h-[360px] bg-black/30 object-contain" />
         {content && <p className="border-t border-white/10 bg-white/5 p-4 text-sm text-gray-400">{content}</p>}
       </div>
     );
@@ -64,7 +70,7 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
             {content && <p className="mt-1 text-xs text-gray-400">{content}</p>}
           </div>
           <a
-            href={`${BACKEND}${fileUrl}`}
+            href={getFullUrl(fileUrl)}
             target="_blank"
             rel="noopener noreferrer"
             className="shrink-0 rounded-xl px-4 py-2 text-sm font-medium transition-colors"
@@ -84,7 +90,7 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
           <Film size={13} />
           Shared Video
         </div>
-        <video src={`${BACKEND}${fileUrl}`} controls className="w-full max-h-[360px] bg-black" />
+        <video src={getFullUrl(fileUrl)} controls className="w-full max-h-[360px] bg-black" />
         {content && <p className="border-t border-white/10 bg-white/5 p-4 text-sm text-gray-400">{content}</p>}
       </div>
     );
