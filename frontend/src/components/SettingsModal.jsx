@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { AlertTriangle, Check, Image as ImageIcon, LogOut, ShieldCheck, Upload, UserCircle2, X } from "lucide-react";
 import api from "../api";
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+const BACKEND_URL = "https://truthbox-production.up.railway.app";
 
 export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
   const [selectedSections, setSelectedSections] = useState({

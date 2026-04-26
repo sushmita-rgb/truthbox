@@ -5,7 +5,7 @@ import { Send, ShieldCheck, CheckCircle, FileUp, Film, Globe, FileText, Image as
 import api from "../api";
 import TermsModal from "../components/TermsModal";
 
-const BACKEND = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+const BACKEND = "https://truthbox-production.up.railway.app";
 
 function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
   if (!postType || postType === "text") {

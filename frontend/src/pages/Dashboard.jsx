@@ -36,7 +36,7 @@ import CommandPalette from "../components/CommandPalette";
 import StoryShareModal from "../components/StoryShareModal";
 import { Camera } from "lucide-react";
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+const BACKEND_URL = "https://truthbox-production.up.railway.app";
 
 const POST_TYPES = [
   { id: "text", label: "Text", icon: FileText, color: "#97ce23", desc: "Publish a written prompt for structured feedback" },

@@ -1,7 +1,7 @@
 import { User as UserIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+const BACKEND_URL = "https://truthbox-production.up.railway.app";
 
 export default function ProfileDropdown({ user, onClose }) {
   const dropdownRef = useRef(null);
