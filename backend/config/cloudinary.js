@@ -25,18 +25,10 @@ const avatarStorage = new CloudinaryStorage({
 const feedbackStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
-    // Determine resource type based on file mimetype
-    let resourceType = "auto";
-    if (file.mimetype.startsWith("video/")) {
-      resourceType = "video";
-    } else if (file.mimetype === "application/pdf") {
-      resourceType = "raw";
-    }
 
     return {
       folder: "Verit/feedback",
-      resource_type: resourceType,
-      allowed_formats: ["jpg", "jpeg", "png", "gif", "webp", "pdf", "mp4", "webm", "mov"],
+      resource_type: "auto",
     };
   },
 });
@@ -49,6 +41,14 @@ const uploadAvatar = multer({
 const uploadFeedback = multer({
   storage: feedbackStorage,
   limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  fileFilter: (req, file, cb) => {
+    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", "video/mp4", "video/webm", "video/quicktime"];
+    if (allowedTypes.includes(file.mimetype)) {
+      cb(null, true);
+    } else {
+      cb(new Error("Invalid file type. Only images, PDFs, and videos are allowed."));
+    }
+  }
 });
 
 module.exports = {
