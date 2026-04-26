@@ -12,15 +12,22 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@google/genai": "^1.50.1",
     "bcrypt": "^6.0.0",
+    "cloudinary": "^1.41.3",
+    "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.1",
     "express": "^5.2.1",
+    "express-rate-limit": "^8.4.1",
+    "geoip-lite": "^1.4.10",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "multer": "^2.1.1",
+    "multer-storage-cloudinary": "^4.0.0",
     "nanoid": "^3.3.11",
-    "razorpay": "^2.9.6"
+    "razorpay": "^2.9.6",
+    "resend": "^6.12.2"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"

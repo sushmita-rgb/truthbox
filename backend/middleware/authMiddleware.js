@@ -6,8 +6,15 @@ module.exports = function (req, res, next) {
     return res.status(500).json({ message: "Server misconfiguration: missing JWT secret." });
   }
 
-  // Get token from header
-  const token = req.header("Authorization");
+  // Get token from cookies or Authorization header
+  let token = req.cookies?.token;
+  
+  if (!token) {
+    const authHeader = req.header("Authorization");
+    if (authHeader && authHeader.startsWith("Bearer ")) {
+      token = authHeader.replace("Bearer ", "");
+    }
+  }
 
   // Check if no token
   if (!token) {
@@ -16,10 +23,7 @@ module.exports = function (req, res, next) {
 
   // Verify token
   try {
-    const decoded = jwt.verify(
-      token.replace("Bearer ", ""),
-      jwtSecret
-    );
+    const decoded = jwt.verify(token, jwtSecret);
     req.user = decoded; // add user to request payload
     next();
   } catch (err) {

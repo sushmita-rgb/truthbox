@@ -15,6 +15,14 @@ const feedbackSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    country: {
+      type: String,
+      default: "Unknown",
+    },
+    isToxic: {
+      type: Boolean,
+      default: false,
+    },
   },
   { timestamps: true }
 );

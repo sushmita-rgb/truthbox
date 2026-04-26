@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import TruthBoxLogo from "../components/TruthBoxLogo";
+import Footer from "../components/Footer";
 import {
   ArrowRight,
   Check,
@@ -642,6 +643,7 @@ export default function Home() {
           </p>
         </section>
       </main>
+      <Footer />
     </div>
   );
 }

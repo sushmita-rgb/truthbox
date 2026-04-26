@@ -1,0 +1,433 @@
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { AnimatePresence, motion } from "framer-motion";
+import {
+  ArrowRight,
+  BarChart3,
+  Bell,
+  Check,
+  CheckCircle,
+  Copy,
+  Crown,
+  FileText,
+  FileUp,
+  Film,
+  Globe,
+  Image as ImageIcon,
+  Link as LinkIcon,
+  LogOut,
+  Menu,
+  MessageSquare,
+  Plus,
+  Settings,
+  Sparkles,
+  User,
+  X,
+  Zap,
+} from "lucide-react";
+import api from "../api";
+import ProfileDropdown from "../components/ProfileDropdown";
+import SettingsModal from "../components/SettingsModal";
+import TermsModal from "../components/TermsModal";
+import PricingModal from "../components/PricingModal";
+
+const BACKEND_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+
+const POST_TYPES = [
+  { id: "text", label: "Text", icon: FileText, color: "#97ce23", desc: "Publish a written prompt for structured feedback" },
+  { id: "image", label: "Image", icon: ImageIcon, color: "#60a5fa", desc: "Share a visual asset for review and comments" },
+  { id: "pdf", label: "PDF", icon: FileUp, color: "#f472b6", desc: "Upload a document, brief, or report for review" },
+  { id: "video", label: "Video", icon: Film, color: "#a78bfa", desc: "Share a video clip and collect responses" },
+  { id: "url", label: "URL", icon: Globe, color: "#fb923c", desc: "Request feedback on a website or external page" },
+];
+
+const NAV = [
+  { id: "create", label: "Create", icon: Plus },
+  { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "links", label: "My Links", icon: LinkIcon },
+  { id: "feedback", label: "Feedback", icon: MessageSquare },
+  { id: "plans", label: "Plans", icon: Crown },
+];
+
+const TEMPLATE_PRESETS = [
+  {
+    id: "portfolio",
+    label: "Portfolio Review",
+    postType: "url",
+    title: "Portfolio Feedback",
+    description: "Tell me what stands out, what feels weak, and what I should improve first.",
+    content: "https://your-portfolio.com",
+    accentColor: "#7c3aed",
+    templateKey: "portfolio",
+  },
+  {
+    id: "launch",
+    label: "Launch Copy",
+    postType: "text",
+    title: "Launch Messaging",
+    description: "Help me sharpen this product message before I publish it.",
+    content: "Would you immediately understand the value from this copy?",
+    accentColor: "#fb923c",
+    templateKey: "launch",
+  },
+  {
+    id: "content",
+    label: "Content Feedback",
+    postType: "text",
+    title: "Content Review",
+    description: "I want blunt but useful feedback on my writing or caption.",
+    content: "Does this sound confident and clear?",
+    accentColor: "#38bdf8",
+    templateKey: "content",
+  },
+  {
+    id: "brand",
+    label: "Personal Brand",
+    postType: "image",
+    title: "Profile Image Review",
+    description: "Let me know what impression this photo and visual style create.",
+    content: "",
+    accentColor: "#97ce23",
+    templateKey: "brand",
+  },
+];
+
+const card = {
+  hidden: { opacity: 0, y: 24 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
+};
+
+const stagger = { show: { transition: { staggerChildren: 0.08 } } };
+
+export default function Dashboard() {
+  const [feedback, setFeedback] = useState([]);
+  const [links, setLinks] = useState([]);
+  const [analytics, setAnalytics] = useState(null);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [activeNav, setActiveNav] = useState("create");
+  const [generatedLink, setGeneratedLink] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [postType, setPostType] = useState("text");
+  const [content, setContent] = useState("");
+  const [file, setFile] = useState(null);
+  const [filePreview, setFilePreview] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [showTermsModal, setShowTermsModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showProfileCard, setShowProfileCard] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [selectedTemplate, setSelectedTemplate] = useState(null);
+  const [feedbackSearch, setFeedbackSearch] = useState("");
+  const [feedbackRange, setFeedbackRange] = useState("all");
+  const [feedbackLinkFilter, setFeedbackLinkFilter] = useState("all");
+  const [branding, setBranding] = useState({
+    title: "",
+    description: "",
+    accentColor: "#97ce23",
+    templateKey: "custom",
+  });
+  // ── Plan / usage state
+  const [showPricingModal, setShowPricingModal] = useState(false);
+  const [usage, setUsage] = useState({ plan: "free", used: 0, limit: 5, percentage: 0 });
+  const fileInputRef = useRef(null);
+  const navigate = useNavigate();
+
+  const avatarUrl = user?.avatar
+    ? (user.avatar.startsWith("/uploads") ? `${BACKEND_URL}${user.avatar}` : user.avatar)
+    : null;
+
+  const activeType = POST_TYPES.find((type) => type.id === postType);
+  const latestLink = links[0] || null;
+  const feedbackLinkOptions = useMemo(
+    () =>
+      links.map((link) => ({
+        value: link.linkId,
+        label: link.title || link.templateKey || link.linkId,
+      })),
+    [links]
+  );
+  const filteredFeedback = useMemo(() => {
+    const now = Date.now();
+    return feedback.filter((item) => {
+      const matchesSearch =
+        item.message.toLowerCase().includes(feedbackSearch.toLowerCase()) ||
+        item.linkId.toLowerCase().includes(feedbackSearch.toLowerCase());
+      const matchesRange =
+        feedbackRange === "all"
+          ? true
+          : feedbackRange === "7d"
+          ? now - new Date(item.createdAt).getTime() <= 7 * 24 * 60 * 60 * 1000
+          : now - new Date(item.createdAt).getTime() <= 30 * 24 * 60 * 60 * 1000;
+      const matchesLink = feedbackLinkFilter === "all" ? true : item.linkId === feedbackLinkFilter;
+      return matchesSearch && matchesRange && matchesLink;
+    });
+  }, [feedback, feedbackSearch, feedbackRange, feedbackLinkFilter]);
+
+  const loadCollections = async () => {
+    const [fbRes, linksRes, analyticsRes, usageRes] = await Promise.all([
+      api.get("/feedback/my-feedback"),
+      api.get("/links/my-links"),
+      api.get("/links/analytics"),
+      api.get("/links/usage"),
+    ]);
+    setFeedback(fbRes.data);
+    setLinks(linksRes.data);
+    setAnalytics(analyticsRes.data);
+    setUsage(usageRes.data);
+  };
+
+  const restoreSelectedTemplate = () => {
+    const storedTemplate = localStorage.getItem("truthbox.selectedTemplate");
+    if (!storedTemplate) return;
+
+    try {
+      const template = JSON.parse(storedTemplate);
+      if (!template?.id) return;
+
+      setSelectedTemplate(template);
+      setPostType(template.postType || "text");
+      setContent(template.content || "");
+      setBranding({
+        title: template.title || "",
+        description: template.summary || "",
+        accentColor: template.accent || "#97ce23",
+        templateKey: template.id || "custom",
+      });
+    } catch (err) {
+      console.warn("Unable to load selected template from storage:", err);
+    }
+  };
+
+  const loadDashboard = async () => {
+    setLoading(true);
+    try {
+      const userRes = await api.get("/auth/me");
+      setUser(userRes.data);
+
+      if (!userRes.data.termsAccepted) {
+        setShowTermsModal(true);
+        return;
+      }
+
+      await loadCollections();
+      restoreSelectedTemplate();
+
+      // Auto-open PricingModal if user arrived via a plan CTA from the landing page
+      const planIntent = localStorage.getItem("truthbox.planIntent");
+      if (planIntent && ["pro", "ultra"].includes(planIntent)) {
+        localStorage.removeItem("truthbox.planIntent");
+        setActiveNav("plans");
+        setShowPricingModal(true);
+      }
+    } catch (err) {
+      if (err.response?.status === 401) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDashboard();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [navigate]);
+
+  const handleAcceptTerms = async () => {
+    try {
+      await api.post("/auth/accept-terms");
+      setShowTermsModal(false);
+      setUser((prev) => (prev ? { ...prev, termsAccepted: true } : prev));
+      await loadCollections();
+      restoreSelectedTemplate();
+    } catch (err) {
+      alert(err.response?.data?.message || "Failed to accept terms. Please try again.");
+    }
+  };
+
+  const handleFileChange = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    setFile(selectedFile);
+    if (postType === "image") {
+      const reader = new FileReader();
+      reader.onload = (event) => setFilePreview(event.target.result);
+      reader.readAsDataURL(selectedFile);
+    } else {
+      setFilePreview(null);
+    }
+  };
+
+  const clearFile = () => {
+    setFile(null);
+    setFilePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const switchType = (type) => {
+    setPostType(type);
+    setContent("");
+    clearFile();
+    setGeneratedLink(null);
+    setBranding((prev) => ({ ...prev, templateKey: "custom" }));
+  };
+
+  const applyTemplate = (template) => {
+    setPostType(template.postType);
+    setContent(template.content);
+    setBranding({
+      title: template.title,
+      description: template.description,
+      accentColor: template.accentColor,
+      templateKey: template.templateKey,
+    });
+    setGeneratedLink(null);
+    clearFile();
+  };
+
+  const clearSelectedTemplate = () => {
+    localStorage.removeItem("truthbox.selectedTemplate");
+    setSelectedTemplate(null);
+    setBranding({
+      title: "",
+      description: "",
+      accentColor: "#97ce23",
+      templateKey: "custom",
+    });
+  };
+
+  const handleSubmit = async () => {
+    if (postType === "text" && !content.trim()) return alert("Please enter the prompt you want reviewed.");
+    if (postType === "url" && !content.trim()) return alert("Please enter the URL you want reviewed.");
+    if (["image", "pdf", "video"].includes(postType) && !file) return alert("Please select a file before continuing.");
+
+    setSubmitting(true);
+    try {
+      const formData = new FormData();
+      formData.append("postType", postType);
+      if (content) formData.append("content", content);
+      if (file) formData.append("file", file);
+      formData.append("title", branding.title);
+      formData.append("description", branding.description);
+      formData.append("accentColor", branding.accentColor);
+      formData.append("templateKey", branding.templateKey);
+
+      const res = await api.post("/links/create-link", formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+
+      setGeneratedLink(res.data.linkId);
+      setContent("");
+      clearFile();
+      setBranding((prev) => ({ ...prev, templateKey: "custom" }));
+
+      await loadCollections();
+      setActiveNav("links");
+    } catch (err) {
+      // If the server says the plan limit is reached, open the upgrade modal
+      if (err.response?.data?.code === "PLAN_LIMIT_REACHED") {
+        const { plan, used, limit } = err.response.data;
+        setUsage((prev) => ({ ...prev, plan, used, limit }));
+        setShowPricingModal(true);
+      } else {
+        alert(err.response?.data?.message || "Unable to create the feedback request.");
+      }
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const copyTextToClipboard = async (text) => {
+    try {
+      if (navigator.clipboard?.writeText) {
+        await navigator.clipboard.writeText(text);
+        return true;
+      }
+
+      const tempInput = document.createElement("textarea");
+      tempInput.value = text;
+      tempInput.setAttribute("readonly", "");
+      tempInput.style.position = "fixed";
+      tempInput.style.opacity = "0";
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      const copied = document.execCommand("copy");
+      document.body.removeChild(tempInput);
+      return copied;
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const copyLink = async (id) => {
+    const copiedSuccessfully = await copyTextToClipboard(`${window.location.origin}/feedback/${id}`);
+    if (copiedSuccessfully) {
+      setCopied(true);
+      alert("Link copied to your clipboard.");
+      setTimeout(() => setCopied(false), 2500);
+      return;
+    }
+
+    alert("Unable to copy the link right now. Please copy it manually.");
+  };
+
+  const toggleLinkStatus = async (linkId) => {
+    try {
+      await api.patch(`/links/${linkId}/toggle`);
+      await loadCollections();
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to update the link status.");
+    }
+  };
+
+  const deleteLink = async (linkId) => {
+    const confirmed = window.confirm("Delete this link and all of its feedback?");
+    if (!confirmed) return;
+
+    try {
+      await api.delete(`/links/${linkId}`);
+      await loadCollections();
+    } catch (err) {
+      alert(err.response?.data?.message || "Unable to delete the link.");
+    }
+  };
+
+  const exportFeedbackCsv = () => {
+    const rows = filteredFeedback.map((item) => [
+      new Date(item.createdAt).toISOString(),
+      item.linkId,
+      links.find((link) => link.linkId === item.linkId)?.title || "",
+      item.message.replaceAll('"', '""'),
+    ]);
+
+    const csv = [
+      ["Created At", "Link ID", "Link Title", "Message"],
+      ...rows,
+    ]
+      .map((row) => row.map((cell) => `"${String(cell)}"`).join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `truthbox-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    navigate("/");
+  };
+
+  const handleNavSelect = (id) => {
+    setActiveNav(id);
+    setSidebarOpen(false);
+  };
+
+  if (loading) {
+  

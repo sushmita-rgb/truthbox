@@ -47,7 +47,7 @@ router.post("/create-order", authMiddleware, async (req, res) => {
     const order = await razorpay.orders.create({
       amount,
       currency,
-      receipt: `tb_${req.user.id}_${Date.now()}`,
+      receipt: `tb_${req.user.id.toString().slice(-6)}_${Date.now()}`,
       notes: { userId: req.user.id, plan },
     });
 
@@ -154,6 +154,71 @@ router.get("/history", authMiddleware, async (req, res) => {
   } catch (err) {
     console.error("history error:", err);
     res.status(500).json({ message: "Server error fetching payment history" });
+  }
+});
+
+// ── POST /api/payment/webhook ────────────────────────────────────────────────
+// Razorpay Webhook endpoint to reliably process async payment successes.
+router.post("/webhook", async (req, res) => {
+  try {
+    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
+    if (!webhookSecret) {
+      console.warn("Webhook secret not configured. Ignoring webhook.");
+      return res.status(200).send("OK");
+    }
+
+    const signature = req.headers["x-razorpay-signature"];
+    if (!signature) {
+      return res.status(400).send("Missing signature");
+    }
+
+    // Verify webhook signature
+    const expectedSignature = crypto
+      .createHmac("sha256", webhookSecret)
+      .update(req.rawBody || JSON.stringify(req.body))
+      .digest("hex");
+
+    if (expectedSignature !== signature) {
+      console.warn("Invalid webhook signature received");
+      return res.status(400).send("Invalid signature");
+    }
+
+    // Process event
+    const event = req.body.event;
+    
+    if (event === "payment.captured" || event === "order.paid") {
+      const paymentEntity = req.body.payload.payment.entity;
+      const razorpayOrderId = paymentEntity.order_id;
+      const razorpayPaymentId = paymentEntity.id;
+
+      if (!razorpayOrderId) {
+        return res.status(200).send("No order_id in payment. OK.");
+      }
+
+      // Find pending payment
+      const payment = await Payment.findOne({ razorpayOrderId });
+      
+      if (payment && payment.status !== "paid") {
+        // Mark as paid
+        payment.razorpayPaymentId = razorpayPaymentId;
+        payment.status = "paid";
+        await payment.save();
+
+        // Upgrade user plan
+        await User.findByIdAndUpdate(
+          payment.userId,
+          { plan: payment.plan },
+          { new: true }
+        );
+        console.log(`Webhook successfully processed: upgraded user ${payment.userId} to ${payment.plan}`);
+      }
+    }
+
+    // Always return 200 OK to Razorpay so it stops retrying
+    res.status(200).send("OK");
+  } catch (err) {
+    console.error("Webhook error:", err);
+    res.status(500).send("Server Error");
   }
 });
 

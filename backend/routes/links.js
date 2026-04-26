@@ -13,48 +13,25 @@ const fs = require("fs");
 // ── Plan limits ──────────────────────────────────────────────────────────────
 const PLAN_LIMITS = { free: 5, pro: 20, ultra: Infinity };
 
-const uploadsDir = path.join(__dirname, "../uploads");
-if (!fs.existsSync(uploadsDir)) {
-  fs.mkdirSync(uploadsDir, { recursive: true });
-}
+const { uploadFeedback } = require("../config/cloudinary");
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, uploadsDir);
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + path.extname(file.originalname));
-  },
-});
+const uploadFeedbackMiddleware = (req, res, next) => {
+  uploadFeedback.single("file")(req, res, (err) => {
+    if (!err) {
+      next();
+      return;
+    }
 
-const fileFilter = (req, file, cb) => {
-  const allowedMimeTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/gif",
-    "image/webp",
-    "image/svg+xml",
-    "video/mp4",
-    "video/webm",
-    "video/ogg",
-    "video/quicktime",
-    "application/pdf",
-  ];
+    if (err instanceof multer.MulterError) {
+      if (err.code === "LIMIT_FILE_SIZE") {
+        res.status(400).json({ message: "File size exceeds 50MB limit." });
+        return;
+      }
+    }
 
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-    return;
-  }
-
-  cb(new Error("Unsupported file type"), false);
+    res.status(400).json({ message: err.message || "Failed to upload file." });
+  });
 };
-
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 50 * 1024 * 1024 },
-});
 
 const normalizeAccentColor = (value) => {
   if (typeof value !== "string") return "#97ce23";
@@ -96,7 +73,7 @@ router.post(
   "/create-link",
   authMiddleware,
   requireTerms,
-  upload.single("file"),
+  uploadFeedbackMiddleware,
   async (req, res) => {
     try {
       const userId = req.user.id;
@@ -149,7 +126,7 @@ router.post(
         description: description.trim(),
         accentColor: normalizeAccentColor(accentColor),
         templateKey: templateKey.trim() || "custom",
-        fileUrl: req.file ? `/uploads/${req.file.filename}` : "",
+        fileUrl: req.file ? req.file.path : "",
         fileName: req.file ? req.file.originalname : "",
       });
 

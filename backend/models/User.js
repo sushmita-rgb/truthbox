@@ -38,6 +38,22 @@ const userSchema = new mongoose.Schema(
       enum: ["free", "pro", "ultra"],
       default: "free",
     },
+    isAdmin: {
+      type: Boolean,
+      default: false,
+    },
+    isBanned: {
+      type: Boolean,
+      default: false,
+    },
+    lastActive: {
+      type: Date,
+      default: Date.now,
+    },
+    country: {
+      type: String,
+      default: "Unknown",
+    },
   },
   { timestamps: true }
 );

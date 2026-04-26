@@ -97,6 +97,7 @@ function loadRazorpayScript() {
 
 export default function PricingModal({
   onClose,
+  user,
   currentPlan = "free",
   used = 0,
   limit = 5,
@@ -130,6 +131,10 @@ export default function PricingModal({
           description: `${order.planName} Plan — Monthly`,
           order_id:    order.orderId,
           theme:       { color: plan.color === "#ffffff" ? "#97ce23" : plan.color },
+          prefill: {
+            email: user?.email || "",
+            contact: "9999999999" // Pre-filled so the checkout skips directly to payment methods (showing UPI)
+          },
           modal: {
             ondismiss: () => reject(new Error("Payment was cancelled.")),
           },

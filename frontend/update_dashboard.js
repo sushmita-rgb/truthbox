@@ -1,456 +1,26 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { AnimatePresence, motion } from "framer-motion";
-import {
-  ArrowRight,
-  BarChart3,
-  Bell,
-  Search,
-  Check,
-  CheckCircle,
-  Copy,
-  Crown,
-  FileText,
-  FileUp,
-  Film,
-  Globe,
-  Image as ImageIcon,
-  Link as LinkIcon,
-  LogOut,
-  Menu,
-  MessageSquare,
-  Plus,
-  Settings,
-  Sparkles,
-  User,
-  X,
-  Zap,
-  Trash2,
-} from "lucide-react";
-import api from "../api";
-import ProfileDropdown from "../components/ProfileDropdown";
-import SettingsModal from "../components/SettingsModal";
-import TermsModal from "../components/TermsModal";
-import PricingModal from "../components/PricingModal";
-import CommandPalette from "../components/CommandPalette";
-import StoryShareModal from "../components/StoryShareModal";
-import { Camera } from "lucide-react";
+const fs = require('fs');
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || "http://localhost:5000/api").replace(/\/api\/?$/, "");
+const code = fs.readFileSync('src/pages/Dashboard.jsx', 'utf8');
+const returnIdx = code.indexOf('  if (loading) {');
+const topPart = code.substring(0, returnIdx);
 
-const POST_TYPES = [
-  { id: "text", label: "Text", icon: FileText, color: "#97ce23", desc: "Publish a written prompt for structured feedback" },
-  { id: "image", label: "Image", icon: ImageIcon, color: "#60a5fa", desc: "Share a visual asset for review and comments" },
-  { id: "pdf", label: "PDF", icon: FileUp, color: "#f472b6", desc: "Upload a document, brief, or report for review" },
-  { id: "video", label: "Video", icon: Film, color: "#a78bfa", desc: "Share a video clip and collect responses" },
-  { id: "url", label: "URL", icon: Globe, color: "#fb923c", desc: "Request feedback on a website or external page" },
-];
-
-const NAV = [
-  { id: "create", label: "Create", icon: Plus },
-  { id: "analytics", label: "Analytics", icon: BarChart3 },
-  { id: "links", label: "My Links", icon: LinkIcon },
-  { id: "feedback", label: "Feedback", icon: MessageSquare },
-  { id: "plans", label: "Plans", icon: Crown },
-];
-
-const TEMPLATE_PRESETS = [
-  {
-    id: "portfolio",
-    label: "Portfolio Review",
-    postType: "url",
-    title: "Portfolio Feedback",
-    description: "Tell me what stands out, what feels weak, and what I should improve first.",
-    content: "https://your-portfolio.com",
-    accentColor: "#7c3aed",
-    templateKey: "portfolio",
-  },
-  {
-    id: "launch",
-    label: "Launch Copy",
-    postType: "text",
-    title: "Launch Messaging",
-    description: "Help me sharpen this product message before I publish it.",
-    content: "Would you immediately understand the value from this copy?",
-    accentColor: "#fb923c",
-    templateKey: "launch",
-  },
-  {
-    id: "content",
-    label: "Content Feedback",
-    postType: "text",
-    title: "Content Review",
-    description: "I want blunt but useful feedback on my writing or caption.",
-    content: "Does this sound confident and clear?",
-    accentColor: "#38bdf8",
-    templateKey: "content",
-  },
-  {
-    id: "brand",
-    label: "Personal Brand",
-    postType: "image",
-    title: "Profile Image Review",
-    description: "Let me know what impression this photo and visual style create.",
-    content: "",
-    accentColor: "#97ce23",
-    templateKey: "brand",
-  },
-];
-
-const card = {
-  hidden: { opacity: 0, y: 24 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.35, ease: "easeOut" } },
-};
-
-const stagger = { show: { transition: { staggerChildren: 0.08 } } };
-
-export default function Dashboard() {
-  const [feedback, setFeedback] = useState([]);
-  const [links, setLinks] = useState([]);
-  const [analytics, setAnalytics] = useState(null);
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [activeNav, setActiveNav] = useState("create");
-  const [generatedLink, setGeneratedLink] = useState(null);
-  const [copied, setCopied] = useState(false);
-  const [postType, setPostType] = useState("text");
-  const [content, setContent] = useState("");
-  const [file, setFile] = useState(null);
-  const [filePreview, setFilePreview] = useState(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [showTermsModal, setShowTermsModal] = useState(false);
-  const [showSettingsModal, setShowSettingsModal] = useState(false);
-  const [showProfileCard, setShowProfileCard] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(false);
-  const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [feedbackSearch, setFeedbackSearch] = useState("");
-  const [feedbackRange, setFeedbackRange] = useState("all");
-  const [feedbackLinkFilter, setFeedbackLinkFilter] = useState("all");
-  const [revealedMessages, setRevealedMessages] = useState([]);
-  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
-  const [selectedShareLink, setSelectedShareLink] = useState(null);
-  const [branding, setBranding] = useState({
-    title: "",
-    description: "",
-    accentColor: "#97ce23",
-    templateKey: "custom",
-  });
-  // ── Plan / usage state
-  const [showPricingModal, setShowPricingModal] = useState(false);
-  const [usage, setUsage] = useState({ plan: "free", used: 0, limit: 5, percentage: 0 });
-  const fileInputRef = useRef(null);
-  const navigate = useNavigate();
-
-  const avatarUrl = user?.avatar
-    ? (user.avatar.startsWith("/uploads") ? `${BACKEND_URL}${user.avatar}` : user.avatar)
-    : null;
-
-  const activeType = POST_TYPES.find((type) => type.id === postType);
-  const latestLink = links[0] || null;
-  const feedbackLinkOptions = useMemo(
-    () =>
-      links.map((link) => ({
-        value: link.linkId,
-        label: link.title || link.templateKey || link.linkId,
-      })),
-    [links]
+// First, let's make sure CommandPalette and Search are imported.
+let newTopPart = topPart;
+if (!newTopPart.includes('import CommandPalette')) {
+  newTopPart = newTopPart.replace(
+    'import PricingModal from "../components/PricingModal";',
+    'import PricingModal from "../components/PricingModal";\nimport CommandPalette from "../components/CommandPalette";'
   );
-  const filteredFeedback = useMemo(() => {
-    const now = Date.now();
-    return feedback.filter((item) => {
-      const matchesSearch =
-        item.message.toLowerCase().includes(feedbackSearch.toLowerCase()) ||
-        item.linkId.toLowerCase().includes(feedbackSearch.toLowerCase());
-      const matchesRange =
-        feedbackRange === "all"
-          ? true
-          : feedbackRange === "7d"
-          ? now - new Date(item.createdAt).getTime() <= 7 * 24 * 60 * 60 * 1000
-          : now - new Date(item.createdAt).getTime() <= 30 * 24 * 60 * 60 * 1000;
-      const matchesLink = feedbackLinkFilter === "all" ? true : item.linkId === feedbackLinkFilter;
-      return matchesSearch && matchesRange && matchesLink;
-    });
-  }, [feedback, feedbackSearch, feedbackRange, feedbackLinkFilter]);
+}
+if (!newTopPart.includes('Search,')) {
+  newTopPart = newTopPart.replace(
+    'import {',
+    'import {\n  Search,'
+  );
+}
 
-  const loadCollections = async () => {
-    const [fbRes, linksRes, analyticsRes, usageRes] = await Promise.all([
-      api.get("/feedback/my-feedback"),
-      api.get("/links/my-links"),
-      api.get("/links/analytics"),
-      api.get("/links/usage"),
-    ]);
-    setFeedback(fbRes.data);
-    setLinks(linksRes.data);
-    setAnalytics(analyticsRes.data);
-    setUsage(usageRes.data);
-  };
-
-  const restoreSelectedTemplate = () => {
-    const storedTemplate = localStorage.getItem("truthbox.selectedTemplate");
-    if (!storedTemplate) return;
-
-    try {
-      const template = JSON.parse(storedTemplate);
-      if (!template?.id) return;
-
-      setSelectedTemplate(template);
-      setPostType(template.postType || "text");
-      setContent(template.content || "");
-      setBranding({
-        title: template.title || "",
-        description: template.summary || "",
-        accentColor: template.accent || "#97ce23",
-        templateKey: template.id || "custom",
-      });
-    } catch (err) {
-      console.warn("Unable to load selected template from storage:", err);
-    }
-  };
-
-  const loadDashboard = async () => {
-    setLoading(true);
-    try {
-      const userRes = await api.get("/auth/me");
-      setUser(userRes.data);
-
-      if (!userRes.data.termsAccepted) {
-        setShowTermsModal(true);
-        return;
-      }
-
-      await loadCollections();
-      restoreSelectedTemplate();
-
-      // Auto-open PricingModal if user arrived via a plan CTA from the landing page
-      const planIntent = localStorage.getItem("truthbox.planIntent");
-      if (planIntent && ["pro", "ultra"].includes(planIntent)) {
-        localStorage.removeItem("truthbox.planIntent");
-        setActiveNav("plans");
-        setShowPricingModal(true);
-      }
-    } catch (err) {
-      if (err.response?.status === 401) {
-        navigate("/login");
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadDashboard();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [navigate]);
-
-  const handleAcceptTerms = async () => {
-    try {
-      await api.post("/auth/accept-terms");
-      setShowTermsModal(false);
-      setUser((prev) => (prev ? { ...prev, termsAccepted: true } : prev));
-      await loadCollections();
-      restoreSelectedTemplate();
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to accept terms. Please try again.");
-    }
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFile = e.target.files[0];
-    if (!selectedFile) return;
-
-    setFile(selectedFile);
-    if (postType === "image") {
-      const reader = new FileReader();
-      reader.onload = (event) => setFilePreview(event.target.result);
-      reader.readAsDataURL(selectedFile);
-    } else {
-      setFilePreview(null);
-    }
-  };
-
-  const clearFile = () => {
-    setFile(null);
-    setFilePreview(null);
-    if (fileInputRef.current) fileInputRef.current.value = "";
-  };
-
-  const switchType = (type) => {
-    setPostType(type);
-    setContent("");
-    clearFile();
-    setGeneratedLink(null);
-    setBranding((prev) => ({ ...prev, templateKey: "custom" }));
-  };
-
-  const applyTemplate = (template) => {
-    setPostType(template.postType);
-    setContent(template.content);
-    setBranding({
-      title: template.title,
-      description: template.description,
-      accentColor: template.accentColor,
-      templateKey: template.templateKey,
-    });
-    setGeneratedLink(null);
-    clearFile();
-  };
-
-  const clearSelectedTemplate = () => {
-    localStorage.removeItem("truthbox.selectedTemplate");
-    setSelectedTemplate(null);
-    setBranding({
-      title: "",
-      description: "",
-      accentColor: "#97ce23",
-      templateKey: "custom",
-    });
-  };
-
-  const handleSubmit = async () => {
-    if (postType === "text" && !content.trim()) return alert("Please enter the prompt you want reviewed.");
-    if (postType === "url" && !content.trim()) return alert("Please enter the URL you want reviewed.");
-    if (["image", "pdf", "video"].includes(postType) && !file) return alert("Please select a file before continuing.");
-
-    setSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.append("postType", postType);
-      if (content) formData.append("content", content);
-      if (file) formData.append("file", file);
-      formData.append("title", branding.title);
-      formData.append("description", branding.description);
-      formData.append("accentColor", branding.accentColor);
-      formData.append("templateKey", branding.templateKey);
-
-      const res = await api.post("/links/create-link", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      setGeneratedLink(res.data.linkId);
-      setContent("");
-      clearFile();
-      setBranding((prev) => ({ ...prev, templateKey: "custom" }));
-
-      await loadCollections();
-      setActiveNav("links");
-    } catch (err) {
-      // If the server says the plan limit is reached, open the upgrade modal
-      if (err.response?.data?.code === "PLAN_LIMIT_REACHED") {
-        const { plan, used, limit } = err.response.data;
-        setUsage((prev) => ({ ...prev, plan, used, limit }));
-        setShowPricingModal(true);
-      } else {
-        alert(err.response?.data?.message || "Unable to create the feedback request.");
-      }
-    } finally {
-      setSubmitting(false);
-    }
-  };
-
-  const copyTextToClipboard = async (text) => {
-    try {
-      if (navigator.clipboard?.writeText) {
-        await navigator.clipboard.writeText(text);
-        return true;
-      }
-
-      const tempInput = document.createElement("textarea");
-      tempInput.value = text;
-      tempInput.setAttribute("readonly", "");
-      tempInput.style.position = "fixed";
-      tempInput.style.opacity = "0";
-      document.body.appendChild(tempInput);
-      tempInput.select();
-      const copied = document.execCommand("copy");
-      document.body.removeChild(tempInput);
-      return copied;
-    } catch (err) {
-      return false;
-    }
-  };
-
-  const copyLink = async (id) => {
-    const shareUrl = `${BACKEND_URL}/api/share/${id}`;
-    const copiedSuccessfully = await copyTextToClipboard(shareUrl);
-    if (copiedSuccessfully) {
-      setCopied(true);
-      alert("Link copied to your clipboard.");
-      setTimeout(() => setCopied(false), 2500);
-      return;
-    }
-
-    alert("Unable to copy the link right now. Please copy it manually.");
-  };
-
-  const deleteFeedback = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this piece of feedback?")) return;
-    try {
-      await api.delete(`/feedback/${id}`);
-      setFeedback((prev) => prev.filter((m) => m._id !== id));
-    } catch (err) {
-      alert(err.response?.data?.message || "Failed to delete feedback");
-    }
-  };
-
-  const toggleLinkStatus = async (linkId) => {
-    try {
-      await api.patch(`/links/${linkId}/toggle`);
-      await loadCollections();
-    } catch (err) {
-      alert(err.response?.data?.message || "Unable to update the link status.");
-    }
-  };
-
-  const deleteLink = async (linkId) => {
-    const confirmed = window.confirm("Delete this link and all of its feedback?");
-    if (!confirmed) return;
-
-    try {
-      await api.delete(`/links/${linkId}`);
-      await loadCollections();
-    } catch (err) {
-      alert(err.response?.data?.message || "Unable to delete the link.");
-    }
-  };
-
-  const exportFeedbackCsv = () => {
-    const rows = filteredFeedback.map((item) => [
-      new Date(item.createdAt).toISOString(),
-      item.linkId,
-      links.find((link) => link.linkId === item.linkId)?.title || "",
-      item.message.replaceAll('"', '""'),
-    ]);
-
-    const csv = [
-      ["Created At", "Link ID", "Link Title", "Message"],
-      ...rows,
-    ]
-      .map((row) => row.map((cell) => `"${String(cell)}"`).join(","))
-      .join("\n");
-
-    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = `truthbox-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
-    link.click();
-    URL.revokeObjectURL(url);
-  };
-
-  const handleLogout = async () => {
-    try {
-      await api.post("/auth/logout");
-    } catch (err) {
-      console.error("Logout failed", err);
-    }
-    navigate("/");
-  };
-
-  const handleNavSelect = (id) => {
-    setActiveNav(id);
-    setSidebarOpen(false);
-  };
-
+// Also add cmdKOpen state and effect
+const stateToAdd = `
   const [cmdKOpen, setCmdKOpen] = useState(false);
 
   useEffect(() => {
@@ -470,24 +40,14 @@ export default function Dashboard() {
     else if (id === "plans") { setActiveNav("plans"); setShowPricingModal(true); }
     else setActiveNav(id);
   };
+`;
 
-  const handleNewPost = () => {
-    setActiveNav("create");
-    setGeneratedLink(null);
-    setPostType("text");
-    setContent("");
-    setFile(null);
-    setFilePreview(null);
-    setSelectedTemplate(null);
-    setBranding({
-      title: "",
-      description: "",
-      accentColor: "#97ce23",
-      templateKey: "custom",
-    });
-    localStorage.removeItem("truthbox.selectedTemplate");
-  };
-  if (loading) {
+// Insert the new state right before the return statement part (after `const handleNavSelect` function)
+const navSelectIdx = newTopPart.lastIndexOf('const handleNavSelect = (id) => {');
+const handleNavSelectEnd = newTopPart.indexOf('};', navSelectIdx) + 2;
+newTopPart = newTopPart.substring(0, handleNavSelectEnd) + '\n' + stateToAdd + '\n' + newTopPart.substring(handleNavSelectEnd);
+
+const newReturnBlock = `  if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-black text-white">
         <div className="flex flex-col items-center gap-4">
@@ -512,7 +72,6 @@ export default function Dashboard() {
       )}
       {showPricingModal && (
         <PricingModal
-          user={user}
           onClose={() => setShowPricingModal(false)}
           currentPlan={usage.plan}
           used={usage.used}
@@ -538,9 +97,9 @@ export default function Dashboard() {
                 key={id}
                 onClick={() => handleNavSelect(id)}
                 title={label}
-                className={`relative w-11 h-11 flex items-center justify-center rounded-2xl transition-all ${
+                className={\`relative w-11 h-11 flex items-center justify-center rounded-2xl transition-all \${
                   active ? "bg-brand text-black shadow-[0_0_15px_rgba(151,206,35,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"
-                }`}
+                }\`}
               >
                 <Icon size={20} />
                 {id === "feedback" && feedback.length > 0 && (
@@ -617,7 +176,7 @@ export default function Dashboard() {
                </span>
              </button>
             <button 
-              onClick={handleNewPost} 
+              onClick={() => setActiveNav("create")} 
               className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand text-black font-bold text-sm hover:opacity-90 transition-opacity"
             >
               <Plus size={16} /> <span className="hidden sm:inline">New Post</span>
@@ -676,7 +235,7 @@ export default function Dashboard() {
                         >
                           <div
                             className="mb-4 h-10 w-10 rounded-xl"
-                            style={{ background: `${template.accentColor}20`, border: `1px solid ${template.accentColor}40` }}
+                            style={{ background: \`\${template.accentColor}20\`, border: \`1px solid \${template.accentColor}40\` }}
                           />
                           <p className="text-sm font-semibold text-white">{template.label}</p>
                           <p className="mt-2 text-xs leading-6 text-gray-500">{template.description}</p>
@@ -692,9 +251,9 @@ export default function Dashboard() {
                           <button
                             key={type.id}
                             onClick={() => switchType(type.id)}
-                            className={`relative z-10 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
+                            className={\`relative z-10 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors \${
                               active ? "text-black" : "text-gray-400 hover:text-white"
-                            }`}
+                            }\`}
                           >
                             {active && (
                               <motion.div
@@ -722,7 +281,7 @@ export default function Dashboard() {
                               className="w-full p-5 rounded-2xl bg-black border border-white/10 text-white outline-none focus:border-brand/50 transition-colors resize-none placeholder:text-gray-600 text-base"
                             />
                             <div className="absolute bottom-3 right-4 text-xs text-gray-500 font-mono">
-                               {content.length > 0 ? `${content.length} chars` : "Ready"}
+                               {content.length > 0 ? \`\${content.length} chars\` : "Ready"}
                             </div>
                           </div>
                         )}
@@ -745,7 +304,7 @@ export default function Dashboard() {
                             {!file ? (
                               <label
                                 className="relative flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-2xl p-10 cursor-pointer transition-all hover:opacity-80"
-                                style={{ borderColor: `${activeType?.color}50`, background: `${activeType?.color}08` }}
+                                style={{ borderColor: \`\${activeType?.color}50\`, background: \`\${activeType?.color}08\` }}
                               >
                                 <input
                                   ref={fileInputRef}
@@ -754,7 +313,7 @@ export default function Dashboard() {
                                   accept={postType === "image" ? "image/*" : postType === "pdf" ? "application/pdf" : "video/*"}
                                   onChange={handleFileChange}
                                 />
-                                <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: `${activeType?.color}20` }}>
+                                <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: \`\${activeType?.color}20\` }}>
                                   {postType === "image" && <ImageIcon size={28} style={{ color: activeType?.color }} />}
                                   {postType === "pdf" && <FileUp size={28} style={{ color: activeType?.color }} />}
                                   {postType === "video" && <Film size={28} style={{ color: activeType?.color }} />}
@@ -787,7 +346,7 @@ export default function Dashboard() {
                                  className="w-full p-4 rounded-2xl bg-black border border-white/10 text-white outline-none focus:border-white/20 resize-none placeholder:text-gray-600 text-sm"
                                />
                                <div className="absolute bottom-3 right-4 text-xs text-gray-500 font-mono">
-                                 {content.length > 0 ? `${content.length} chars` : "Ready"}
+                                 {content.length > 0 ? \`\${content.length} chars\` : "Ready"}
                                </div>
                             </div>
                           </div>
@@ -907,7 +466,7 @@ export default function Dashboard() {
                               return (
                                 <div key={item.label} className="flex flex-col items-center gap-3">
                                   <div className="flex h-44 w-full items-end justify-center">
-                                    <div className="w-full max-w-10 rounded-t-xl" style={{ height: `${height}%`, background: `linear-gradient(180deg, ${branding.accentColor}, rgba(151,206,35,0.1))` }} />
+                                    <div className="w-full max-w-10 rounded-t-xl" style={{ height: \`\${height}%\`, background: \`linear-gradient(180deg, \${branding.accentColor}, rgba(151,206,35,0.1))\` }} />
                                   </div>
                                   <span className="text-xs text-gray-500">{item.label}</span>
                                 </div>
@@ -927,7 +486,7 @@ export default function Dashboard() {
                                 <div key={type.id} className="rounded-2xl border border-white/5 bg-black/45 p-3">
                                   <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${type.color}18` }}>
+                                      <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: \`\${type.color}18\` }}>
                                         <type.icon size={14} style={{ color: type.color }} />
                                       </div>
                                       <p className="text-sm font-semibold text-white">{type.label}</p>
@@ -968,7 +527,7 @@ export default function Dashboard() {
                                   <h3 className="mt-3 text-lg font-bold text-white">{link.title || link.templateKey || "Untitled link"}</h3>
                                   <p className="mt-1 text-xs leading-5 text-gray-400 line-clamp-2">{link.description || "No description."}</p>
                                 </div>
-                                <div className="h-10 w-10 rounded-xl border border-white/5" style={{ background: `${linkColor}18` }} />
+                                <div className="h-10 w-10 rounded-xl border border-white/5" style={{ background: \`\${linkColor}18\` }} />
                               </div>
                               <div className="mt-5 rounded-2xl border border-white/5 bg-black/40 p-3">
                                 <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500">Share URL</p>
@@ -979,16 +538,7 @@ export default function Dashboard() {
                                   <button onClick={() => copyLink(link.linkId)} className="rounded-lg px-3 py-2 text-xs font-bold text-black" style={{ background: linkColor }}>Copy</button>
                                 </div>
                               </div>
-                              <div className="mt-4 flex flex-wrap gap-2">
-                                <button 
-                                  onClick={() => {
-                                    setSelectedShareLink(link);
-                                    setIsShareModalOpen(true);
-                                  }} 
-                                  className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-pink-500/10 px-3 py-1.5 text-xs font-semibold text-pink-300 hover:bg-pink-500/20"
-                                >
-                                  <Camera size={14} /> Story
-                                </button>
+                              <div className="mt-4 flex gap-2">
                                 <button onClick={() => toggleLinkStatus(link.linkId)} className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-300 hover:bg-white/10">{link.isActive ? "Deactivate" : "Reactivate"}</button>
                                 <button onClick={() => deleteLink(link.linkId)} className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20">Delete</button>
                               </div>
@@ -1024,41 +574,12 @@ export default function Dashboard() {
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
                           {filteredFeedback.map((message) => {
                             const linkTitle = links.find((link) => link.linkId === message.linkId)?.title || message.linkId;
-                            const isRevealed = revealedMessages.includes(message._id);
-                            const showBlur = message.isToxic && !isRevealed;
-
                             return (
-                              <div key={message._id} className="rounded-3xl p-6 relative overflow-hidden border border-white/5 bg-surface shadow-glow hover:-translate-y-1 transition-transform flex flex-col">
-                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-brand'} rounded-l-3xl`} />
-                                
-                                <div className="flex-1 relative">
-                                  {showBlur && (
-                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md rounded-xl border border-red-500/20">
-                                      <span className="text-xl mb-2">⚠️</span>
-                                      <p className="text-xs text-red-400 font-bold tracking-wider uppercase mb-3">Toxic Content Hidden</p>
-                                      <button 
-                                        onClick={() => setRevealedMessages(prev => [...prev, message._id])}
-                                        className="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-xs font-semibold hover:bg-red-500/30 transition-colors"
-                                      >
-                                        Reveal Message
-                                      </button>
-                                    </div>
-                                  )}
-                                  <p className={`text-gray-200 text-sm leading-relaxed pl-2 ${showBlur ? 'opacity-20 blur-[2px] select-none' : ''}`}>
-                                    {message.message}
-                                  </p>
-                                </div>
-
+                              <div key={message._id} className="rounded-3xl p-6 relative overflow-hidden border border-white/5 bg-surface shadow-glow hover:-translate-y-1 transition-transform">
+                                <div className="absolute top-0 left-0 w-1 h-full bg-brand rounded-l-3xl" />
+                                <p className="text-gray-200 text-sm leading-relaxed pl-2">{message.message}</p>
                                 <div className="flex items-center justify-between gap-3 mt-5 pl-2">
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-[10px] bg-white/5 px-2 py-1 rounded-md text-gray-500">{linkTitle}</span>
-                                    <button 
-                                      onClick={() => deleteFeedback(message._id)}
-                                      className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
-                                    >
-                                      <Trash2 size={12} />
-                                    </button>
-                                  </div>
+                                  <span className="text-[10px] bg-white/5 px-2 py-1 rounded-md text-gray-500">{linkTitle}</span>
                                   <span className="text-[10px] text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</span>
                                 </div>
                               </div>
@@ -1084,7 +605,7 @@ export default function Dashboard() {
                         </div>
                         <div className="flex-1">
                           <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: `${usage.percentage ?? 0}%` }} className="h-full rounded-full bg-brand" />
+                            <motion.div initial={{ width: 0 }} animate={{ width: \`\${usage.percentage ?? 0}%\` }} className="h-full rounded-full bg-brand" />
                           </div>
                           <p className="text-[10px] text-gray-500 mt-2">{usage.used} / {usage.limit ?? "∞"} links used</p>
                         </div>
@@ -1139,18 +660,16 @@ export default function Dashboard() {
       {/* Mobile navigation bar */}
       <nav className="fixed bottom-0 inset-x-0 h-16 border-t border-white/10 bg-black/90 backdrop-blur-xl flex items-center justify-around z-40 md:hidden">
         {NAV.slice(0, 4).map(({ id, icon: Icon }) => (
-          <button key={id} onClick={() => handleNavSelect(id)} className={`p-3 rounded-xl transition-colors ${activeNav === id ? "text-brand bg-brand/10" : "text-gray-500"}`}>
+          <button key={id} onClick={() => handleNavSelect(id)} className={\`p-3 rounded-xl transition-colors \${activeNav === id ? "text-brand bg-brand/10" : "text-gray-500"}\`}>
              <Icon size={20} />
           </button>
         ))}
       </nav>
-
-      <StoryShareModal 
-        isOpen={isShareModalOpen} 
-        onClose={() => setIsShareModalOpen(false)} 
-        link={selectedShareLink} 
-        username={user?.username || "user"} 
-      />
+      
     </div>
   );
 }
+\`;
+
+fs.writeFileSync('src/pages/Dashboard.jsx', newTopPart + newReturnBlock);
+console.log('Dashboard replaced successfully');

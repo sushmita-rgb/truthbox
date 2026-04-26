@@ -5,6 +5,10 @@
   --font-heading: "Poppins", sans-serif;
   --color-main: #141414;
   --color-accent: #97ce23;
+  --color-brand: #97ce23;
+  --color-surface: #0A0A0A;
+  --shadow-glow: 0 0 20px rgba(151, 206, 35, 0.15);
+  --radius-xl: 1rem;
 }
 
 @layer utilities {
