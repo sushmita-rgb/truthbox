@@ -129,6 +129,7 @@ export default function Dashboard() {
   const [revealedMessages, setRevealedMessages] = useState([]);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [selectedShareLink, setSelectedShareLink] = useState(null);
+  const [unreadFeedback, setUnreadFeedback] = useState(false);
   const [branding, setBranding] = useState({
     title: "",
     description: "",
@@ -182,6 +183,10 @@ export default function Dashboard() {
       api.get("/links/usage"),
       api.get("/system/announcement").catch(() => ({ data: null })),
     ]);
+    const previousCount = parseInt(localStorage.getItem("Verit.feedbackCount") || "0");
+    if (fbRes.data.length > previousCount) {
+      setUnreadFeedback(true);
+    }
     setFeedback(fbRes.data);
     setLinks(linksRes.data);
     setAnalytics(analyticsRes.data);
@@ -453,6 +458,10 @@ export default function Dashboard() {
   const handleNavSelect = (id) => {
     setActiveNav(id);
     setSidebarOpen(false);
+    if (id === "feedback") {
+      setUnreadFeedback(false);
+      localStorage.setItem("Verit.feedbackCount", feedback.length.toString());
+    }
   };
 
   const [cmdKOpen, setCmdKOpen] = useState(false);
@@ -547,7 +556,7 @@ export default function Dashboard() {
                 }`}
               >
                 <Icon size={20} />
-                {id === "feedback" && feedback.length > 0 && (
+                {id === "feedback" && unreadFeedback && (
                   <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-surface text-white text-[9px] font-bold flex items-center justify-center">
                     !
                   </span>

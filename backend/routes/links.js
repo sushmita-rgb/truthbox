@@ -9,6 +9,7 @@ const { nanoid } = require("nanoid");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
+const mongoose = require("mongoose");
 
 // ── Plan limits ──────────────────────────────────────────────────────────────
 const PLAN_LIMITS = { free: 5, pro: 20, ultra: Infinity };
@@ -55,7 +56,7 @@ const normalizeAccentColor = (value) => {
 
 const buildResponseCounts = async (userId) => {
   const counts = await Feedback.aggregate([
-    { $match: { receiverId: userId } },
+    { $match: { receiverId: new mongoose.Types.ObjectId(userId) } },
     { $group: { _id: "$linkId", count: { $sum: 1 } } },
   ]);
 

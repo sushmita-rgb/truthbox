@@ -96,7 +96,7 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
               </div>
 
               <div style="text-align: center; margin-top: 30px;">
-                <a href="http://localhost:5173/dashboard" style="background-color: #97ce23; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
+                <a href="https://verit-chi.vercel.app/dashboard" style="background-color: #97ce23; color: #000; padding: 12px 24px; text-decoration: none; border-radius: 8px; font-weight: bold;">
                   Read Full Message
                 </a>
               </div>
