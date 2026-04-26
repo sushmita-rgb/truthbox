@@ -15,7 +15,7 @@ cloudinary.config({
 const avatarStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: {
-    folder: "truthbox/avatars",
+    folder: "Verit/avatars",
     allowed_formats: ["jpg", "jpeg", "png", "webp"],
     transformation: [{ width: 500, height: 500, crop: "limit" }],
   },
@@ -32,7 +32,7 @@ const feedbackStorage = new CloudinaryStorage({
     }
 
     return {
-      folder: "truthbox/feedback",
+      folder: "Verit/feedback",
       resource_type: resourceType,
       allowed_formats: ["jpg", "jpeg", "png", "gif", "webp", "pdf", "mp4", "webm", "mov"],
     };

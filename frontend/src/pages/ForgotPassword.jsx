@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import api from "../api";
-import TruthBoxLogo from "../components/TruthBoxLogo";
+import VeritLogo from "../components/VeritLogo";
 import { KeyRound, ArrowLeft, Mail, Lock } from "lucide-react";
 
 export default function ForgotPassword() {
@@ -70,7 +70,7 @@ export default function ForgotPassword() {
         )}
 
         <Link to="/" className="flex justify-center mb-8 mt-2">
-          <TruthBoxLogo className="h-16 w-auto" showTagline={false} />
+          <VeritLogo className="h-16 w-auto" showTagline={false} />
         </Link>
 
         {error && (

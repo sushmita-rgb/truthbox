@@ -127,7 +127,7 @@ export default function PricingModal({
           key:         order.keyId,
           amount:      order.amount,
           currency:    order.currency,
-          name:        "TruthBox",
+          name:        "Verit",
           description: `${order.planName} Plan — Monthly`,
           order_id:    order.orderId,
           theme:       { color: plan.color === "#ffffff" ? "#97ce23" : plan.color },
@@ -417,7 +417,7 @@ export default function PricingModal({
 
           <p className="text-center text-xs text-gray-600 mt-6">
             Plans auto-renew monthly. Cancel anytime. Questions?{" "}
-            <a href="mailto:support@truthbox.app" className="text-accent hover:underline">
+            <a href="mailto:support@Verit.app" className="text-accent hover:underline">
               Contact support
             </a>
           </p>

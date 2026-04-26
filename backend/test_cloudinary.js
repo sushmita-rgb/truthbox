@@ -14,7 +14,7 @@ async function test() {
     console.log("Uploading...");
     const res = await cloudinary.uploader.upload('test.pdf', {
       resource_type: "auto",
-      folder: "truthbox/feedback"
+      folder: "Verit/feedback"
     });
     console.log("SUCCESS:", res);
   } catch (err) {

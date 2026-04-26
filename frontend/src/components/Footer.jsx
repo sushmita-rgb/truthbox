@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import TruthBoxLogo from "./TruthBoxLogo";
+import VeritLogo from "./VeritLogo";
 import { Send, Globe, Mail } from "lucide-react";
 
 export default function Footer() {
@@ -9,14 +9,14 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">
           
           <div className="col-span-1 md:col-span-2 space-y-6">
-            <TruthBoxLogo className="h-10 w-auto" showTagline={false} />
+            <VeritLogo className="h-10 w-auto" showTagline={false} />
             <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
               The world's most professional anonymous feedback platform. Built for growth, safety, and real human connection.
             </p>
             <div className="flex items-center gap-4">
               <a href="#" className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all"><Send size={18} /></a>
               <a href="#" className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all"><Globe size={18} /></a>
-              <a href="mailto:support@truthbox.app" className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all"><Mail size={18} /></a>
+              <a href="mailto:support@Verit.app" className="p-2 rounded-lg bg-white/5 text-gray-400 hover:text-brand hover:bg-white/10 transition-all"><Mail size={18} /></a>
             </div>
           </div>
 
@@ -34,6 +34,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li><Link to="/terms" className="text-sm text-gray-500 hover:text-brand transition-colors">Terms of Service</Link></li>
               <li><Link to="/privacy" className="text-sm text-gray-500 hover:text-brand transition-colors">Privacy Policy</Link></li>
+              <li><Link to="/refund" className="text-sm text-gray-500 hover:text-brand transition-colors">Refund Policy</Link></li>
               <li><Link to="/support" className="text-sm text-gray-500 hover:text-brand transition-colors">Help & Support</Link></li>
             </ul>
           </div>
@@ -42,7 +43,7 @@ export default function Footer() {
 
         <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-[10px] text-gray-600 uppercase tracking-widest">
-            © 2026 TruthBox. Built with ❤️ for the anonymous web.
+            © 2026 Verit. Built with ❤️ for the anonymous web.
           </p>
           <div className="flex items-center gap-6">
             <span className="text-[10px] text-gray-700 flex items-center gap-2">

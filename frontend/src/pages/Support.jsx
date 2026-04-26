@@ -2,14 +2,9 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, MessageCircle, HelpCircle, Send, CheckCircle } from "lucide-react";
 import api from "../api";
+import Footer from "../components/Footer";
 
-const FAQ = [
-  { q: "Is TruthBox really anonymous?", a: "Yes. We do not show your identity to the person receiving feedback. However, all messages are scanned for toxicity to prevent abuse." },
-  { q: "Can I delete a message I received?", a: "Yes, you can delete individual feedback items or your entire feedback link from your dashboard." },
-  { q: "How do I upgrade to Pro?", a: "Go to your Dashboard, click on 'Plans', and select the Pro or Ultra tier. Payments are processed securely via Razorpay." },
-  { q: "I lost my password, what do I do?", a: "Use the 'Forgot Password' link on the login page to receive a reset code via email." },
-];
-
+// ... (rest of the code)
 export default function Support() {
   const [formData, setFormData] = useState({ name: "", email: "", message: "" });
   const [submitting, setSubmitting] = useState(false);
@@ -29,8 +24,8 @@ export default function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-main/45 text-gray-300 font-sans selection:bg-brand/30 pb-20">
-      <div className="max-w-6xl mx-auto px-6 pt-12">
+    <div className="min-h-screen bg-main/45 flex flex-col font-sans selection:bg-brand/30">
+      <div className="flex-1 max-w-6xl mx-auto px-6 pt-12 pb-20 w-full">
         <Link to="/" className="inline-flex items-center gap-2 text-brand hover:gap-3 transition-all mb-12">
           <ArrowLeft size={18} /> Back to Home
         </Link>
@@ -123,6 +118,7 @@ export default function Support() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

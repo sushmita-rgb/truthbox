@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft, Lock, Eye, Database, Share2 } from "lucide-react";
+import Footer from "../components/Footer";
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-main/45 text-gray-300 font-sans selection:bg-brand/30 pb-20">
-      <div className="max-w-4xl mx-auto px-6 pt-12">
+    <div className="min-h-screen bg-main/45 flex flex-col font-sans selection:bg-brand/30">
+      <div className="flex-1 max-w-4xl mx-auto px-6 pt-12 pb-20 w-full">
         <Link to="/" className="inline-flex items-center gap-2 text-brand hover:gap-3 transition-all mb-12">
           <ArrowLeft size={18} /> Back to Home
         </Link>
@@ -74,11 +75,12 @@ export default function Privacy() {
 
           <div className="pt-10 border-t border-white/5 text-center">
             <p className="text-sm text-gray-500">
-              By using TruthBox, you consent to our Privacy Policy.
+              By using Verit, you consent to our Privacy Policy.
             </p>
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

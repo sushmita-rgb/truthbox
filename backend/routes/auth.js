@@ -54,12 +54,12 @@ router.post("/send-otp", async (req, res) => {
 
     // Send email using Resend
     await resend.emails.send({
-      from: "TruthBox <onboarding@resend.dev>", // Note: resend.dev only sends to verified emails in dev unless you have a custom domain
+      from: "Verit <onboarding@resend.dev>", // Note: resend.dev only sends to verified emails in dev unless you have a custom domain
       to: email,
-      subject: "Your TruthBox Verification Code",
+      subject: "Your Verit Verification Code",
       html: `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border-radius: 16px;">
-          <h1 style="color: #97ce23; margin-bottom: 20px;">TruthBox</h1>
+          <h1 style="color: #97ce23; margin-bottom: 20px;">Verit</h1>
           <p style="font-size: 16px; color: #aaa;">Your verification code is:</p>
           <div style="font-size: 32px; font-weight: bold; letter-spacing: 4px; padding: 20px; background: #111; border-radius: 8px; text-align: center; margin: 20px 0;">
             ${code}
@@ -130,9 +130,9 @@ router.post("/forgot-password", async (req, res) => {
     await newOtp.save();
 
     await resend.emails.send({
-      from: "TruthBox Security <onboarding@resend.dev>",
+      from: "Verit Security <onboarding@resend.dev>",
       to: email,
-      subject: "TruthBox Password Reset",
+      subject: "Verit Password Reset",
       html: `
         <div style="font-family: sans-serif; max-width: 500px; margin: 0 auto; background: #000; color: #fff; padding: 40px; border-radius: 16px;">
           <h1 style="color: #97ce23; margin-bottom: 20px;">Password Reset</h1>

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import api from "../api";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { Shield, Users, Link as LinkIcon, MessageSquare, Zap, Crown, TrendingUp, AlertTriangle, Globe, Trash2, Power } from "lucide-react";
-import TruthBoxLogo from "../components/TruthBoxLogo";
+import VeritLogo from "../components/VeritLogo";
 
 export default function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -92,7 +92,7 @@ export default function AdminDashboard() {
               <Shield className="text-red-500" size={24} />
               <h1 className="text-3xl font-extrabold tracking-tight">God Mode</h1>
             </div>
-            <p className="text-gray-400">TruthBox Platform Overview</p>
+            <p className="text-gray-400">Verit Platform Overview</p>
           </div>
 
           <div className="flex items-center gap-4">

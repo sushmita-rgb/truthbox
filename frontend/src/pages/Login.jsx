@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api";
-import TruthBoxLogo from "../components/TruthBoxLogo";
+import VeritLogo from "../components/VeritLogo";
+import Footer from "../components/Footer";
 import { Zap, Crown } from "lucide-react";
 
 export default function Login() {
@@ -20,7 +21,7 @@ export default function Login() {
       const res = await api.post("/auth/login", formData);
       // Store plan intent so Dashboard can auto-open PricingModal
       if (planIntent) {
-        localStorage.setItem("truthbox.planIntent", planIntent);
+        localStorage.setItem("Verit.planIntent", planIntent);
       }
       window.location.href = "/dashboard";
     } catch (err) {
@@ -35,7 +36,7 @@ export default function Login() {
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="glass p-8 md:p-12 rounded-3xl w-full max-w-md animate-fade-in-up">
           <Link to="/" className="flex justify-center mb-4">
-            <TruthBoxLogo className="h-20 w-auto" showTagline={false} />
+            <VeritLogo className="h-20 w-auto" showTagline={false} />
           </Link>
 
           {/* Plan intent badge */}

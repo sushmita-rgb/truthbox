@@ -186,7 +186,7 @@ export default function Dashboard() {
   };
 
   const restoreSelectedTemplate = () => {
-    const storedTemplate = localStorage.getItem("truthbox.selectedTemplate");
+    const storedTemplate = localStorage.getItem("Verit.selectedTemplate");
     if (!storedTemplate) return;
 
     try {
@@ -222,9 +222,9 @@ export default function Dashboard() {
       restoreSelectedTemplate();
 
       // Auto-open PricingModal if user arrived via a plan CTA from the landing page
-      const planIntent = localStorage.getItem("truthbox.planIntent");
+      const planIntent = localStorage.getItem("Verit.planIntent");
       if (planIntent && ["pro", "ultra"].includes(planIntent)) {
-        localStorage.removeItem("truthbox.planIntent");
+        localStorage.removeItem("Verit.planIntent");
         setActiveNav("plans");
         setShowPricingModal(true);
       }
@@ -296,7 +296,7 @@ export default function Dashboard() {
   };
 
   const clearSelectedTemplate = () => {
-    localStorage.removeItem("truthbox.selectedTemplate");
+    localStorage.removeItem("Verit.selectedTemplate");
     setSelectedTemplate(null);
     setBranding({
       title: "",
@@ -432,7 +432,7 @@ export default function Dashboard() {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.download = `truthbox-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
+    link.download = `Verit-feedback-${new Date().toISOString().slice(0, 10)}.csv`;
     link.click();
     URL.revokeObjectURL(url);
   };
@@ -485,7 +485,7 @@ export default function Dashboard() {
       accentColor: "#97ce23",
       templateKey: "custom",
     });
-    localStorage.removeItem("truthbox.selectedTemplate");
+    localStorage.removeItem("Verit.selectedTemplate");
   };
   if (loading) {
     return (

@@ -13,7 +13,7 @@ const Payment = require("../models/Payment");
 
 async function clearDatabase() {
   try {
-    const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/truthbox";
+    const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/Verit";
     await mongoose.connect(mongoURI);
     console.log("Connected to MongoDB for cleanup...");
 

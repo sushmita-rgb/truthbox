@@ -1,11 +1,12 @@
 import { Link } from "react-router-dom";
-import TruthBoxLogo from "../components/TruthBoxLogo";
+import VeritLogo from "../components/VeritLogo";
+import Footer from "../components/Footer";
 import { ArrowLeft, ShieldCheck, Scale, ScrollText } from "lucide-react";
 
 export default function Terms() {
   return (
-    <div className="min-h-screen bg-main/45 text-gray-300 font-sans selection:bg-brand/30 pb-20">
-      <div className="max-w-4xl mx-auto px-6 pt-12">
+    <div className="min-h-screen bg-main/45 flex flex-col font-sans selection:bg-brand/30">
+      <div className="flex-1 max-w-4xl mx-auto px-6 pt-12 pb-20 w-full">
         <Link to="/" className="inline-flex items-center gap-2 text-brand hover:gap-3 transition-all mb-12">
           <ArrowLeft size={18} /> Back to Home
         </Link>
@@ -26,7 +27,7 @@ export default function Terms() {
               <ScrollText size={20} className="text-brand" /> 1. Acceptance of Terms
             </h2>
             <p>
-              By accessing and using TruthBox, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
+              By accessing and using Verit, you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our services.
             </p>
           </section>
 
@@ -35,7 +36,7 @@ export default function Terms() {
               <ShieldCheck size={20} className="text-brand" /> 2. User Conduct
             </h2>
             <p className="mb-4">
-              TruthBox is designed for honest, constructive feedback. You agree not to use the service to:
+              Verit is designed for honest, constructive feedback. You agree not to use the service to:
             </p>
             <ul className="list-disc pl-6 space-y-2 text-sm">
               <li>Engage in cyberbullying, harassment, or threats of violence.</li>
@@ -62,14 +63,14 @@ export default function Terms() {
           <section>
             <h2 className="text-xl font-bold text-white mb-4">5. Limitation of Liability</h2>
             <p>
-              TruthBox is provided "as is". We are not responsible for any emotional distress, data loss, or damages resulting from the use of our anonymous feedback platform.
+              Verit is provided "as is". We are not responsible for any emotional distress, data loss, or damages resulting from the use of our anonymous feedback platform.
             </p>
           </section>
 
           <div className="pt-10 border-t border-white/5 flex flex-col md:flex-row items-center justify-between gap-6">
             <div>
               <p className="text-sm font-bold text-white">Questions about our terms?</p>
-              <p className="text-xs text-gray-500 mt-1">Contact us at support@truthbox.app</p>
+              <p className="text-xs text-gray-500 mt-1">Contact us at support@Verit.app</p>
             </div>
             <Link to="/support" className="px-6 py-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 text-white text-sm font-bold transition-all">
               Contact Support
@@ -77,6 +78,7 @@ export default function Terms() {
           </div>
         </div>
       </div>
+      <Footer />
     </div>
   );
 }

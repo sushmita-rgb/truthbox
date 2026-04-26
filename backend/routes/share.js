@@ -32,22 +32,22 @@ router.get("/:linkId", async (req, res) => {
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           
           <!-- Primary Meta Tags -->
-          <title>${link.title || "Feedback on TruthBox"}</title>
-          <meta name="title" content="${link.title || "Feedback on TruthBox"}">
+          <title>${link.title || "Feedback on Verit"}</title>
+          <meta name="title" content="${link.title || "Feedback on Verit"}">
           <meta name="description" content="${link.description || "Click to leave anonymous feedback!"}">
           <meta name="theme-color" content="${link.accentColor || "#97ce23"}">
 
           <!-- Open Graph / Facebook / WhatsApp -->
           <meta property="og:type" content="website">
           <meta property="og:url" content="${redirectUrl}">
-          <meta property="og:title" content="${link.title || "Feedback on TruthBox"}">
+          <meta property="og:title" content="${link.title || "Feedback on Verit"}">
           <meta property="og:description" content="${link.description || "Click to leave anonymous feedback!"}">
           <meta property="og:image" content="${ogImage}">
 
           <!-- Twitter -->
           <meta property="twitter:card" content="summary_large_image">
           <meta property="twitter:url" content="${redirectUrl}">
-          <meta property="twitter:title" content="${link.title || "Feedback on TruthBox"}">
+          <meta property="twitter:title" content="${link.title || "Feedback on Verit"}">
           <meta property="twitter:description" content="${link.description || "Click to leave anonymous feedback!"}">
           <meta property="twitter:image" content="${ogImage}">
 

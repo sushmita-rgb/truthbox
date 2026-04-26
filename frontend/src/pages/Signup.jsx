@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api";
-import TruthBoxLogo from "../components/TruthBoxLogo";
+import VeritLogo from "../components/VeritLogo";
 import Footer from "../components/Footer";
 import { Zap, Crown, Mail, ArrowLeft } from "lucide-react";
 
@@ -17,7 +17,7 @@ export default function Signup() {
   const [searchParams] = useSearchParams();
   const planIntent = searchParams.get("plan");
 
-  const selectedTemplateRaw = localStorage.getItem("truthbox.selectedTemplate");
+  const selectedTemplateRaw = localStorage.getItem("Verit.selectedTemplate");
   let selectedTemplate = null;
   if (selectedTemplateRaw) {
     try { selectedTemplate = JSON.parse(selectedTemplateRaw); } catch (err) {}
@@ -78,7 +78,7 @@ export default function Signup() {
           )}
 
           <Link to="/" className="flex justify-center mb-8 mt-2">
-            <TruthBoxLogo className="h-16 w-auto" showTagline={false} />
+            <VeritLogo className="h-16 w-auto" showTagline={false} />
           </Link>
 
           {error && (
@@ -91,7 +91,7 @@ export default function Signup() {
             <>
               <div className="mb-8 text-center">
                 <h2 className="text-2xl font-extrabold text-white mb-2">Create Account</h2>
-                <p className="text-gray-400 text-sm">Join TruthBox and start receiving anonymous feedback securely.</p>
+                <p className="text-gray-400 text-sm">Join Verit and start receiving anonymous feedback securely.</p>
               </div>
               
               <form onSubmit={handleSendOtp} className="space-y-5">

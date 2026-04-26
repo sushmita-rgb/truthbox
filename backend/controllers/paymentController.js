@@ -5,8 +5,8 @@ const User = require("../models/User");
 
 // ── Plan pricing (INR, stored in paise: 1 INR = 100 paise) ──────────────────
 const PLAN_PRICES = {
-  pro:   { amount: 10 * 100 * 83, label: "TruthBox Pro"   }, // $10 ≈ ₹830
-  ultra: { amount: 20 * 100 * 83, label: "TruthBox Ultra" }, // $20 ≈ ₹1660
+  pro:   { amount: 10 * 100 * 83, label: "Verit Pro"   }, // $10 ≈ ₹830
+  ultra: { amount: 20 * 100 * 83, label: "Verit Ultra" }, // $20 ≈ ₹1660
 };
 
 // Lazily initialise Razorpay so startup doesn't crash if keys are placeholders

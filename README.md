@@ -1,94 +1,81 @@
-# 🔒 TruthBox
+# ⚖️ Verit | Authentic Anonymous Feedback
 
-<div align="center">
-  <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-  <img src="https://img.shields.io/badge/Vite-B73BFE?style=for-the-badge&logo=vite&logoColor=FFD62E" alt="Vite" />
-  <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
-  <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node" />
-  <img src="https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white" alt="Express" />
-  <img src="https://img.shields.io/badge/MongoDB-4EA94B?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
-</div>
+**Verit** is a premium, privacy-first anonymous feedback platform designed for creators, builders, and professionals. Built with a high-end "Bento Grid" aesthetic, Verit allows users to receive honest, unfiltered thoughts through secure, customizable links.
 
-<br/>
-
-**TruthBox** is a modern, privacy-first anonymous feedback platform. It allows users to generate specific, custom links for their questions, issues, or ideas—supporting image and video attachments—so anyone can leave honest, unfiltered thoughts with zero identity traces.
-
-## ✨ Key Features
-
-- **100% Anonymous Delivery**: Drop brutal honesty or kind words safely. Identity is completely protected.
-- **Rich Media Support**: Ask questions and natively attach local files (images, videos) or direct web URLs.
-- **Granular Custom Links**: Instead of passing around one generic profile link, generate dedicated unique URLs for **every single question/issue** you have.
-- **Dynamic Dashboard**: Easily view, manage, and track all the custom links you've made, and read private feedback tied contextually to each link.
-- **Premium Aesthetics**: Engineered with deep glass-morphism panels, vivid ambient glows, and fully responsive pure CSS styling for high-end luxury feel.
-- **Secure Authentication**: Encrypted password matching and rigorous JWT (JSON Web Token) architecture.
-
-## 🛠️ Tech Stack
-
-#### Frontend
-- **React 18** (Vite bundler) for blazing-fast modular components.
-- **TailwindCSS v4** for utility-first, robust responsive styling.
-- **React Router DOM** for instantaneous client-side navigation.
-- **Axios** mapped to an API utility module to intercept and inject secure tokens.
-
-#### Backend
-- **Node.js runtime** powered by **Express.js**.
-- **MongoDB** integration modeled smoothly via **Mongoose**.
-- **Multer** for seamless `multipart/form-data` handling to process image and video file streams locally.
-- **Bcrypt & JSONWebToken** locking down the API endpoints safely behind cryptographic schemas.
+![Verit Preview](https://res.cloudinary.com/ddni2vnua/image/upload/v1714123456/verit_preview.png)
 
 ---
 
-## 🚀 Installation & Local Environment
+## 🚀 The Tech Stack
 
-Follow these steps to run **TruthBox** on your own local device.
+### Frontend
+- **React 19 & Vite**: Ultra-fast, modern component architecture.
+- **Tailwind CSS 4**: Sophisticated styling with glassmorphism and premium color palettes.
+- **Framer Motion**: Immersive page transitions and interactive animations.
+- **Lucide React**: Clean, professional iconography.
+- **html2canvas**: High-fidelity Instagram Story graphic generation.
 
-### Prerequisites:
-Make sure you have Node JS and NPM installed on your machine. You will also need a MongoDB Database URI.
+### Backend
+- **Node.js & Express**: Scalable API architecture.
+- **MongoDB Atlas**: Secure, cloud-hosted document database.
+- **Mongoose**: Robust data modeling.
+- **JWT & Bcrypt**: Industry-standard security and authentication.
 
-### 1. Backend Setting
+---
+
+## 🧠 Integrated Power Tools
+
+Verit integrates the world's best APIs to provide a seamless, safe experience:
+
+1.  **Google Gemini AI**: Every message is scanned in real-time for toxicity and harassment, ensuring a safe community.
+2.  **Razorpay**: A tiered subscription system (Pro & Ultra) for power users, processed through India's leading payment gateway.
+3.  **Cloudinary**: Secure, anonymous hosting for image and video attachments within feedback.
+4.  **Resend**: Instant transactional emails and high-speed OTP verification.
+5.  **Geo-Mapping**: Automatic detection of feedback origin (Country/City) using IP intelligence.
+
+---
+
+## 🛠️ Installation & Setup
+
+### 1. Clone the repository
 ```bash
-# Enter the backend directory
-cd backend
+git clone https://github.com/sushmita-rgb/truthbox.git
+cd truthbox
+```
 
-# Install all NodeJS dependencies
+### 2. Backend Setup
+Create a `.env` file in the `/backend` folder:
+```env
+PORT=5000
+MONGO_URI=your_mongodb_atlas_uri
+JWT_SECRET=your_secret
+RAZORPAY_KEY_ID=your_key
+RAZORPAY_KEY_SECRET=your_secret
+CLOUDINARY_CLOUD_NAME=your_name
+CLOUDINARY_API_KEY=your_key
+CLOUDINARY_API_SECRET=your_secret
+RESEND_API_KEY=your_key
+GEMINI_API_KEY=your_key
+ADMIN_EMAIL=admin@verit.app
+ADMIN_PASSWORD=admin123
+```
+
+### 3. Run Locally
+```bash
+# In backend folder
 npm install
+npm run dev
 
-# (Optional) Create a .env file and supply a MONGO_URI string
-# e.g., MONGO_URI=mongodb+srv://<username>:<password>@cluster/truthbox
-
-# Spin up the development server using nodemon
+# In frontend folder
+npm install
 npm run dev
 ```
-*The backend server will instantiate securely on `http://localhost:5000`.*
-
-### 2. Frontend Settings
-```bash
-# Enter the frontend directory via a new terminal tab
-cd frontend
-
-# Install Vite React frontend dependencies
-npm install
-
-# Boot up the Vite client engine
-npm run dev
-```
-*Vite will launch TruthBox on `http://localhost:5173`. You can now open your browser!*
 
 ---
 
-## 🌍 Production Environment Deployment
-
-TruthBox has been fully pre-configured with dynamic URL routing (`import.meta.env`) to support instant CI/CD deployment globally.
-
-1. **Deploy Backend (e.g., Render, Railway)**
-   - Create a Web Service pointing to the `./backend` root directory.
-   - Run Build Command: `npm install`
-   - Run Start Command: `npm run start` 
-
-2. **Deploy Frontend (e.g., Vercel, Netlify)**
-   - Connect platform to this GitHub repository. Ensure Root Directory targets `./frontend`.
-   - Setup Environment Variables: Add `VITE_API_URL` mapped to the secure HTTPS link you generated in step 1 (Example: `https://truthbox.onrender.com/api`).
-   - Deploy.
+## 📄 License
+This project is for private use and development. Rebranding from TruthBox to Verit completed on April 26, 2026.
 
 ---
-> Designed with precision and style. Unfiltered Feedback, Zero Judgment.
+
+**Developed with ❤️ for the future of authentic communication.**

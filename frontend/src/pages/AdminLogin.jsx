@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
-import TruthBoxLogo from "../components/TruthBoxLogo";
+import VeritLogo from "../components/VeritLogo";
 
 export default function AdminLogin() {
   const [formData, setFormData] = useState({ email: "", password: "" });
@@ -28,7 +28,7 @@ export default function AdminLogin() {
       <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,0,0,0.1)_0%,transparent_50%)]" />
       <div className="relative z-10 glass p-8 md:p-12 rounded-3xl w-full max-w-md animate-fade-in-up border-red-500/20 shadow-[0_0_50px_rgba(255,0,0,0.1)]">
         <div className="flex justify-center mb-8">
-          <TruthBoxLogo className="h-16 w-auto" showTagline={false} />
+          <VeritLogo className="h-16 w-auto" showTagline={false} />
         </div>
 
         <p className="text-center text-xs uppercase tracking-[0.3em] text-red-500 font-bold mb-8">God Mode Authorization</p>

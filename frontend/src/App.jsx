@@ -7,6 +7,7 @@ import Signup from "./pages/Signup";
 import ForgotPassword from "./pages/ForgotPassword";
 import Terms from "./pages/Terms";
 import Privacy from "./pages/Privacy";
+import Refund from "./pages/Refund";
 import Support from "./pages/Support";
 import Dashboard from "./pages/Dashboard";
 import FeedbackPage from "./pages/FeedbackPage";
@@ -28,6 +29,7 @@ function AnimatedRoutes() {
         <Route path="/forgot-password" element={<PageTransition><ForgotPassword /></PageTransition>} />
         <Route path="/terms"          element={<PageTransition><Terms /></PageTransition>} />
         <Route path="/privacy"        element={<PageTransition><Privacy /></PageTransition>} />
+        <Route path="/refund"         element={<PageTransition><Refund /></PageTransition>} />
         <Route path="/support"        element={<PageTransition><Support /></PageTransition>} />
         <Route path="/dashboard"      element={<PageTransition><Dashboard /></PageTransition>} />
         <Route path="/feedback/:linkId" element={<PageTransition><FeedbackPage /></PageTransition>} />
@@ -80,7 +82,7 @@ function AppShell() {
           </div>
           <h1 className="text-3xl font-extrabold mb-4">Under Maintenance</h1>
           <p className="text-gray-400 text-lg leading-relaxed">
-            TruthBox is currently undergoing scheduled upgrades to make the platform even better. We'll be back online shortly.
+            Verit is currently undergoing scheduled upgrades to make the platform even better. We'll be back online shortly.
           </p>
           <p className="mt-8 text-sm text-gray-600">Your feedback links are still actively receiving responses!</p>
         </div>

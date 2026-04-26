@@ -1,14 +1,14 @@
-// Inline SVG logo — gold justice scales + TRUTHBOX text, fully transparent background
-// Colours match the ChatGPT reference: gold metallic gradient (#C9A84C → #F0D080 → #A07830)
+// Inline SVG logo — gold justice scales + VERIT text, fully transparent background
+// Colours match the site accent #97ce23
 
-export default function TruthBoxLogo({ className = "h-14 w-auto", showTagline = true }) {
+export default function VeritLogo({ className = "h-14 w-auto", showTagline = true }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
       viewBox="0 0 260 110"
       className={className}
       fill="none"
-      aria-label="TruthBox"
+      aria-label="Verit"
     >
       <defs>
         {/* Lime green gradient — site accent #97ce23 */}
@@ -63,7 +63,7 @@ export default function TruthBoxLogo({ className = "h-14 w-auto", showTagline = 
       <rect x="122" y="56" width="16.5" height="2.5" rx="1.2" fill="url(#gold)" />
       <rect x="125" y="52" width="10.5" height="4" rx="1.2" fill="url(#gold)" />
 
-      {/* ── TRUTHBOX wordmark ── */}
+      {/* ── VERIT wordmark ── */}
       <text
         x="130"
         y="77"
@@ -71,10 +71,10 @@ export default function TruthBoxLogo({ className = "h-14 w-auto", showTagline = 
         fontFamily="'Georgia', 'Times New Roman', serif"
         fontSize="17"
         fontWeight="bold"
-        letterSpacing="5"
+        letterSpacing="8"
         fill="#ffffff"
       >
-        TRUTHBOX
+        VERIT
       </text>
 
       {/* ── Thin divider line ── */}
@@ -92,7 +92,7 @@ export default function TruthBoxLogo({ className = "h-14 w-auto", showTagline = 
           fill="#97ce23"
           opacity="0.8"
         >
-          TRUTH. JUSTICE. IMPACT.
+          AUTHENTIC. PRIVATE. POWERFUL.
         </text>
       )}
     </svg>

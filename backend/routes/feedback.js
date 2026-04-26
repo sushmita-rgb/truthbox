@@ -83,7 +83,7 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
       const receiver = await User.findById(link.userId);
       if (receiver && receiver.email) {
         await resend.emails.send({
-          from: "TruthBox Notifications <notifications@resend.dev>",
+          from: "Verit Notifications <notifications@resend.dev>",
           to: receiver.email,
           subject: "You received new anonymous feedback!",
           html: `

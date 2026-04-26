@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import TruthBoxLogo from "../components/TruthBoxLogo";
+import VeritLogo from "../components/VeritLogo";
 import Footer from "../components/Footer";
 import {
   ArrowRight,
@@ -168,11 +168,11 @@ export default function Home() {
   const handleTemplateSelect = (template) => {
     setActiveTemplate(template);
     setDemoNote(template.note);
-    localStorage.setItem("truthbox.selectedTemplate", JSON.stringify(template));
+    localStorage.setItem("verit.selectedTemplate", JSON.stringify(template));
   };
 
   const continueWithTemplate = () => {
-    localStorage.setItem("truthbox.selectedTemplate", JSON.stringify(activeTemplate));
+    localStorage.setItem("verit.selectedTemplate", JSON.stringify(activeTemplate));
     navigate("/signup");
   };
 
@@ -183,7 +183,7 @@ export default function Home() {
       <header className="relative z-10 w-full border-b border-white/10">
         <div className="flex w-full items-center justify-between px-6 py-6 lg:px-12 2xl:px-20">
           <Link to="/" className="flex items-center">
-            <TruthBoxLogo className="h-16 w-auto" showTagline={false} />
+            <VeritLogo className="h-16 w-auto" showTagline={false} />
           </Link>
 
           <div className="hidden items-center gap-3 md:flex">
@@ -228,7 +228,7 @@ export default function Home() {
                   not basic.
                 </h2>
                 <p className="max-w-2xl text-lg leading-8 text-gray-300 md:text-xl">
-                  TruthBox helps creators, students, and builders collect anonymous feedback through
+                  Verit helps creators, students, and builders collect anonymous feedback through
                   branded links, useful templates, and a dashboard that actually tells them what to do next.
                 </p>
               </div>
@@ -303,7 +303,7 @@ export default function Home() {
                   <div className="p-6">
                     <div className="mb-4 flex items-center gap-3">
                       <div className="h-12 w-12 rounded-2xl border border-white/10 bg-black/50 p-2">
-                        <img src={heroArt} alt="TruthBox preview" className="h-full w-full object-contain" />
+                        <img src={heroArt} alt="Verit preview" className="h-full w-full object-contain" />
                       </div>
                       <div>
                         <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Live preview</p>
@@ -639,7 +639,7 @@ export default function Home() {
 
           <p className="text-center text-xs text-gray-600 mt-10">
             All plans include anonymous responses. No credit card required for Free.
-            Questions? <a href="mailto:support@truthbox.app" className="text-accent hover:underline">Contact us</a>.
+            Questions? <a href="mailto:support@verit.app" className="text-accent hover:underline">Contact us</a>.
           </p>
         </section>
       </main>

@@ -66,7 +66,7 @@ app.use("/api/admin", adminLimiter, adminRoutes);
 app.use("/api/system", systemRoutes);
 
 const PORT = process.env.PORT || 5000;
-const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/truthbox";
+const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/Verit";
 
 mongoose
   .connect(mongoURI)
@@ -74,7 +74,7 @@ mongoose
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
 app.get("/", (req, res) => {
-  res.send("TruthBox Server is Live!");
+  res.send("Verit Server is Live!");
 });
 
 app.listen(PORT, () => {

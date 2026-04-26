@@ -169,7 +169,7 @@ export default function FeedbackPage() {
               <h2 className="text-3xl font-bold font-heading">Feedback Sent!</h2>
               <p className="text-gray-400">Your anonymous message was delivered securely.</p>
               <Link to="/signup" className="mt-4 inline-block rounded-full bg-white/10 px-8 py-3 text-sm font-medium transition-colors hover:bg-white/20">
-                Get your own TruthBox →
+                Get your own Verit →
               </Link>
             </motion.div>
           ) : (
