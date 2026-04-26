@@ -13,8 +13,8 @@ export default function TermsModal({ onAccept }) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
-      <div className="glass p-8 md:p-10 rounded-3xl w-full max-w-2xl max-h-[90vh] flex flex-col relative overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-start md:items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in overflow-y-auto">
+      <div className="glass p-6 md:p-10 rounded-3xl w-full max-w-2xl my-auto flex flex-col relative overflow-hidden">
         {/* Decorative background element */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
         
@@ -32,8 +32,8 @@ export default function TermsModal({ onAccept }) {
             Please read and accept our rules to ensure a safe and respectful environment for everyone.
           </p>
 
-          {/* Scrollable Terms Content */}
-          <div className="flex-1 overflow-y-auto pr-4 mb-8 space-y-6 text-neutral-300 styled-scrollbar">
+          {/* Terms Content */}
+          <div className="pr-4 mb-8 space-y-6 text-neutral-300">
             <section className="bg-white/5 p-6 rounded-2xl border border-white/5">
               <h3 className="text-lg font-semibold text-white mb-3">1. Rules for Users (Posting Content)</h3>
               <ul className="list-disc pl-5 space-y-2 text-sm text-neutral-400">
