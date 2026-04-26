@@ -43,40 +43,50 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
 
   if (postType === "image") {
     return (
-      <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
-        <div className="flex items-center gap-2 bg-white/5 p-3 text-xs font-semibold uppercase tracking-wide text-blue-400">
-          <ImageIcon size={13} />
+      <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-2xl">
+        <div className="flex items-center gap-2 bg-white/5 p-4 text-xs font-bold uppercase tracking-widest text-blue-400">
+          <ImageIcon size={14} />
           Shared Image
         </div>
-        <img src={getFullUrl(fileUrl)} alt={fileName || "image"} className="w-full max-h-[360px] bg-black/30 object-contain" />
-        {content && <p className="border-t border-white/10 bg-white/5 p-4 text-sm text-gray-400">{content}</p>}
+        <div className="relative group">
+          <img 
+            src={getFullUrl(fileUrl)} 
+            alt={fileName || "image"} 
+            className="w-full h-auto max-h-[70vh] object-contain block mx-auto transition-transform duration-500 group-hover:scale-[1.02]" 
+          />
+        </div>
+        {content && (
+          <div className="border-t border-white/5 bg-white/5 p-6">
+            <p className="text-base leading-relaxed text-gray-300 italic">"{content}"</p>
+          </div>
+        )}
       </div>
     );
   }
 
   if (postType === "pdf") {
     return (
-      <div className="mb-6 rounded-2xl border p-5" style={{ background: `${accentColor}10`, borderColor: `${accentColor}30` }}>
-        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: accentColor }}>
-          <FileUp size={13} />
+      <div className="mb-8 rounded-3xl border p-6 shadow-xl transition-all hover:border-white/20" style={{ background: `${accentColor}10`, borderColor: `${accentColor}30` }}>
+        <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{ color: accentColor }}>
+          <FileUp size={14} />
           Shared PDF
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl" style={{ background: `${accentColor}20` }}>
-            <FileUp size={22} style={{ color: accentColor }} />
+        <div className="flex items-center gap-5">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl shadow-lg" style={{ background: `${accentColor}20` }}>
+            <FileUp size={32} style={{ color: accentColor }} />
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-white">{fileName || "Document.pdf"}</p>
-            {content && <p className="mt-1 text-xs text-gray-400">{content}</p>}
+            <p className="truncate text-base font-bold text-white">{fileName || "Document.pdf"}</p>
+            {content && <p className="mt-1 text-sm text-gray-400 line-clamp-2">{content}</p>}
           </div>
           <a
             href={getFullUrl(fileUrl)}
             target="_blank"
             rel="noopener noreferrer"
-            className="shrink-0 rounded-xl px-4 py-2 text-sm font-medium transition-colors"
-            style={{ background: `${accentColor}22`, color: accentColor }}
+            className="shrink-0 rounded-2xl px-6 py-3 text-sm font-bold shadow-lg transition-all hover:brightness-110 active:scale-95"
+            style={{ background: accentColor, color: "#000" }}
           >
-            View
+            Open PDF
           </a>
         </div>
       </div>
@@ -85,13 +95,21 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
 
   if (postType === "video") {
     return (
-      <div className="mb-6 overflow-hidden rounded-2xl border border-white/10">
-        <div className="flex items-center gap-2 bg-white/5 p-3 text-xs font-semibold uppercase tracking-wide text-purple-400">
-          <Film size={13} />
+      <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
+        <div className="flex items-center gap-2 bg-white/5 p-4 text-xs font-bold uppercase tracking-widest text-purple-400">
+          <Film size={14} />
           Shared Video
         </div>
-        <video src={getFullUrl(fileUrl)} controls className="w-full max-h-[360px] bg-black" />
-        {content && <p className="border-t border-white/10 bg-white/5 p-4 text-sm text-gray-400">{content}</p>}
+        <video 
+          src={getFullUrl(fileUrl)} 
+          controls 
+          className="w-full h-auto max-h-[70vh] block mx-auto" 
+        />
+        {content && (
+          <div className="border-t border-white/5 bg-white/5 p-6">
+            <p className="text-base leading-relaxed text-gray-300 italic">"{content}"</p>
+          </div>
+        )}
       </div>
     );
   }
