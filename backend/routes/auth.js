@@ -94,11 +94,12 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password, otp } = req.body;
 
-    if (!otp) return res.status(400).json({ message: "Verification code is required" });
-
-    // Verify OTP
-    const validOtp = await Otp.findOne({ email, code: otp });
-    if (!validOtp) return res.status(400).json({ message: "Invalid or expired verification code" });
+    // Optional: Verify OTP only if it was provided
+    if (otp) {
+      const validOtp = await Otp.findOne({ email, code: otp });
+      if (!validOtp) return res.status(400).json({ message: "Invalid or expired verification code" });
+      await Otp.deleteOne({ _id: validOtp._id });
+    }
 
     // Check if user already exists in the Users collection (by email or username)
     let user = await User.findOne({ $or: [{ email }, { username }] });

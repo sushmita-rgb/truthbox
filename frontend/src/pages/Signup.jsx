@@ -31,24 +31,7 @@ export default function Signup() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  const handleSendOtp = async (e) => {
-    e.preventDefault();
-    if (cooldown > 0) return;
-    
-    setLoading(true);
-    setError("");
-    try {
-      await api.post("/auth/send-otp", { email: formData.email });
-      setOtpSent(true);
-      setCooldown(60);
-    } catch (err) {
-      setError(err.response?.data?.message || "Failed to send verification code");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleVerifyAndSignup = async (e) => {
+  const handleSignup = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
@@ -94,7 +77,7 @@ export default function Signup() {
                 <p className="text-gray-400 text-sm">Join Verit and start receiving anonymous feedback securely.</p>
               </div>
               
-              <form onSubmit={handleSendOtp} className="space-y-5">
+              <form onSubmit={handleSignup} className="space-y-5">
                 <div>
                   <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
                   <input
@@ -133,7 +116,7 @@ export default function Signup() {
                   disabled={loading}
                   className="w-full py-4 mt-2 rounded-2xl bg-accent text-main font-bold hover:shadow-[0_0_30px_rgba(151,206,35,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
                 >
-                  {loading ? "Sending code..." : "Continue"}
+                  {loading ? "Creating account..." : "Create Account"}
                 </button>
               </form>
             </>
