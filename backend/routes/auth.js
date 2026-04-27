@@ -51,6 +51,8 @@ router.post("/send-otp", async (req, res) => {
     const newOtp = new Otp({ email, code });
     await newOtp.save();
 
+    console.log(`🔑 DEBUG: OTP for ${email} is [ ${code} ]`);
+
     // Send email using Nodemailer
     const mailOptions = {
       from: `"${process.env.EMAIL_FROM_NAME || "Verit"}" <${process.env.EMAIL_USER}>`,
