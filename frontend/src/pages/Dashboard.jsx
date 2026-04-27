@@ -24,6 +24,7 @@ import {
   Sparkles,
   User,
   X,
+  Zap,
   Trash2,
   Loader2,
   Archive,
