@@ -118,9 +118,6 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
     
-    // Clear the OTP so it can't be reused
-    await Otp.deleteOne({ _id: validOtp._id });
-
     res.status(201).json({ message: "Account created! You can now log in." });
   } catch (err) {
     console.error(err);
