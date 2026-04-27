@@ -55,16 +55,17 @@ export default function Signup() {
     setLoading(true);
     setError("");
     try {
-      // Direct signup for now (assuming OTP is optional or handled by backend)
+      console.log("Direct signup and redirecting to welcome...");
       const res = await api.post("/auth/signup", formData);
       
       // Auto-login: Store token and user
       localStorage.setItem("Verit.token", res.data.token);
       localStorage.setItem("Verit.user", JSON.stringify(res.data.user));
       
-      // Redirect to the beautiful Welcome Journey
-      navigate("/welcome");
+      // Force a hard redirect to the Welcome Journey to ensure it's reached
+      window.location.href = "/welcome";
     } catch (err) {
+      console.error("Signup failed:", err);
       setError(err.response?.data?.message || "Registration failed");
     } finally {
       setLoading(false);
@@ -76,15 +77,17 @@ export default function Signup() {
     setLoading(true);
     setError("");
     try {
+      console.log("Creating account and redirecting to welcome...");
       const res = await api.post("/auth/signup", formData);
       
       // Auto-login: Store token and user
       localStorage.setItem("Verit.token", res.data.token);
       localStorage.setItem("Verit.user", JSON.stringify(res.data.user));
       
-      // Redirect to the beautiful Welcome Journey
-      navigate("/welcome");
+      // Force a hard redirect to the Welcome Journey to ensure it's reached
+      window.location.href = "/welcome";
     } catch (err) {
+      console.error("Signup failed:", err);
       setError(err.response?.data?.message || "Verification failed");
     } finally {
       setLoading(false);
