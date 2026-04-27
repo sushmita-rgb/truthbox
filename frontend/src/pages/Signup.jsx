@@ -6,7 +6,6 @@ import Footer from "../components/Footer";
 import { Zap, Crown, Mail, ArrowLeft } from "lucide-react";
 
 export default function Signup() {
-  // ... (keep existing state and logic)
   const [formData, setFormData] = useState({ username: "", email: "", password: "", otp: "" });
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
@@ -32,11 +31,31 @@ export default function Signup() {
     return () => clearInterval(timer);
   }, [cooldown]);
 
-  const handleSignup = async (e) => {
-    e.preventDefault();
+  const handleSendOtp = async (e) => {
+    if (e) e.preventDefault();
     setLoading(true);
     setError("");
     try {
+      await api.post("/auth/send-otp", { email: formData.email });
+      setOtpSent(true);
+      setCooldown(60);
+    } catch (err) {
+      setError(err.response?.data?.message || "Failed to send OTP");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSignup = async (e) => {
+    e.preventDefault();
+    if (!termsAccepted) {
+      setError("Please agree to the Terms and Conditions");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      // Direct signup for now (assuming OTP is optional or handled by backend)
       const res = await api.post("/auth/signup", formData);
       
       // Auto-login: Store token and user
@@ -52,8 +71,28 @@ export default function Signup() {
     }
   };
 
+  const handleVerifyAndSignup = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.post("/auth/signup", formData);
+      
+      // Auto-login: Store token and user
+      localStorage.setItem("Verit.token", res.data.token);
+      localStorage.setItem("Verit.user", JSON.stringify(res.data.user));
+      
+      // Redirect to the beautiful Welcome Journey
+      navigate("/welcome");
+    } catch (err) {
+      setError(err.response?.data?.message || "Verification failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-main/45 flex flex-col font-sans">
+    <div className="min-h-screen bg-[#141414] flex flex-col font-sans">
       <div className="flex-1 flex items-center justify-center p-4">
         <div className="glass p-8 md:p-12 rounded-3xl w-full max-w-md animate-fade-in-up z-10 relative overflow-hidden">
           
