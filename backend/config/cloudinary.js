@@ -27,6 +27,11 @@ const path = require("path");
 const feedbackStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
+    // Determine resource type based on mime type
+    let resourceType = "raw";
+    if (file.mimetype.startsWith("image/")) resourceType = "image";
+    else if (file.mimetype.startsWith("video/")) resourceType = "video";
+    else if (file.mimetype === "application/pdf") resourceType = "raw";
 
     // Sanitize filename correctly
     const baseName = path.parse(file.originalname).name;
@@ -60,12 +65,13 @@ const uploadFeedback = multer({
       "image/webp", 
       "video/mp4", 
       "video/webm", 
-      "video/quicktime"
+      "video/quicktime",
+      "application/pdf"
     ];
     if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Invalid file type. Only images and videos are allowed."));
+      cb(new Error("Invalid file type. Only images, videos, and PDFs are allowed."));
     }
   }
 });
