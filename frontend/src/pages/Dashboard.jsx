@@ -1143,60 +1143,61 @@ export default function Dashboard() {
                 )}
 
                 {activeNav === "link_details" && selectedLinkDetails && (
-                  <motion.div key="link_details" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                    <div className="flex items-center gap-4">
+                  <motion.div key="link_details" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-6">
+                    <div className="mb-2">
                       <button 
                         onClick={() => { setActiveNav("links"); setSelectedLinkDetails(null); }}
-                        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-semibold"
                       >
-                        <ArrowLeft size={20} /> Back to Links
+                        <ArrowLeft size={16} /> Back
                       </button>
-                      <h2 className="text-2xl font-bold text-white">Post Details</h2>
                     </div>
 
-                    <div className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow">
-                      <div className="flex items-center gap-2 mb-4">
-                        <span className="rounded-lg px-2 py-1 text-[10px] font-bold text-black uppercase" style={{ background: selectedLinkDetails.accentColor || "#97ce23" }}>
+                    <div className="rounded-[2rem] border border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+                      <div className="flex items-center justify-between mb-6">
+                        <h3 className="text-2xl font-black text-white tracking-tight">{selectedLinkDetails.title || "Untitled link"}</h3>
+                        <span className="rounded-full px-3 py-1 text-[10px] font-black text-black uppercase tracking-widest shadow-glow" style={{ background: selectedLinkDetails.accentColor || "#97ce23" }}>
                           {selectedLinkDetails.postType}
                         </span>
-                        <h3 className="text-xl font-bold text-white">{selectedLinkDetails.title || "Untitled link"}</h3>
                       </div>
                       
                       {selectedLinkDetails.description && (
-                        <p className="text-gray-400 text-sm mb-6">{selectedLinkDetails.description}</p>
+                        <p className="text-gray-400 text-sm mb-6 border-l-2 pl-3" style={{ borderColor: selectedLinkDetails.accentColor || "#97ce23" }}>{selectedLinkDetails.description}</p>
                       )}
 
-                      <div className="rounded-2xl border border-white/10 bg-black/40 overflow-hidden relative">
+                      <div className="rounded-3xl border border-white/10 bg-black/60 overflow-hidden relative shadow-inner">
                         {selectedLinkDetails.postType === "text" && (
-                          <div className="p-6 text-xl font-medium leading-relaxed italic text-gray-200">"{selectedLinkDetails.content}"</div>
+                          <div className="p-8 text-xl font-medium leading-relaxed italic text-gray-200">"{selectedLinkDetails.content}"</div>
                         )}
                         
                         {selectedLinkDetails.postType === "image" && selectedLinkDetails.fileUrl && (
-                          <div className="relative aspect-video max-h-[400px] w-full bg-black/50 flex items-center justify-center">
-                            <img src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} alt="Post media" className="max-w-full max-h-[400px] object-contain" />
+                          <div className="relative aspect-video max-h-[500px] w-full bg-[#0a0a0a] flex items-center justify-center group">
+                            <img src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} alt="Post media" className="max-w-full max-h-[500px] object-contain transition-transform duration-700 group-hover:scale-[1.02]" />
                             {selectedLinkDetails.content && (
-                              <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                                <p className="text-white text-sm">{selectedLinkDetails.content}</p>
+                              <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+                                <p className="text-white text-base font-medium">{selectedLinkDetails.content}</p>
                               </div>
                             )}
                           </div>
                         )}
                         
                         {selectedLinkDetails.postType === "video" && selectedLinkDetails.fileUrl && (
-                          <div className="relative aspect-video max-h-[400px] w-full bg-black/50">
+                          <div className="relative aspect-video max-h-[500px] w-full bg-[#0a0a0a]">
                             <video src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} controls className="w-full h-full object-contain" />
                             {selectedLinkDetails.content && (
-                              <div className="absolute top-0 inset-x-0 p-4 bg-gradient-to-b from-black/80 to-transparent">
-                                <p className="text-white text-sm drop-shadow-md">{selectedLinkDetails.content}</p>
+                              <div className="absolute top-0 inset-x-0 p-6 bg-gradient-to-b from-black via-black/80 to-transparent">
+                                <p className="text-white text-base font-medium drop-shadow-lg">{selectedLinkDetails.content}</p>
                               </div>
                             )}
                           </div>
                         )}
 
                         {selectedLinkDetails.postType === "url" && (
-                          <div className="p-6 flex flex-col items-center justify-center gap-4">
-                            <Globe size={48} className="text-gray-600" />
-                            <a href={selectedLinkDetails.content} target="_blank" rel="noreferrer" className="text-brand hover:underline">
+                          <div className="p-10 flex flex-col items-center justify-center gap-6">
+                            <div className="p-4 rounded-full bg-brand/10 text-brand">
+                              <Globe size={48} />
+                            </div>
+                            <a href={selectedLinkDetails.content} target="_blank" rel="noreferrer" className="text-xl font-bold text-white hover:text-brand transition-colors text-center break-all underline decoration-brand/30 underline-offset-8">
                               {selectedLinkDetails.content}
                             </a>
                           </div>
@@ -1204,50 +1205,57 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    <div>
-                      <h3 className="text-lg font-bold text-white mb-4">Feedback for this post</h3>
+                    <div className="pt-6">
+                      <div className="flex items-center gap-3 mb-6">
+                        <MessageSquare size={20} className="text-brand" />
+                        <h3 className="text-xl font-black text-white">Responses on this post</h3>
+                      </div>
+                      
                       {feedback.filter(f => f.linkId === selectedLinkDetails.linkId).length === 0 ? (
-                        <div className="p-12 rounded-3xl border border-white/5 text-center bg-surface shadow-glow">
-                          <MessageSquare size={36} className="mx-auto mb-4 text-gray-700" />
-                          <p className="text-gray-300 font-semibold">No feedback yet</p>
-                          <p className="text-gray-600 text-sm mt-1">Share your link to get responses on this post.</p>
+                        <div className="p-12 rounded-[2rem] border border-white/5 text-center bg-white/[0.02] shadow-inner backdrop-blur-md">
+                          <MessageSquare size={48} className="mx-auto mb-5 text-gray-700/50" />
+                          <p className="text-gray-300 font-bold text-lg">No responses yet</p>
+                          <p className="text-gray-500 text-sm mt-2">Share this specific link to get anonymous thoughts.</p>
                         </div>
                       ) : (
-                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
                           {feedback.filter(f => f.linkId === selectedLinkDetails.linkId).map((message) => {
                             const isRevealed = revealedMessages.includes(message._id);
                             const showBlur = message.isToxic && !isRevealed;
 
                             return (
-                              <div key={message._id} className="rounded-2xl md:rounded-3xl p-5 md:p-6 relative overflow-hidden border border-white/5 bg-surface shadow-glow hover:-translate-y-1 transition-transform flex flex-col">
-                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-brand'} rounded-l-3xl`} />
+                              <div key={message._id} className="group rounded-[2rem] p-6 relative overflow-hidden border border-white/5 bg-gradient-to-br from-white/[0.05] to-transparent shadow-xl hover:border-brand/30 hover:shadow-brand/10 transition-all duration-300 flex flex-col backdrop-blur-xl">
+                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'bg-brand shadow-[0_0_15px_rgba(151,206,35,0.5)]'} transition-all duration-500`} />
+                                <div className="absolute -top-6 -right-6 text-white/[0.03] transform rotate-12 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                                  <MessageSquare size={100} />
+                                </div>
                                 
-                                <div className="flex-1 relative">
+                                <div className="flex-1 relative z-10 pt-2">
                                   {showBlur && (
-                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md rounded-xl border border-red-500/20">
-                                      <span className="text-xl mb-2">⚠️</span>
-                                      <p className="text-xs text-red-400 font-bold tracking-wider uppercase mb-3">Toxic Content Hidden</p>
+                                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xl rounded-xl border border-red-500/20">
+                                      <span className="text-3xl mb-3 filter drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">⚠️</span>
+                                      <p className="text-xs text-red-400 font-black tracking-widest uppercase mb-4">Toxic Hidden</p>
                                       <button 
                                         onClick={() => setRevealedMessages(prev => [...prev, message._id])}
-                                        className="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-xs font-semibold hover:bg-red-500/30 transition-colors"
+                                        className="px-5 py-2 rounded-xl bg-red-500/20 text-red-300 text-xs font-bold hover:bg-red-500/40 hover:text-white transition-all duration-300"
                                       >
-                                        Reveal Message
+                                        Reveal Response
                                       </button>
                                     </div>
                                   )}
-                                  <p className={`text-gray-200 text-sm leading-relaxed pl-2 ${showBlur ? 'opacity-20 blur-[2px] select-none' : ''}`}>
-                                    {message.message}
+                                  <p className={`text-gray-100 text-[15px] font-medium leading-relaxed pl-3 ${showBlur ? 'opacity-10 blur-[4px] select-none' : ''}`}>
+                                    "{message.message}"
                                   </p>
                                 </div>
 
-                                <div className="flex items-center justify-between gap-3 mt-5 pl-2">
+                                <div className="flex items-center justify-between gap-3 mt-8 pl-3 relative z-10 border-t border-white/5 pt-4">
+                                  <span className="text-[10px] font-bold tracking-wider uppercase text-gray-500">{new Date(message.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                   <button 
                                     onClick={() => deleteFeedback(message._id)}
-                                    className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                    className="p-2 rounded-full text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
                                   >
-                                    <Trash2 size={12} />
+                                    <Trash2 size={14} />
                                   </button>
-                                  <span className="text-[10px] text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</span>
                                 </div>
                               </div>
                             );
