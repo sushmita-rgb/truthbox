@@ -100,8 +100,8 @@ function AppShell() {
       <div className="fixed inset-0 z-[1] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 0%, rgba(151,206,35,0.04) 0%, transparent 55%), " +
-            "linear-gradient(180deg, rgba(5,5,5,0.10) 0%, rgba(5,5,5,0.25) 100%)",
+            "radial-gradient(ellipse at 50% 0%, rgba(151,206,35,0.06) 0%, transparent 60%), " +
+            "linear-gradient(180deg, rgba(5,5,5,0.20) 0%, rgba(5,5,5,0.40) 100%)",
         }}
       />
 

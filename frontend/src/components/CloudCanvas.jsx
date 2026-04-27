@@ -135,8 +135,8 @@ function spawnCloud(canvasWidth, canvasHeight, fromBottom = false) {
   // Speed inversely proportional to size (smaller = faster)
   const speed = (0.12 + Math.random() * 0.22) * (260 / w);
 
-  // Opacity: small clouds more transparent, large ones more solid
-  const alpha = 0.16 + (w / 350) * 0.28 + Math.random() * 0.10;
+  // Opacity: drastically reduced to prevent clashing with white text
+  const alpha = 0.04 + (w / 350) * 0.08 + Math.random() * 0.04;
 
   // Slight horizontal drift
   const driftX = (Math.random() - 0.5) * 0.18;
@@ -212,9 +212,9 @@ export default function CloudCanvas() {
         CLOUD_SHAPES[c.shapeIdx](ctx, 0, 0, c.w, c.h);
 
         // ── Soft outer glow (shadow-like aura) ──
-        ctx.shadowColor  = "rgba(255,255,255,0.85)";
-        ctx.shadowBlur   = 36 + c.w * 0.18;
-        ctx.fillStyle    = `rgba(255,255,255,${c.alpha * 0.55})`;
+        ctx.shadowColor  = "rgba(255,255,255,0.4)";
+        ctx.shadowBlur   = 20 + c.w * 0.1;
+        ctx.fillStyle    = `rgba(255,255,255,${c.alpha * 0.3})`;
         ctx.fill();
 
         // ── Main cloud body — radial gradient for depth ──
@@ -223,9 +223,9 @@ export default function CloudCanvas() {
           0, -c.h * 0.1, c.w * 0.05,
           0,  c.h * 0.2, c.w * 0.72
         );
-        grad.addColorStop(0,   `rgba(255,255,255,${Math.min(1, c.alpha * 4.5)})`);
-        grad.addColorStop(0.45,`rgba(255,255,255,${Math.min(1, c.alpha * 3.0)})`);
-        grad.addColorStop(1,   `rgba(230,240,255,${c.alpha * 1.2})`);
+        grad.addColorStop(0,   `rgba(255,255,255,${Math.min(0.6, c.alpha * 2.5)})`);
+        grad.addColorStop(0.45,`rgba(255,255,255,${Math.min(0.4, c.alpha * 1.5)})`);
+        grad.addColorStop(1,   `rgba(230,240,255,${c.alpha * 0.8})`);
 
         ctx.beginPath();
         CLOUD_SHAPES[c.shapeIdx](ctx, 0, 0, c.w, c.h);
