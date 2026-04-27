@@ -41,7 +41,6 @@ const BACKEND_URL = "https://truthbox-production.up.railway.app";
 const POST_TYPES = [
   { id: "text", label: "Text", icon: FileText, color: "#97ce23", desc: "Publish a written prompt for structured feedback" },
   { id: "image", label: "Image", icon: ImageIcon, color: "#60a5fa", desc: "Share a visual asset for review and comments" },
-  { id: "pdf", label: "PDF", icon: FileUp, color: "#f472b6", desc: "Upload a document, brief, or report for review" },
   { id: "video", label: "Video", icon: Film, color: "#a78bfa", desc: "Share a video clip and collect responses" },
   { id: "url", label: "URL", icon: Globe, color: "#fb923c", desc: "Request feedback on a website or external page" },
 ];
@@ -318,7 +317,7 @@ export default function Dashboard() {
   const handleSubmit = async () => {
     if (postType === "text" && !content.trim()) return alert("Please enter the prompt you want reviewed.");
     if (postType === "url" && !content.trim()) return alert("Please enter the URL you want reviewed.");
-    if (["image", "pdf", "video"].includes(postType) && !file) return alert("Please select a file before continuing.");
+    if (["image", "video"].includes(postType) && !file) return alert("Please select a file before continuing.");
 
     setSubmitting(true);
     try {
@@ -802,22 +801,20 @@ export default function Dashboard() {
                                   ref={fileInputRef}
                                   type="file"
                                   className="absolute inset-0 opacity-0 cursor-pointer"
-                                  accept={postType === "image" ? "image/*" : postType === "pdf" ? "application/pdf" : "video/*"}
+                                  accept={postType === "image" ? "image/*" : "video/*"}
                                   onChange={handleFileChange}
                                 />
                                 <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: `${activeType?.color}20` }}>
                                   {postType === "image" && <ImageIcon size={28} style={{ color: activeType?.color }} />}
-                                  {postType === "pdf" && <FileUp size={28} style={{ color: activeType?.color }} />}
                                   {postType === "video" && <Film size={28} style={{ color: activeType?.color }} />}
                                 </div>
                                 <p className="font-semibold text-gray-300">
-                                  Click to upload {postType === "image" ? "an image" : postType === "pdf" ? "a PDF" : "a video"}
+                                  Click to upload {postType === "image" ? "an image" : "a video"}
                                 </p>
                               </label>
                             ) : (
                               <div className="rounded-2xl border border-white/10 bg-black p-4 flex items-start gap-4">
                                 {postType === "image" && filePreview && <img src={filePreview} alt="Preview" className="w-20 h-20 object-cover rounded-xl" />}
-                                {postType === "pdf" && <div className="w-16 h-16 bg-pink-500/20 rounded-xl flex items-center justify-center"><FileUp size={28} className="text-pink-400" /></div>}
                                 {postType === "video" && <div className="w-16 h-16 bg-purple-500/20 rounded-xl flex items-center justify-center"><Film size={28} className="text-purple-400" /></div>}
                                 <div className="flex-1 min-w-0">
                                   <p className="font-medium text-white truncate">{file.name}</p>

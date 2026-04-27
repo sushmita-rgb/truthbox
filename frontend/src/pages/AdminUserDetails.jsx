@@ -108,11 +108,6 @@ export default function AdminUserDetails() {
                       <a href={link.fileUrl} target="_blank" rel="noreferrer" className="w-24 h-24 shrink-0 rounded-xl bg-black border border-white/10 overflow-hidden flex items-center justify-center relative group">
                         {link.fileUrl.toLowerCase().includes(".mp4") || link.fileUrl.toLowerCase().includes(".webm") ? (
                           <video src={link.fileUrl} className="w-full h-full object-cover" />
-                        ) : (link.fileUrl.toLowerCase().includes(".pdf") || link.postType === "pdf") ? (
-                          <div className="flex flex-col items-center justify-center h-full w-full bg-pink-500/10 text-pink-500">
-                             <FileUp size={24} />
-                             <span className="text-[10px] font-bold mt-1">PDF</span>
-                          </div>
                         ) : (
                           <img src={link.fileUrl} className="w-full h-full object-cover" />
                         )}

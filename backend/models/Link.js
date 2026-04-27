@@ -16,10 +16,10 @@ const linkSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    // Post type: 'text' | 'image' | 'pdf' | 'video' | 'url'
+    // Post type: 'text' | 'image' | 'video' | 'url'
     postType: {
       type: String,
-      enum: ["text", "image", "pdf", "video", "url"],
+      enum: ["text", "image", "video", "url"],
       default: "text",
     },
     // For text and url types
@@ -27,7 +27,7 @@ const linkSchema = new mongoose.Schema(
       type: String,
       default: "",
     },
-    // For image, pdf, video types (stored filename)
+    // For image and video types (stored filename)
     fileUrl: {
       type: String,
       default: "",

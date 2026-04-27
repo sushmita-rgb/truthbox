@@ -64,35 +64,7 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
     );
   }
 
-  if (postType === "pdf") {
-    return (
-      <div className="mb-8 rounded-3xl border p-6 shadow-xl transition-all hover:border-white/20" style={{ background: `${accentColor}10`, borderColor: `${accentColor}30` }}>
-        <div className="mb-4 flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{ color: accentColor }}>
-          <FileUp size={14} />
-          Shared PDF
-        </div>
-        <div className="flex items-center gap-5">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl shadow-lg" style={{ background: `${accentColor}20` }}>
-            <FileUp size={32} style={{ color: accentColor }} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-base font-bold text-white">{fileName || "Document.pdf"}</p>
-            {content && <p className="mt-1 text-sm text-gray-400 line-clamp-2">{content}</p>}
-          </div>
-          <a
-            href={getFullUrl(fileUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-            type="application/pdf"
-            className="shrink-0 rounded-2xl px-6 py-3 text-sm font-bold shadow-lg transition-all hover:brightness-110 active:scale-95"
-            style={{ background: accentColor, color: "#000" }}
-          >
-            Open PDF
-          </a>
-        </div>
-      </div>
-    );
-  }
+
 
   if (postType === "video") {
     return (

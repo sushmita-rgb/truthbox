@@ -28,20 +28,13 @@ const feedbackStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
 
-    const isPdf = file.mimetype === "application/pdf" || file.mimetype.includes("pdf");
-    let resourceType = isPdf ? "raw" : "auto";
-
-    if (file.mimetype.startsWith("video/")) {
-      resourceType = "video";
-    }
-
     // Sanitize filename correctly
     const baseName = path.parse(file.originalname).name;
     const sanitizedName = baseName
       .replace(/[^a-z0-9]/gi, '_') 
       .substring(0, 50); 
     
-    const publicId = sanitizedName + "_" + Date.now() + (isPdf ? ".pdf" : "");
+    const publicId = sanitizedName + "_" + Date.now();
 
     return {
       folder: "Verit/feedback",
@@ -58,24 +51,21 @@ const uploadAvatar = multer({
 
 const uploadFeedback = multer({
   storage: feedbackStorage,
-  limits: { fileSize: 100 * 1024 * 1024 }, // Increased to 100MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // Keep 100MB for video
   fileFilter: (req, file, cb) => {
     const allowedTypes = [
       "image/jpeg", 
       "image/png", 
       "image/gif", 
       "image/webp", 
-      "application/pdf", 
-      "application/x-pdf",
-      "application/vnd.pdf",
       "video/mp4", 
       "video/webm", 
       "video/quicktime"
     ];
-    if (allowedTypes.includes(file.mimetype) || file.mimetype.includes("pdf")) {
+    if (allowedTypes.includes(file.mimetype)) {
       cb(null, true);
     } else {
-      cb(new Error("Invalid file type. Only images, PDFs, and videos are allowed."));
+      cb(new Error("Invalid file type. Only images and videos are allowed."));
     }
   }
 });

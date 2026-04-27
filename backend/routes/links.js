@@ -125,7 +125,7 @@ router.post(
         return res.status(400).json({ message: "URL is required" });
       }
 
-      if (["image", "pdf", "video"].includes(postType) && !req.file) {
+      if (["image", "video"].includes(postType) && !req.file) {
         return res.status(400).json({ message: "File upload is required for this post type" });
       }
 

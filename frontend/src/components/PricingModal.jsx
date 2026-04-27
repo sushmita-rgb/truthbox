@@ -27,7 +27,7 @@ const PLANS = [
     links: 5,
     features: [
       "5 feedback links",
-      "All post types (text, image, PDF, video, URL)",
+      "All post types (text, image, video, URL)",
       "Anonymous responses",
       "Basic dashboard",
     ],
