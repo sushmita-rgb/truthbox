@@ -54,8 +54,11 @@ export default function Support() {
 
         <div className="text-center mb-16">
           <h1 className="text-5xl font-black text-white mb-4">Help & Support</h1>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Got questions? We've got answers. If you can't find what you're looking for, shoot us a message.
+          <p className="text-gray-400 max-w-2xl mx-auto mb-2">
+            Got questions? We've got answers. If you can't find what you're looking for, shoot us a message below.
+          </p>
+          <p className="text-gray-400">
+            You can also email us directly at: <a href="mailto:veritnowapp@gmail.com" className="text-brand hover:underline font-medium">veritnowapp@gmail.com</a>
           </p>
         </div>
 
