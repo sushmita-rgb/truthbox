@@ -119,8 +119,23 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
 router.get("/my-feedback", authMiddleware, requireTerms, async (req, res) => {
   try {
     const userId = req.user.id;
-    const feedback = await Feedback.find({ receiverId: userId }).sort({ createdAt: -1 });
-    res.json(feedback);
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+
+    const total = await Feedback.countDocuments({ receiverId: userId });
+    const feedback = await Feedback.find({ receiverId: userId })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    res.json({
+      feedback,
+      total,
+      page,
+      pages: Math.ceil(total / limit),
+      hasMore: page * limit < total
+    });
   } catch (error) {
     console.error("Error fetching feedback:", error);
     res.status(500).json({ message: "Server error fetching feedback" });

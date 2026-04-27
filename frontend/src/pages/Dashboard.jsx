@@ -147,6 +147,9 @@ export default function Dashboard() {
   // ── Plan / usage state
   const [showPricingModal, setShowPricingModal] = useState(false);
   const [usage, setUsage] = useState({ plan: "free", used: 0, limit: 5, percentage: 0 });
+  const [feedbackPage, setFeedbackPage] = useState(1);
+  const [hasMoreFeedback, setHasMoreFeedback] = useState(false);
+  const [loadingMoreFeedback, setLoadingMoreFeedback] = useState(false);
   const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
@@ -185,21 +188,39 @@ export default function Dashboard() {
 
   const loadCollections = async () => {
     const [fbRes, linksRes, analyticsRes, usageRes, announceRes] = await Promise.all([
-      api.get("/feedback/my-feedback"),
+      api.get("/feedback/my-feedback?page=1&limit=20"),
       api.get("/links/my-links"),
       api.get("/links/analytics"),
       api.get("/links/usage"),
       api.get("/system/announcement").catch(() => ({ data: null })),
     ]);
     const previousCount = parseInt(localStorage.getItem("Verit.feedbackCount") || "0");
-    if (fbRes.data.length > previousCount) {
+    if (fbRes.data.total > previousCount) {
       setUnreadFeedback(true);
     }
-    setFeedback(fbRes.data);
+    setFeedback(fbRes.data.feedback);
+    setHasMoreFeedback(fbRes.data.hasMore);
+    setFeedbackPage(1);
     setLinks(linksRes.data);
     setAnalytics(analyticsRes.data);
     setUsage(usageRes.data);
     setAnnouncement(announceRes?.data);
+  };
+
+  const loadMoreFeedback = async () => {
+    if (loadingMoreFeedback || !hasMoreFeedback) return;
+    setLoadingMoreFeedback(true);
+    try {
+      const nextPage = feedbackPage + 1;
+      const res = await api.get(`/feedback/my-feedback?page=${nextPage}&limit=20`);
+      setFeedback((prev) => [...prev, ...res.data.feedback]);
+      setFeedbackPage(nextPage);
+      setHasMoreFeedback(res.data.hasMore);
+    } catch (err) {
+      console.error("Error loading more feedback:", err);
+    } finally {
+      setLoadingMoreFeedback(false);
+    }
   };
 
   const loadDeletedLinks = async () => {
@@ -1331,6 +1352,22 @@ export default function Dashboard() {
                             );
                           })}
                         </div>
+                        
+                        {hasMoreFeedback && (
+                          <div className="pt-8 flex justify-center">
+                            <button 
+                              onClick={loadMoreFeedback}
+                              disabled={loadingMoreFeedback}
+                              className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 hover:border-brand/50 transition-all flex items-center gap-3 disabled:opacity-50 group"
+                            >
+                              {loadingMoreFeedback ? (
+                                <Loader2 size={18} className="animate-spin text-brand" />
+                              ) : (
+                                <>Load more responses <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
+                              )}
+                            </button>
+                          </div>
+                        )}
                       </>
                     )}
                   </motion.div>
