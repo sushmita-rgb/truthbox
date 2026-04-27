@@ -1015,8 +1015,9 @@ export default function Dashboard() {
                         </button>
                       </div>
                     </div>
+                  </div>
 
-                    <AnimatePresence>
+                  <AnimatePresence>
                       {generatedLink && (
                         <motion.div
                           initial={{ opacity: 0, y: 12 }}
