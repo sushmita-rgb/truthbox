@@ -23,7 +23,7 @@ export default function ProfileDropdown({ user, onClose }) {
   if (!user) return null;
 
   return (
-    <div ref={dropdownRef} className="absolute top-full right-0 mt-3 w-56 bg-[#131313] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in z-40 transform origin-top-right p-5">
+    <div ref={dropdownRef} className="w-56 bg-[#131313] border border-white/10 rounded-2xl shadow-2xl overflow-hidden animate-fade-in p-5">
       <div className="flex flex-col items-center text-center">
         <div className="w-20 h-20 rounded-full overflow-hidden border border-[#97ce23]/50 bg-black/40 flex-shrink-0 flex items-center justify-center">
           {user.avatar ? (

@@ -649,7 +649,7 @@ export default function Dashboard() {
               )}
             </button>
             {showProfileCard && (
-              <div className="absolute bottom-14 left-14 z-50">
+              <div className="absolute bottom-0 left-[60px] z-50">
                 <ProfileDropdown user={user} onClose={() => setShowProfileCard(false)} />
               </div>
             )}
