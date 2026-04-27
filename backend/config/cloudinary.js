@@ -21,25 +21,25 @@ const avatarStorage = new CloudinaryStorage({
   },
 });
 
+const path = require("path");
+
 // Configure storage for Feedback Attachments
 const feedbackStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
 
-    let resourceType = "auto";
+    const isPdf = file.mimetype === "application/pdf" || file.mimetype.includes("pdf");
+    let resourceType = isPdf ? "raw" : "auto";
+
     if (file.mimetype.startsWith("video/")) {
       resourceType = "video";
-    } else if (file.mimetype === "application/pdf" || file.mimetype.includes("pdf")) {
-      resourceType = "auto"; 
     }
 
-    const isPdf = file.mimetype === "application/pdf" || file.mimetype.includes("pdf");
-    
-    // Sanitize filename: remove special characters and spaces
-    const sanitizedName = file.originalname
-      .split('.')[0]
-      .replace(/[^a-z0-9]/gi, '_') // Replace non-alphanumeric with underscore
-      .substring(0, 50); // Limit length
+    // Sanitize filename correctly
+    const baseName = path.parse(file.originalname).name;
+    const sanitizedName = baseName
+      .replace(/[^a-z0-9]/gi, '_') 
+      .substring(0, 50); 
     
     const publicId = sanitizedName + "_" + Date.now() + (isPdf ? ".pdf" : "");
 
@@ -47,8 +47,6 @@ const feedbackStorage = new CloudinaryStorage({
       folder: "Verit/feedback",
       resource_type: resourceType,
       public_id: publicId,
-      use_filename: true,
-      unique_filename: false,
     };
   },
 });
