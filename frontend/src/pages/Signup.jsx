@@ -8,6 +8,7 @@ import { Zap, Crown, Mail, ArrowLeft } from "lucide-react";
 export default function Signup() {
   // ... (keep existing state and logic)
   const [formData, setFormData] = useState({ username: "", email: "", password: "", otp: "" });
+  const [termsAccepted, setTermsAccepted] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [otpSent, setOtpSent] = useState(false);
@@ -36,9 +37,14 @@ export default function Signup() {
     setLoading(true);
     setError("");
     try {
-      await api.post("/auth/signup", formData);
-      const loginPath = planIntent ? `/login?plan=${planIntent}` : "/login";
-      navigate(loginPath);
+      const res = await api.post("/auth/signup", formData);
+      
+      // Auto-login: Store token and user
+      localStorage.setItem("Verit.token", res.data.token);
+      localStorage.setItem("Verit.user", JSON.stringify(res.data.user));
+      
+      // Redirect to the beautiful Welcome Journey
+      navigate("/welcome");
     } catch (err) {
       setError(err.response?.data?.message || "Registration failed");
     } finally {
@@ -110,6 +116,20 @@ export default function Signup() {
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   />
+                </div>
+
+                <div className="flex items-start gap-3 px-2 py-1">
+                  <input
+                    id="terms"
+                    type="checkbox"
+                    required
+                    className="mt-1 w-4 h-4 rounded border-white/10 bg-black/50 text-accent focus:ring-accent"
+                    checked={termsAccepted}
+                    onChange={(e) => setTermsAccepted(e.target.checked)}
+                  />
+                  <label htmlFor="terms" className="text-xs text-gray-400 leading-relaxed">
+                    I agree to the <Link to="/terms" className="text-accent hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-accent hover:underline">Privacy Policy</Link>.
+                  </label>
                 </div>
 
                 <button

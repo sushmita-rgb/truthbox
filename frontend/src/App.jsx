@@ -11,6 +11,7 @@ import Refund from "./pages/Refund";
 import Support from "./pages/Support";
 import Dashboard from "./pages/Dashboard";
 import FeedbackPage from "./pages/FeedbackPage";
+import WelcomeJourney from "./pages/WelcomeJourney";
 import PageTransition from "./components/PageTransition";
 import CloudCanvas from "./components/CloudCanvas";
 
@@ -32,6 +33,7 @@ function AnimatedRoutes() {
         <Route path="/refund"         element={<PageTransition><Refund /></PageTransition>} />
         <Route path="/support"        element={<PageTransition><Support /></PageTransition>} />
         <Route path="/dashboard"      element={<PageTransition><Dashboard /></PageTransition>} />
+        <Route path="/welcome"        element={<PageTransition><WelcomeJourney /></PageTransition>} />
         <Route path="/feedback/:linkId" element={<PageTransition><FeedbackPage /></PageTransition>} />
         <Route path="/admin/login"    element={<PageTransition><AdminLogin /></PageTransition>} />
         <Route path="/admin"          element={<PageTransition><AdminDashboard /></PageTransition>} />

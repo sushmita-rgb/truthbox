@@ -122,7 +122,23 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
     
-    res.status(201).json({ message: "Account created! You can now log in." });
+    // Auto-login: Create JWT token
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+
+    res.status(201).json({ 
+      message: "Account created successfully!",
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        plan: user.plan || "free",
+        instagramHandle: user.instagramHandle
+      }
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({ message: "Server error during registration" });
