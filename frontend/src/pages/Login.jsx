@@ -3,15 +3,23 @@ import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api";
 import VeritLogo from "../components/VeritLogo";
 import Footer from "../components/Footer";
-import { Zap, Crown } from "lucide-react";
+import { Zap, Crown, Eye, EyeOff } from "lucide-react";
 
 export default function Login() {
   const [formData, setFormData] = useState({ username: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const planIntent = searchParams.get("plan"); // "pro" | "ultra" | null
+
+  const togglePassword = () => {
+    setShowPassword(true);
+    setTimeout(() => {
+      setShowPassword(false);
+    }, 10000);
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -90,14 +98,23 @@ export default function Login() {
                   Forgot password?
                 </Link>
               </div>
-              <input
-                type="password"
-                required
-                className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
-                placeholder="••••••••"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-              />
+              <div className="relative">
+                <input
+                  type={showPassword ? "text" : "password"}
+                  required
+                  className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all pr-12"
+                  placeholder="••••••••"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                />
+                <button
+                  type="button"
+                  onClick={togglePassword}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                >
+                  {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                </button>
+              </div>
             </div>
 
             <button
