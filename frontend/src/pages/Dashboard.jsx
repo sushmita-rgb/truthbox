@@ -28,6 +28,7 @@ import {
   Trash2,
 } from "lucide-react";
 import api from "../api";
+import axios from "axios";
 import ProfileDropdown from "../components/ProfileDropdown";
 import SettingsModal from "../components/SettingsModal";
 import TermsModal from "../components/TermsModal";
@@ -322,21 +323,48 @@ export default function Dashboard() {
 
     setSubmitting(true);
     try {
-      const formData = new FormData();
-      formData.append("postType", postType);
-      if (content) formData.append("content", content);
-      if (file) formData.append("file", file);
-      formData.append("title", branding.title);
-      formData.append("description", branding.description);
-      formData.append("accentColor", branding.accentColor);
-      formData.append("templateKey", branding.templateKey);
+      let finalFileUrl = "";
+      let finalFileName = "";
 
-      const res = await api.post("/links/create-link", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-        onUploadProgress: (progressEvent) => {
-          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
-          setUploadProgress(percentCompleted);
-        },
+      // ── Step 1: Direct Upload to Cloudinary (if file exists) ──
+      if (file && ["image", "video"].includes(postType)) {
+        // A. Get signature from backend
+        const { data: signData } = await api.get("/links/sign-upload");
+        
+        // B. Prepare Cloudinary FormData
+        const cloudData = new FormData();
+        cloudData.append("file", file);
+        cloudData.append("api_key", signData.apiKey);
+        cloudData.append("timestamp", signData.timestamp);
+        cloudData.append("signature", signData.signature);
+        cloudData.append("folder", signData.folder);
+
+        // C. Upload directly to Cloudinary
+        const cloudRes = await axios.post(
+          `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
+          cloudData,
+          {
+            onUploadProgress: (progressEvent) => {
+              const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+              setUploadProgress(percentCompleted);
+            },
+          }
+        );
+
+        finalFileUrl = cloudRes.data.secure_url;
+        finalFileName = file.name;
+      }
+
+      // ── Step 2: Create Link in our Database ──
+      const res = await api.post("/links/create-link", {
+        postType,
+        content,
+        title: branding.title,
+        description: branding.description,
+        accentColor: branding.accentColor,
+        templateKey: branding.templateKey,
+        directUrl: finalFileUrl,
+        directFileName: finalFileName
       });
 
       setGeneratedLink(res.data.linkId);

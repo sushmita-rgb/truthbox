@@ -14,7 +14,35 @@ const mongoose = require("mongoose");
 // ── Plan limits ──────────────────────────────────────────────────────────────
 const PLAN_LIMITS = { free: 5, pro: 20, ultra: Infinity };
 
-const { uploadFeedback } = require("../config/cloudinary");
+const { uploadFeedback, cloudinary } = require("../config/cloudinary");
+
+// ── Get Cloudinary Signature for Direct Upload ───────────────────────────────
+router.get("/sign-upload", authMiddleware, async (req, res) => {
+  try {
+    const timestamp = Math.round(new Date().getTime() / 1000);
+    const folder = "Verit/feedback";
+    
+    // Generate signature
+    const signature = cloudinary.utils.api_sign_request(
+      {
+        timestamp,
+        folder,
+      },
+      process.env.CLOUDINARY_API_SECRET
+    );
+
+    res.json({
+      signature,
+      timestamp,
+      cloudName: process.env.CLOUDINARY_CLOUD_NAME,
+      apiKey: process.env.CLOUDINARY_API_KEY,
+      folder,
+    });
+  } catch (err) {
+    console.error("Signature error:", err);
+    res.status(500).json({ message: "Failed to generate upload signature" });
+  }
+});
 
 // ── Increment view count (Public) ────────────────────────────────────────────
 router.post("/:linkId/view", async (req, res) => {
@@ -99,6 +127,8 @@ router.post(
         description = "",
         accentColor,
         templateKey = "custom",
+        directUrl = "",
+        directFileName = "",
       } = req.body;
 
       // ── Plan limit check ──────────────────────────────────────────────────
@@ -125,19 +155,23 @@ router.post(
         return res.status(400).json({ message: "URL is required" });
       }
 
-      if (["image", "video"].includes(postType) && !req.file) {
+      if (["image", "video"].includes(postType) && !req.file && !directUrl) {
         return res.status(400).json({ message: "File upload is required for this post type" });
       }
 
       const linkId = nanoid(8);
 
+      // We'll use either the multer file OR the direct upload URL
+      const finalFileUrl = req.file ? req.file.path : directUrl;
+      const finalFileName = req.file ? req.file.originalname : directFileName;
+
       if (req.file) {
-        console.log("[DEBUG] File Uploaded:", {
+        console.log("[DEBUG] Multer Upload:", {
           path: req.file.path,
-          mimetype: req.file.mimetype,
-          size: req.file.size,
           originalname: req.file.originalname
         });
+      } else if (directUrl) {
+        console.log("[DEBUG] Direct Upload:", { directUrl, directFileName });
       }
 
       const newLink = new Link({
@@ -150,8 +184,8 @@ router.post(
         description: description.trim(),
         accentColor: normalizeAccentColor(accentColor),
         templateKey: templateKey.trim() || "custom",
-        fileUrl: req.file ? req.file.path : "",
-        fileName: req.file ? req.file.originalname : "",
+        fileUrl: finalFileUrl,
+        fileName: finalFileName,
       });
 
       await newLink.save();
