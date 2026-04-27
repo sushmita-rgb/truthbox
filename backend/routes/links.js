@@ -39,7 +39,7 @@ const uploadFeedbackMiddleware = (req, res, next) => {
 
     if (err instanceof multer.MulterError) {
       if (err.code === "LIMIT_FILE_SIZE") {
-        res.status(400).json({ message: "File size exceeds 50MB limit." });
+        res.status(400).json({ message: "File size exceeds 100MB limit." });
         return;
       }
     }

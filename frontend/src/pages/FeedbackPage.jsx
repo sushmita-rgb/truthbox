@@ -83,6 +83,7 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
             href={getFullUrl(fileUrl)}
             target="_blank"
             rel="noopener noreferrer"
+            type="application/pdf"
             className="shrink-0 rounded-2xl px-6 py-3 text-sm font-bold shadow-lg transition-all hover:brightness-110 active:scale-95"
             style={{ background: accentColor, color: "#000" }}
           >

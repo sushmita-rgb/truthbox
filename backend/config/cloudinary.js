@@ -29,16 +29,23 @@ const feedbackStorage = new CloudinaryStorage({
     let resourceType = "auto";
     if (file.mimetype.startsWith("video/")) {
       resourceType = "video";
-    } else if (file.mimetype === "application/pdf") {
-      resourceType = "raw";
+    } else if (file.mimetype === "application/pdf" || file.mimetype.includes("pdf")) {
+      resourceType = "image"; // Using "image" for PDFs allows Cloudinary to handle them as documents with better headers
     }
 
-    const isPdf = file.mimetype === "application/pdf";
-    const publicId = file.originalname.split('.')[0] + "_" + Date.now() + (isPdf ? ".pdf" : "");
+    const isPdf = file.mimetype === "application/pdf" || file.mimetype.includes("pdf");
+    
+    // Sanitize filename: remove special characters and spaces
+    const sanitizedName = file.originalname
+      .split('.')[0]
+      .replace(/[^a-z0-9]/gi, '_') // Replace non-alphanumeric with underscore
+      .substring(0, 50); // Limit length
+    
+    const publicId = sanitizedName + "_" + Date.now() + (isPdf ? ".pdf" : "");
 
     return {
       folder: "Verit/feedback",
-      resource_type: isPdf ? "raw" : "auto",
+      resource_type: resourceType,
       public_id: publicId,
       use_filename: true,
       unique_filename: false,
@@ -53,10 +60,21 @@ const uploadAvatar = multer({
 
 const uploadFeedback = multer({
   storage: feedbackStorage,
-  limits: { fileSize: 50 * 1024 * 1024 }, // 50MB
+  limits: { fileSize: 100 * 1024 * 1024 }, // Increased to 100MB
   fileFilter: (req, file, cb) => {
-    const allowedTypes = ["image/jpeg", "image/png", "image/gif", "image/webp", "application/pdf", "video/mp4", "video/webm", "video/quicktime"];
-    if (allowedTypes.includes(file.mimetype)) {
+    const allowedTypes = [
+      "image/jpeg", 
+      "image/png", 
+      "image/gif", 
+      "image/webp", 
+      "application/pdf", 
+      "application/x-pdf",
+      "application/vnd.pdf",
+      "video/mp4", 
+      "video/webm", 
+      "video/quicktime"
+    ];
+    if (allowedTypes.includes(file.mimetype) || file.mimetype.includes("pdf")) {
       cb(null, true);
     } else {
       cb(new Error("Invalid file type. Only images, PDFs, and videos are allowed."));
