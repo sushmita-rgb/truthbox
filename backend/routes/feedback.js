@@ -5,9 +5,7 @@ const Link = require("../models/Link");
 const User = require("../models/User");
 const authMiddleware = require("../middleware/authMiddleware");
 const requireTerms = require("../middleware/requireTerms");
-const { Resend } = require("resend");
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = require("../utils/mailer");
 
 const rateLimit = require("express-rate-limit");
 
@@ -82,8 +80,8 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
     try {
       const receiver = await User.findById(link.userId);
       if (receiver && receiver.email) {
-        await resend.emails.send({
-          from: `${process.env.EMAIL_FROM_NAME || "Verit"} Notifications <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`,
+        await transporter.sendMail({
+          from: `"${process.env.EMAIL_FROM_NAME || "Verit"}" Notifications <${process.env.EMAIL_USER}>`,
           to: receiver.email,
           subject: "You received new anonymous feedback!",
           html: `
@@ -104,9 +102,8 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
           `
         });
       }
-    } catch (emailErr) {
-      console.error("Failed to send notification email:", emailErr);
-      // We don't return an error to the user if the email fails, the feedback was still saved successfully.
+    } catch (mailError) {
+      console.error("Feedback Notification Mail Error:", mailError);
     }
 
     res.status(201).json({ message: "Feedback sent successfully" });

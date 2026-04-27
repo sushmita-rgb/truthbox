@@ -29,9 +29,8 @@ const uploadAvatarMiddleware = (req, res, next) => {
   });
 };
 
-const { Resend } = require("resend");
+const transporter = require("../utils/mailer");
 const Otp = require("../models/Otp");
-const resend = new Resend(process.env.RESEND_API_KEY);
 
 // 1. SEND OTP API
 router.post("/send-otp", async (req, res) => {
@@ -52,9 +51,9 @@ router.post("/send-otp", async (req, res) => {
     const newOtp = new Otp({ email, code });
     await newOtp.save();
 
-    // Send email using Resend
-    await resend.emails.send({
-      from: `${process.env.EMAIL_FROM_NAME || "Verit"} <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`, 
+    // Send email using Nodemailer
+    const mailOptions = {
+      from: `"${process.env.EMAIL_FROM_NAME || "Verit"}" <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Your Verit Verification Code",
       html: `
@@ -76,7 +75,9 @@ router.post("/send-otp", async (req, res) => {
           </div>
         </div>
       `
-    });
+    };
+
+    await transporter.sendMail(mailOptions);
 
     res.json({ message: "Verification code sent to your email" });
   } catch (err) {
@@ -139,8 +140,8 @@ router.post("/forgot-password", async (req, res) => {
     const newOtp = new Otp({ email, code });
     await newOtp.save();
 
-    await resend.emails.send({
-      from: `${process.env.EMAIL_FROM_NAME || "Verit"} Security <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`,
+    const mailOptions = {
+      from: `"${process.env.EMAIL_FROM_NAME || "Verit"}" Security <${process.env.EMAIL_USER}>`,
       to: email,
       subject: "Verit Password Reset",
       html: `
@@ -162,7 +163,9 @@ router.post("/forgot-password", async (req, res) => {
           </div>
         </div>
       `
-    });
+    };
+
+    await transporter.sendMail(mailOptions);
 
     res.json({ message: "Password reset code sent to your email" });
   } catch (err) {

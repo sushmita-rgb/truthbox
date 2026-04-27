@@ -1,9 +1,7 @@
 const express = require("express");
 const router = express.Router();
-const { Resend } = require("resend");
+const transporter = require("../utils/mailer");
 const SystemConfig = require("../models/SystemConfig");
-
-const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 // POST /api/system/support
 router.post("/support", async (req, res) => {
@@ -15,9 +13,9 @@ router.post("/support", async (req, res) => {
     }
 
     // Send email to admin
-    if (resend) {
-      await resend.emails.send({
-        from: `${process.env.EMAIL_FROM_NAME || "Verit"} Support <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`,
+    try {
+      await transporter.sendMail({
+        from: `"${process.env.EMAIL_FROM_NAME || "Verit"}" Support <${process.env.EMAIL_USER}>`,
         to: process.env.ADMIN_EMAIL || "admin@Verit.app",
         subject: `[New Support Ticket] From ${name}`,
         html: `
@@ -30,6 +28,8 @@ router.post("/support", async (req, res) => {
           </div>
         `,
       });
+    } catch (mailError) {
+      console.error("Support Mail Error:", mailError);
     }
 
     res.json({ message: "Support request sent successfully" });
