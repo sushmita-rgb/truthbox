@@ -30,7 +30,7 @@ const feedbackStorage = new CloudinaryStorage({
     if (file.mimetype.startsWith("video/")) {
       resourceType = "video";
     } else if (file.mimetype === "application/pdf" || file.mimetype.includes("pdf")) {
-      resourceType = "image"; // Using "image" for PDFs allows Cloudinary to handle them as documents with better headers
+      resourceType = "auto"; 
     }
 
     const isPdf = file.mimetype === "application/pdf" || file.mimetype.includes("pdf");
