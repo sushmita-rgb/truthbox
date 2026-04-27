@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
+  ArrowLeft,
   BarChart3,
   Bell,
   Search,
@@ -135,6 +136,7 @@ export default function Dashboard() {
   const [revealedMessages, setRevealedMessages] = useState([]);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [selectedShareLink, setSelectedShareLink] = useState(null);
+  const [selectedLinkDetails, setSelectedLinkDetails] = useState(null);
   const [unreadFeedback, setUnreadFeedback] = useState(false);
   const [branding, setBranding] = useState({
     title: "",
@@ -1113,6 +1115,15 @@ export default function Dashboard() {
                               <div className="mt-4 flex flex-wrap gap-2">
                                 <button 
                                   onClick={() => {
+                                    setSelectedLinkDetails(link);
+                                    setActiveNav("link_details");
+                                  }} 
+                                  className="flex items-center gap-2 rounded-lg border border-brand/20 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand hover:bg-brand/20"
+                                >
+                                  <MessageSquare size={14} /> View Details
+                                </button>
+                                <button 
+                                  onClick={() => {
                                     setSelectedShareLink(link);
                                     setIsShareModalOpen(true);
                                   }} 
@@ -1128,6 +1139,122 @@ export default function Dashboard() {
                         })}
                       </div>
                     )}
+                  </motion.div>
+                )}
+
+                {activeNav === "link_details" && selectedLinkDetails && (
+                  <motion.div key="link_details" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                    <div className="flex items-center gap-4">
+                      <button 
+                        onClick={() => { setActiveNav("links"); setSelectedLinkDetails(null); }}
+                        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
+                      >
+                        <ArrowLeft size={20} /> Back to Links
+                      </button>
+                      <h2 className="text-2xl font-bold text-white">Post Details</h2>
+                    </div>
+
+                    <div className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow">
+                      <div className="flex items-center gap-2 mb-4">
+                        <span className="rounded-lg px-2 py-1 text-[10px] font-bold text-black uppercase" style={{ background: selectedLinkDetails.accentColor || "#97ce23" }}>
+                          {selectedLinkDetails.postType}
+                        </span>
+                        <h3 className="text-xl font-bold text-white">{selectedLinkDetails.title || "Untitled link"}</h3>
+                      </div>
+                      
+                      {selectedLinkDetails.description && (
+                        <p className="text-gray-400 text-sm mb-6">{selectedLinkDetails.description}</p>
+                      )}
+
+                      <div className="rounded-2xl border border-white/10 bg-black/40 overflow-hidden relative">
+                        {selectedLinkDetails.postType === "text" && (
+                          <div className="p-6 text-xl font-medium leading-relaxed italic text-gray-200">"{selectedLinkDetails.content}"</div>
+                        )}
+                        
+                        {selectedLinkDetails.postType === "image" && selectedLinkDetails.directUrl && (
+                          <div className="relative aspect-video max-h-[400px] w-full bg-black/50 flex items-center justify-center">
+                            <img src={selectedLinkDetails.directUrl} alt="Post media" className="max-w-full max-h-[400px] object-contain" />
+                            {selectedLinkDetails.content && (
+                              <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                                <p className="text-white text-sm">{selectedLinkDetails.content}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                        
+                        {selectedLinkDetails.postType === "video" && selectedLinkDetails.directUrl && (
+                          <div className="relative aspect-video max-h-[400px] w-full bg-black/50">
+                            <video src={selectedLinkDetails.directUrl} controls className="w-full h-full object-contain" />
+                            {selectedLinkDetails.content && (
+                              <div className="absolute top-0 inset-x-0 p-4 bg-gradient-to-b from-black/80 to-transparent">
+                                <p className="text-white text-sm drop-shadow-md">{selectedLinkDetails.content}</p>
+                              </div>
+                            )}
+                          </div>
+                        )}
+
+                        {selectedLinkDetails.postType === "url" && (
+                          <div className="p-6 flex flex-col items-center justify-center gap-4">
+                            <Globe size={48} className="text-gray-600" />
+                            <a href={selectedLinkDetails.content} target="_blank" rel="noreferrer" className="text-brand hover:underline">
+                              {selectedLinkDetails.content}
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <h3 className="text-lg font-bold text-white mb-4">Feedback for this post</h3>
+                      {feedback.filter(f => f.linkId === selectedLinkDetails.linkId).length === 0 ? (
+                        <div className="p-12 rounded-3xl border border-white/5 text-center bg-surface shadow-glow">
+                          <MessageSquare size={36} className="mx-auto mb-4 text-gray-700" />
+                          <p className="text-gray-300 font-semibold">No feedback yet</p>
+                          <p className="text-gray-600 text-sm mt-1">Share your link to get responses on this post.</p>
+                        </div>
+                      ) : (
+                        <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
+                          {feedback.filter(f => f.linkId === selectedLinkDetails.linkId).map((message) => {
+                            const isRevealed = revealedMessages.includes(message._id);
+                            const showBlur = message.isToxic && !isRevealed;
+
+                            return (
+                              <div key={message._id} className="rounded-2xl md:rounded-3xl p-5 md:p-6 relative overflow-hidden border border-white/5 bg-surface shadow-glow hover:-translate-y-1 transition-transform flex flex-col">
+                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-brand'} rounded-l-3xl`} />
+                                
+                                <div className="flex-1 relative">
+                                  {showBlur && (
+                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md rounded-xl border border-red-500/20">
+                                      <span className="text-xl mb-2">⚠️</span>
+                                      <p className="text-xs text-red-400 font-bold tracking-wider uppercase mb-3">Toxic Content Hidden</p>
+                                      <button 
+                                        onClick={() => setRevealedMessages(prev => [...prev, message._id])}
+                                        className="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-xs font-semibold hover:bg-red-500/30 transition-colors"
+                                      >
+                                        Reveal Message
+                                      </button>
+                                    </div>
+                                  )}
+                                  <p className={`text-gray-200 text-sm leading-relaxed pl-2 ${showBlur ? 'opacity-20 blur-[2px] select-none' : ''}`}>
+                                    {message.message}
+                                  </p>
+                                </div>
+
+                                <div className="flex items-center justify-between gap-3 mt-5 pl-2">
+                                  <button 
+                                    onClick={() => deleteFeedback(message._id)}
+                                    className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                  >
+                                    <Trash2 size={12} />
+                                  </button>
+                                  <span className="text-[10px] text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
                   </motion.div>
                 )}
 
