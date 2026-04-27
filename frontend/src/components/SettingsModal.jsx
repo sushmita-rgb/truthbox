@@ -12,6 +12,7 @@ export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
   });
   const [formData, setFormData] = useState({
     username: user?.username || "",
+    instagramHandle: user?.instagramHandle || "",
   });
   const [passwordData, setPasswordData] = useState({
     currentPassword: "",
@@ -57,7 +58,7 @@ export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
     const wantsPasswordUpdate = selectedSections.password;
 
     const hasProfileChanges =
-      wantsProfileUpdate && formData.username !== user.username;
+      wantsProfileUpdate && (formData.username !== user.username || formData.instagramHandle !== user.instagramHandle);
     const hasPasswordChanges =
       wantsPasswordUpdate && (
         passwordData.currentPassword ||
@@ -227,6 +228,20 @@ export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-neutral-400 mb-2">Instagram Handle (Optional)</label>
+                  <div className="relative">
+                    <span className="absolute left-4 top-1/2 -translate-y-1/2 text-neutral-500 font-bold">@</span>
+                    <input
+                      type="text"
+                      placeholder="username"
+                      className="w-full bg-black/50 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-white focus:outline-none focus:border-[#97ce23] transition-colors"
+                      value={formData.instagramHandle}
+                      onChange={(e) => setFormData({ ...formData, instagramHandle: e.target.value.replace("@", "") })}
+                    />
+                  </div>
+                  <p className="text-[10px] text-neutral-600 mt-2 italic">Used to customize your Story sharing graphics.</p>
                 </div>
               </div>
             )}

@@ -3,7 +3,7 @@ import { X, Download, Camera } from "lucide-react";
 import html2canvas from "html2canvas";
 import { QRCodeSVG } from "qrcode.react";
 
-export default function StoryShareModal({ isOpen, onClose, link, username }) {
+export default function StoryShareModal({ isOpen, onClose, link, username, instagramHandle }) {
   const shareRef = useRef(null);
   const [downloading, setDownloading] = useState(false);
 
@@ -19,13 +19,13 @@ export default function StoryShareModal({ isOpen, onClose, link, username }) {
       const canvas = await html2canvas(shareRef.current, {
         useCORS: true,
         backgroundColor: "#000000",
-        scale: 2, // Back to high quality
+        scale: 2,
       });
       
       const image = canvas.toDataURL("image/png");
       const a = document.createElement("a");
       a.href = image;
-      a.download = `verit-story.png`;
+      a.download = `verit-story-${link.linkId}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -84,7 +84,7 @@ export default function StoryShareModal({ isOpen, onClose, link, username }) {
                   marginBottom: "40px"
                 }}>
                   <div style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#97ce23", boxShadow: "0 0 10px #97ce23" }} />
-                  <p style={{ fontSize: "12px", fontWeight: "700", color: "#ffffff", letterSpacing: "2px", textTransform: "uppercase", margin: 0, fontFamily: "sans-serif" }}>@{username}</p>
+                  <p style={{ fontSize: "12px", fontWeight: "700", color: "#ffffff", letterSpacing: "2px", textTransform: "uppercase", margin: 0, fontFamily: "sans-serif" }}>@{instagramHandle || username}</p>
                 </div>
 
                 {/* Main Text */}

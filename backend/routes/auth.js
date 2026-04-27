@@ -238,7 +238,7 @@ router.post("/login", async (req, res) => {
     });
     res.json({
       token,
-      user: { id: user._id, username: user.username, email: user.email, termsAccepted: user.termsAccepted, avatar: user.avatar },
+      user: { id: user._id, username: user.username, email: user.email, termsAccepted: user.termsAccepted, avatar: user.avatar, instagramHandle: user.instagramHandle || "" },
     });
   } catch (err) {
     console.error(err);
@@ -340,6 +340,7 @@ router.put("/profile", authMiddleware, async (req, res) => {
 
     user.username = username || user.username;
     user.email = email || user.email;
+    user.instagramHandle = req.body.instagramHandle !== undefined ? req.body.instagramHandle : user.instagramHandle;
     await user.save();
 
     const safeUser = await User.findById(user._id).select("-password");

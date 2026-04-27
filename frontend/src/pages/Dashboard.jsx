@@ -1459,6 +1459,7 @@ export default function Dashboard() {
         onClose={() => setIsShareModalOpen(false)} 
         link={selectedShareLink} 
         username={user?.username || "user"} 
+        instagramHandle={user?.instagramHandle}
       />
     </div>
   );
