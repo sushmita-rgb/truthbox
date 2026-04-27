@@ -211,7 +211,7 @@ router.get("/my-links", authMiddleware, requireTerms, async (req, res) => {
   try {
     const userId = req.user.id;
     const [links, responseCounts] = await Promise.all([
-      Link.find({ userId }).sort({ createdAt: -1 }).lean(),
+      Link.find({ userId, isDeleted: false }).sort({ createdAt: -1 }).lean(),
       buildResponseCounts(userId),
     ]);
 
@@ -231,7 +231,7 @@ router.get("/analytics", authMiddleware, requireTerms, async (req, res) => {
   try {
     const userId = req.user.id;
     const [links, feedbacks, responseCounts] = await Promise.all([
-      Link.find({ userId }).sort({ createdAt: -1 }).lean(),
+      Link.find({ userId, isDeleted: false }).sort({ createdAt: -1 }).lean(),
       Feedback.find({ receiverId: userId }).sort({ createdAt: -1 }).lean(),
       buildResponseCounts(userId),
     ]);
@@ -296,6 +296,7 @@ router.patch("/:linkId/toggle", authMiddleware, requireTerms, async (req, res) =
     const link = await Link.findOne({
       linkId: req.params.linkId,
       userId: req.user.id,
+      isDeleted: false,
     });
 
     if (!link) {
@@ -318,19 +319,18 @@ router.patch("/:linkId/toggle", authMiddleware, requireTerms, async (req, res) =
 
 router.delete("/:linkId", authMiddleware, requireTerms, async (req, res) => {
   try {
-    const link = await Link.findOneAndDelete({
-      linkId: req.params.linkId,
-      userId: req.user.id,
-    });
+    const link = await Link.findOneAndUpdate(
+      { linkId: req.params.linkId, userId: req.user.id },
+      { isDeleted: true, isActive: false, deletedAt: new Date() },
+      { new: true }
+    );
 
     if (!link) {
       return res.status(404).json({ message: "Link not found" });
     }
 
-    await Feedback.deleteMany({
-      receiverId: req.user.id,
-      linkId: req.params.linkId,
-    });
+    // We don't delete feedbacks, we keep them archived with the deleted link
+    // but they won't show up in active dashboard stats anymore due to filter above
 
     res.json({ message: "Link deleted successfully", linkId: req.params.linkId });
   } catch (error) {
@@ -344,6 +344,7 @@ router.get("/:linkId", async (req, res) => {
     const link = await Link.findOne({
       linkId: req.params.linkId,
       isActive: true,
+      isDeleted: false,
     });
 
     if (!link) {
@@ -363,6 +364,18 @@ router.get("/:linkId", async (req, res) => {
   } catch (error) {
     console.error("Error fetching link:", error);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// ── Get Deleted Links ────────────────────────────────────────────────────────
+router.get("/deleted-links", authMiddleware, requireTerms, async (req, res) => {
+  try {
+    const userId = req.user.id;
+    const links = await Link.find({ userId, isDeleted: true }).sort({ deletedAt: -1 }).lean();
+    res.json(links);
+  } catch (error) {
+    console.error("Error fetching deleted links:", error);
+    res.status(500).json({ message: "Server error fetching deleted links" });
   }
 });
 

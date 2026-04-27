@@ -25,6 +25,8 @@ router.get("/stats", async (req, res) => {
   try {
     const totalUsers = await User.countDocuments();
     const totalLinks = await Link.countDocuments();
+    const deletedLinks = await Link.countDocuments({ isDeleted: true });
+    const activeLinks = totalLinks - deletedLinks;
     const totalFeedback = await Feedback.countDocuments();
 
     // Projected MRR
@@ -42,6 +44,8 @@ router.get("/stats", async (req, res) => {
     res.json({
       totalUsers,
       totalLinks,
+      activeLinks,
+      deletedLinks,
       totalFeedback,
       proUsers,
       ultraUsers,

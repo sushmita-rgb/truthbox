@@ -24,9 +24,9 @@ import {
   Sparkles,
   User,
   X,
-  Zap,
   Trash2,
   Loader2,
+  Archive,
 } from "lucide-react";
 import api from "../api";
 import axios from "axios";
@@ -52,6 +52,7 @@ const NAV = [
   { id: "analytics", label: "Analytics", icon: BarChart3 },
   { id: "links", label: "My Links", icon: LinkIcon },
   { id: "feedback", label: "Feedback", icon: MessageSquare },
+  { id: "trash", label: "Trash", icon: Archive },
   { id: "plans", label: "Plans", icon: Crown },
 ];
 
@@ -112,6 +113,8 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeNav, setActiveNav] = useState("create");
+  const [deletedLinks, setDeletedLinks] = useState([]);
+  const [loadingDeleted, setLoadingDeleted] = useState(false);
   const [generatedLink, setGeneratedLink] = useState(null);
   const [copied, setCopied] = useState(false);
   const [postType, setPostType] = useState("text");
@@ -195,6 +198,27 @@ export default function Dashboard() {
     setUsage(usageRes.data);
     setAnnouncement(announceRes?.data);
   };
+
+  const loadDeletedLinks = async () => {
+    setLoadingDeleted(true);
+    try {
+      const res = await api.get("/links/deleted-links");
+      setDeletedLinks(res.data);
+    } catch (err) {
+      console.error("Error loading deleted links:", err);
+    } finally {
+      setLoadingDeleted(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeNav === "links" || activeNav === "create" || activeNav === "analytics") {
+      loadCollections();
+    }
+    if (activeNav === "trash") {
+      loadDeletedLinks();
+    }
+  }, [activeNav]);
 
   const restoreSelectedTemplate = () => {
     const storedTemplate = localStorage.getItem("Verit.selectedTemplate");
@@ -1175,7 +1199,50 @@ export default function Dashboard() {
                     )}
                   </motion.div>
                 )}
-                
+
+                {activeNav === "trash" && (
+                  <motion.div key="trash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                    <div className="flex items-center justify-between gap-4">
+                      <div>
+                        <h2 className="text-2xl font-bold text-white">Trash</h2>
+                        <p className="text-sm text-gray-500 mt-1">Deleted links still count toward your plan limit.</p>
+                      </div>
+                    </div>
+
+                    {loadingDeleted ? (
+                      <div className="p-16 rounded-3xl border border-white/5 text-center bg-surface flex flex-col items-center gap-4 shadow-glow">
+                        <Loader2 className="animate-spin text-brand" size={32} />
+                        <p className="text-gray-400">Loading your trash...</p>
+                      </div>
+                    ) : deletedLinks.length === 0 ? (
+                      <div className="p-16 rounded-3xl border border-white/5 text-center bg-surface shadow-glow">
+                        <Archive size={48} className="mx-auto mb-4 text-gray-700" />
+                        <p className="text-gray-300 font-semibold">Your trash is empty</p>
+                        <p className="text-gray-600 text-sm mt-1">Links you delete will appear here.</p>
+                      </div>
+                    ) : (
+                      <div className="grid gap-5 xl:grid-cols-2">
+                        {deletedLinks.map((link) => (
+                          <div key={link._id} className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow opacity-60">
+                            <div className="flex items-start justify-between gap-4">
+                              <div>
+                                <div className="flex items-center gap-2 flex-wrap">
+                                  <span className="rounded-lg px-2 py-1 text-[10px] font-bold text-white uppercase bg-gray-700">{link.postType}</span>
+                                  <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-gray-400">
+                                    Deleted {new Date(link.deletedAt).toLocaleDateString()}
+                                  </span>
+                                </div>
+                                <h3 className="mt-3 text-lg font-bold text-white/50 line-through">{link.title || link.templateKey || "Untitled link"}</h3>
+                              </div>
+                              <Archive className="text-gray-600" size={20} />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </motion.div>
+                )}
+
                 {activeNav === "plans" && (
                    <motion.div key="plans" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                       <div className="rounded-3xl border border-white/5 bg-surface p-7 shadow-glow flex flex-col md:flex-row md:items-center gap-6">
