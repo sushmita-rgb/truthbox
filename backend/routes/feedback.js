@@ -76,11 +76,11 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
 
     await newFeedback.save();
 
-    // Trigger Email Notification
+    // Trigger Email Notification in the background (no await)
     try {
       const receiver = await User.findById(link.userId);
       if (receiver && receiver.email) {
-        await transporter.sendMail({
+        transporter.sendMail({
           from: `"${process.env.EMAIL_FROM_NAME || "Verit"}" Notifications <${process.env.EMAIL_USER}>`,
           to: receiver.email,
           subject: "You received new anonymous feedback!",
@@ -100,10 +100,12 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
               </div>
             </div>
           `
+        }).catch(mailError => {
+          console.error("Feedback Notification Mail Error (Background):", mailError);
         });
       }
-    } catch (mailError) {
-      console.error("Feedback Notification Mail Error:", mailError);
+    } catch (err) {
+      console.error("Error setting up email notification:", err);
     }
 
     res.status(201).json({ message: "Feedback sent successfully" });
