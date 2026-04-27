@@ -13,7 +13,7 @@ const getFullUrl = (url) => {
   return `${BACKEND}${url}`;
 };
 
-function PostPreview({ postType, content, directUrl, directFileName, accentColor }) {
+function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
   if (!postType || postType === "text") {
     return content ? (
       <div className="mb-6 rounded-2xl border p-5 text-sm leading-relaxed text-gray-200" style={{ background: `${accentColor}10`, borderColor: `${accentColor}26` }}>
@@ -50,8 +50,8 @@ function PostPreview({ postType, content, directUrl, directFileName, accentColor
         </div>
         <div className="relative group">
           <img 
-            src={getFullUrl(directUrl)} 
-            alt={directFileName || "image"} 
+            src={getFullUrl(fileUrl)} 
+            alt={fileName || "image"} 
             className="w-full h-auto max-h-[70vh] object-contain block mx-auto transition-transform duration-500 group-hover:scale-[1.02]" 
           />
         </div>
@@ -74,7 +74,7 @@ function PostPreview({ postType, content, directUrl, directFileName, accentColor
           Shared Video
         </div>
         <video 
-          src={getFullUrl(directUrl)} 
+          src={getFullUrl(fileUrl)} 
           controls 
           className="w-full h-auto max-h-[70vh] block mx-auto" 
         />

@@ -1171,9 +1171,9 @@ export default function Dashboard() {
                           <div className="p-6 text-xl font-medium leading-relaxed italic text-gray-200">"{selectedLinkDetails.content}"</div>
                         )}
                         
-                        {selectedLinkDetails.postType === "image" && selectedLinkDetails.directUrl && (
+                        {selectedLinkDetails.postType === "image" && selectedLinkDetails.fileUrl && (
                           <div className="relative aspect-video max-h-[400px] w-full bg-black/50 flex items-center justify-center">
-                            <img src={selectedLinkDetails.directUrl} alt="Post media" className="max-w-full max-h-[400px] object-contain" />
+                            <img src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} alt="Post media" className="max-w-full max-h-[400px] object-contain" />
                             {selectedLinkDetails.content && (
                               <div className="absolute bottom-0 inset-x-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
                                 <p className="text-white text-sm">{selectedLinkDetails.content}</p>
@@ -1182,9 +1182,9 @@ export default function Dashboard() {
                           </div>
                         )}
                         
-                        {selectedLinkDetails.postType === "video" && selectedLinkDetails.directUrl && (
+                        {selectedLinkDetails.postType === "video" && selectedLinkDetails.fileUrl && (
                           <div className="relative aspect-video max-h-[400px] w-full bg-black/50">
-                            <video src={selectedLinkDetails.directUrl} controls className="w-full h-full object-contain" />
+                            <video src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} controls className="w-full h-full object-contain" />
                             {selectedLinkDetails.content && (
                               <div className="absolute top-0 inset-x-0 p-4 bg-gradient-to-b from-black/80 to-transparent">
                                 <p className="text-white text-sm drop-shadow-md">{selectedLinkDetails.content}</p>
