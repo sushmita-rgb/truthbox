@@ -117,6 +117,7 @@ export default function Dashboard() {
   const [file, setFile] = useState(null);
   const [filePreview, setFilePreview] = useState(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [showTermsModal, setShowTermsModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showProfileCard, setShowProfileCard] = useState(false);
@@ -332,12 +333,17 @@ export default function Dashboard() {
 
       const res = await api.post("/links/create-link", formData, {
         headers: { "Content-Type": "multipart/form-data" },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round((progressEvent.loaded * 100) / progressEvent.total);
+          setUploadProgress(percentCompleted);
+        },
       });
 
       setGeneratedLink(res.data.linkId);
       setContent("");
       clearFile();
       setBranding((prev) => ({ ...prev, templateKey: "custom" }));
+      setUploadProgress(0);
 
       await loadCollections();
       setActiveNav("links");
@@ -352,6 +358,7 @@ export default function Dashboard() {
       }
     } finally {
       setSubmitting(false);
+      setUploadProgress(0);
     }
   };
 
@@ -879,16 +886,33 @@ export default function Dashboard() {
                           </div>
                         </div>
 
-                        <motion.button
-                          whileHover={{ scale: 1.01 }}
-                          whileTap={{ scale: 0.99 }}
-                          onClick={handleSubmit}
+                        <button
                           disabled={submitting}
-                          className="w-full py-3 mt-2 rounded-xl font-bold text-black text-sm shadow-glow disabled:opacity-60 disabled:cursor-not-allowed"
-                          style={{ background: branding.accentColor }}
+                          onClick={handleSubmit}
+                          className={`w-full py-4 rounded-2xl font-bold text-base transition-all flex flex-col items-center justify-center gap-1 relative overflow-hidden ${
+                            submitting 
+                              ? "bg-white/5 text-gray-500 cursor-not-allowed" 
+                              : "hover:brightness-110 active:scale-[0.98] shadow-[0_20px_40px_rgba(151,206,35,0.2)]"
+                          }`}
+                          style={!submitting ? { background: branding.accentColor, color: "#000" } : {}}
                         >
-                          {submitting ? "Generating..." : "Generate Link"}
-                        </motion.button>
+                          {submitting && (
+                            <div 
+                              className="absolute bottom-0 left-0 h-1 bg-[#97ce23] transition-all duration-300" 
+                              style={{ width: `${uploadProgress}%`, background: branding.accentColor }}
+                            />
+                          )}
+                          <div className="flex items-center gap-2">
+                            {submitting ? (
+                              <>
+                                <Loader2 className="animate-spin" size={20} />
+                                <span>{uploadProgress > 0 ? `Uploading ${uploadProgress}%...` : "Generating..."}</span>
+                              </>
+                            ) : (
+                              "Generate Link"
+                            )}
+                          </div>
+                        </button>
                       </div>
                     </div>
 
