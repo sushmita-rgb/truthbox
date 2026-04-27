@@ -101,9 +101,13 @@ router.post("/signup", async (req, res) => {
       await Otp.deleteOne({ _id: validOtp._id });
     }
 
-    // Check if user already exists in the Users collection (by email or username)
-    let user = await User.findOne({ $or: [{ email }, { username }] });
-    if (user) return res.status(400).json({ message: "User with that email or username already exists" });
+    // Check if email is already registered
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) return res.status(400).json({ message: "Email is already registered" });
+
+    // Check if username is already taken
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) return res.status(400).json({ message: "Username is already taken" });
 
     // Hashing the password
     const salt = await bcrypt.genSalt(10);
