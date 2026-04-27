@@ -17,7 +17,7 @@ router.post("/support", async (req, res) => {
     // Send email to admin
     if (resend) {
       await resend.emails.send({
-        from: "Verit Support <onboarding@resend.dev>",
+        from: `${process.env.EMAIL_FROM_NAME || "Verit"} Support <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`,
         to: process.env.ADMIN_EMAIL || "admin@Verit.app",
         subject: `[New Support Ticket] From ${name}`,
         html: `

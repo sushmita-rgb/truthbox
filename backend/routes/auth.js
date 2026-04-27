@@ -54,7 +54,7 @@ router.post("/send-otp", async (req, res) => {
 
     // Send email using Resend
     await resend.emails.send({
-      from: "Verit <onboarding@resend.dev>", // Note: resend.dev only sends to verified emails in dev unless you have a custom domain
+      from: `${process.env.EMAIL_FROM_NAME || "Verit"} <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`, 
       to: email,
       subject: "Your Verit Verification Code",
       html: `
@@ -80,8 +80,9 @@ router.post("/send-otp", async (req, res) => {
 
     res.json({ message: "Verification code sent to your email" });
   } catch (err) {
-    console.error("Failed to send OTP:", err);
-    res.status(500).json({ message: "Server error sending OTP" });
+    console.error("Resend Error Details:", err.response || err);
+    console.error("Failed to send OTP:", err.message);
+    res.status(500).json({ message: "Server error sending OTP. Please check if your Resend domain is verified." });
   }
 });
 
@@ -139,7 +140,7 @@ router.post("/forgot-password", async (req, res) => {
     await newOtp.save();
 
     await resend.emails.send({
-      from: "Verit Security <onboarding@resend.dev>",
+      from: `${process.env.EMAIL_FROM_NAME || "Verit"} Security <${process.env.EMAIL_FROM || "onboarding@resend.dev"}>`,
       to: email,
       subject: "Verit Password Reset",
       html: `
