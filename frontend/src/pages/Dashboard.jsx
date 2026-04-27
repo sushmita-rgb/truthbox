@@ -773,8 +773,31 @@ export default function Dashboard() {
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="rounded-3xl p-7 space-y-6 border border-white/5 bg-surface shadow-glow"
+                    className="space-y-6"
                   >
+                    {links.length === 0 && (
+                      <motion.div 
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-8 rounded-[2.5rem] bg-gradient-to-r from-brand/20 via-brand/5 to-transparent border border-brand/20 flex flex-col md:flex-row items-center justify-between gap-8"
+                      >
+                        <div className="flex items-center gap-5 text-center md:text-left">
+                          <div className="w-16 h-16 rounded-3xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand shadow-[0_0_30px_rgba(151,206,35,0.1)]">
+                            <Sparkles size={32} />
+                          </div>
+                          <div>
+                            <h3 className="text-2xl font-black text-white tracking-tight">Welcome, {user?.username}!</h3>
+                            <p className="text-gray-400 mt-1">Ready to launch your first anonymous post? Pick a template below to start.</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3 text-[10px] font-black text-brand uppercase tracking-widest bg-brand/10 px-6 py-3 rounded-full border border-brand/20 shadow-glow">
+                          <div className="w-2 h-2 rounded-full bg-brand animate-ping" />
+                          3 minutes to first response
+                        </div>
+                      </motion.div>
+                    )}
+
+                    <div className="rounded-3xl p-7 space-y-6 border border-white/5 bg-surface shadow-glow">
                     <div className="flex items-center justify-between gap-4 flex-wrap">
                       <div>
                         <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Templates</p>
@@ -1093,13 +1116,50 @@ export default function Dashboard() {
                 )}
 
                 {activeNav === "links" && (
-                  <motion.div key="links" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
+                  <motion.div key="links" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                     {links.length === 0 ? (
-                      <div className="rounded-3xl border border-white/5 bg-surface p-12 text-center shadow-glow">
-                        <LinkIcon size={48} className="mx-auto mb-4 text-gray-700" />
-                        <p className="font-semibold text-gray-300">No links yet</p>
-                        <p className="mt-1 text-sm text-gray-600">Create a branded feedback page to start collecting responses.</p>
-                        <button onClick={() => setActiveNav("create")} className="mt-6 rounded-xl bg-brand px-6 py-3 text-sm font-bold text-black">Create a post</button>
+                      <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
+                        {/* Background Accents */}
+                        <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand/10 rounded-full blur-[80px]" />
+                        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]" />
+
+                        <div className="relative z-10 max-w-2xl mx-auto text-center">
+                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand/10 border border-brand/20 text-brand text-xs font-black uppercase tracking-widest mb-8">
+                            <Sparkles size={14} /> Welcome to Verit
+                          </div>
+                          <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tighter leading-tight mb-6">
+                            Let's launch your <span className="text-brand">first feedback post.</span>
+                          </h2>
+                          <p className="text-gray-400 text-lg mb-12 leading-relaxed">
+                            Verit helps you collect anonymous, honest feedback through beautiful branded links. Follow these 3 steps to get started.
+                          </p>
+
+                          <div className="grid sm:grid-cols-3 gap-6 text-left mb-12">
+                            {[
+                              { step: "01", title: "Create a link", desc: "Pick a template or media to start.", icon: Plus },
+                              { step: "02", title: "Share on story", desc: "Use our cute Story graphics for IG.", icon: Camera },
+                              { step: "03", title: "Read feedback", desc: "Find honest thoughts in your inbox.", icon: MessageSquare },
+                            ].map((item) => (
+                              <div key={item.step} className="group p-6 rounded-3xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
+                                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
+                                  <item.icon size={20} className="text-brand" />
+                                </div>
+                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{item.step} STEP</p>
+                                <h4 className="text-white font-bold mb-2">{item.title}</h4>
+                                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
+                              </div>
+                            ))}
+                          </div>
+
+                          <button 
+                            onClick={() => setActiveNav("create")}
+                            className="group relative px-10 py-5 rounded-2xl bg-brand text-black font-black uppercase tracking-widest text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(151,206,35,0.3)] overflow-hidden"
+                          >
+                            <span className="relative z-10 flex items-center gap-3">
+                              Create your first post <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                            </span>
+                          </button>
+                        </div>
                       </div>
                     ) : (
                       <div className="grid gap-5 xl:grid-cols-2">
