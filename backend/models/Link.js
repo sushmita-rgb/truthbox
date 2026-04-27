@@ -19,7 +19,7 @@ const linkSchema = new mongoose.Schema(
     // Post type: 'text' | 'image' | 'video' | 'url'
     postType: {
       type: String,
-      enum: ["text", "image", "video", "url"],
+      enum: ["text", "image", "video", "url", "pdf"],
       default: "text",
     },
     // For text and url types
