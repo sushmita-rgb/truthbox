@@ -4,6 +4,7 @@ import api from "../api";
 import VeritLogo from "../components/VeritLogo";
 import Footer from "../components/Footer";
 import { Zap, Crown, Mail, ArrowLeft, Eye, EyeOff } from "lucide-react";
+import { GoogleLogin } from '@react-oauth/google';
 
 export default function Signup() {
   const [formData, setFormData] = useState({ username: "", email: "", password: "", otp: "" });
@@ -39,6 +40,34 @@ export default function Signup() {
     }, 10000);
   };
 
+  const handleGoogleSuccess = async (credentialResponse) => {
+    if (!termsAccepted) {
+      setError("Please agree to the Terms and Conditions first");
+      return;
+    }
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.post("/auth/google-login", { 
+        token: credentialResponse.credential,
+        isSignup: true 
+      });
+      
+      // Store token and user
+      localStorage.setItem("Verit.token", res.data.token);
+      localStorage.setItem("Verit.user", JSON.stringify(res.data.user));
+
+      if (planIntent) {
+        localStorage.setItem("Verit.planIntent", planIntent);
+      }
+      window.location.href = "/dashboard";
+    } catch (err) {
+      setError(err.response?.data?.message || "Google signup failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSendOtp = async (e) => {
     if (e) e.preventDefault();
     setLoading(true);
@@ -60,24 +89,8 @@ export default function Signup() {
       setError("Please agree to the Terms and Conditions");
       return;
     }
-    setLoading(true);
-    setError("");
-    try {
-      console.log("Direct signup and redirecting to welcome...");
-      const res = await api.post("/auth/signup", formData);
-      
-      // Auto-login: Store token and user
-      localStorage.setItem("Verit.token", res.data.token);
-      localStorage.setItem("Verit.user", JSON.stringify(res.data.user));
-      
-      // Force a hard redirect to the Welcome Journey to ensure it's reached
-      window.location.href = "/welcome";
-    } catch (err) {
-      console.error("Signup failed:", err);
-      setError(err.response?.data?.message || "Registration failed");
-    } finally {
-      setLoading(false);
-    }
+    // Instead of signing up directly, we send the OTP first
+    handleSendOtp();
   };
 
   const handleVerifyAndSignup = async (e) => {
@@ -103,14 +116,14 @@ export default function Signup() {
   };
 
   return (
-    <div className="min-h-screen bg-[#141414] flex flex-col font-sans">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col font-sans text-[var(--text-primary)] transition-colors duration-300">
       <div className="flex-1 flex items-center justify-center p-4">
-        <div className="glass p-8 md:p-12 rounded-3xl w-full max-w-md animate-fade-in-up z-10 relative overflow-hidden">
+        <div className="bg-[var(--glass-bg)] backdrop-blur-2xl p-8 md:p-12 rounded-[40px] border border-[var(--border-color)] shadow-2xl w-full max-w-md animate-fade-in-up z-10 relative overflow-hidden">
           
           {otpSent && (
             <button 
               onClick={() => setOtpSent(false)} 
-              className="absolute top-8 left-8 text-gray-500 hover:text-white transition-colors"
+              className="absolute top-8 left-8 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
             >
               <ArrowLeft size={20} />
             </button>
@@ -121,7 +134,7 @@ export default function Signup() {
           </Link>
 
           {error && (
-            <div className="p-4 mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-400 text-sm animate-fade-in-up">
+            <div className="p-4 mb-6 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-500 text-sm animate-fade-in-up">
               {error}
             </div>
           )}
@@ -129,40 +142,40 @@ export default function Signup() {
           {!otpSent ? (
             <>
               <div className="mb-8 text-center">
-                <h2 className="text-2xl font-extrabold text-white mb-2">Create Account</h2>
-                <p className="text-gray-400 text-sm">Join Verit and start receiving anonymous feedback securely.</p>
+                <h2 className="text-2xl font-extrabold text-[var(--text-primary)] mb-2">Create Account</h2>
+                <p className="text-[var(--text-secondary)] text-sm">Join TruthBox and start receiving anonymous feedback securely.</p>
               </div>
               
               <form onSubmit={handleSignup} className="space-y-5">
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] mb-2">Username</label>
                   <input
                     type="text"
                     required
-                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                    className="w-full bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] rounded-2xl px-5 py-4 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 transition-all text-sm"
                     placeholder="unique_username"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] mb-2">Email</label>
                   <input
                     type="email"
                     required
-                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all"
+                    className="w-full bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] rounded-2xl px-5 py-4 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 transition-all text-sm"
                     placeholder="you@example.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                  <label className="block text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] mb-2">Password</label>
                   <div className="relative">
                     <input
                       type={showPassword ? "text" : "password"}
                       required
-                      className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all pr-12"
+                      className="w-full bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] rounded-2xl px-5 py-4 text-[var(--text-primary)] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 transition-all pr-12 text-sm"
                       placeholder="••••••••"
                       value={formData.password}
                       onChange={(e) => setFormData({ ...formData, password: e.target.value })}
@@ -170,9 +183,9 @@ export default function Signup() {
                     <button
                       type="button"
                       onClick={togglePassword}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white transition-colors"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors"
                     >
-                      {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                      {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
                   </div>
                 </div>
@@ -182,33 +195,52 @@ export default function Signup() {
                     id="terms"
                     type="checkbox"
                     required
-                    className="mt-1 w-4 h-4 rounded border-white/10 bg-black/50 text-accent focus:ring-accent"
+                    className="mt-1 w-4 h-4 rounded border-[var(--border-color)] bg-[var(--bg-secondary)] text-[var(--accent)] focus:ring-[var(--accent)]"
                     checked={termsAccepted}
                     onChange={(e) => setTermsAccepted(e.target.checked)}
                   />
-                  <label htmlFor="terms" className="text-xs text-gray-400 leading-relaxed">
-                    I agree to the <Link to="/terms" className="text-accent hover:underline">Terms of Service</Link> and <Link to="/privacy" className="text-accent hover:underline">Privacy Policy</Link>.
+                  <label htmlFor="terms" className="text-xs text-[var(--text-secondary)] leading-relaxed">
+                    I agree to the <Link to="/terms" style={{ color: 'var(--accent)' }} className="font-bold hover:underline">Terms</Link> and <Link to="/privacy" style={{ color: 'var(--accent)' }} className="font-bold hover:underline">Privacy</Link>.
                   </label>
                 </div>
 
                 <button
                   disabled={loading}
-                  className="w-full py-4 mt-2 rounded-2xl bg-accent text-main font-bold hover:shadow-[0_0_30px_rgba(151,206,35,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+                  className="w-full py-4 mt-2 rounded-2xl bg-[var(--accent)] text-white font-bold shadow-lg shadow-[var(--accent)]/20 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 text-sm"
                 >
                   {loading ? "Creating account..." : "Create Account"}
                 </button>
               </form>
+
+              <div className="mt-8 space-y-6">
+                <div className="relative flex items-center justify-center">
+                  <div className="absolute inset-x-0 h-px bg-[var(--border-color)]"></div>
+                  <span className="relative bg-[#1a1a1a] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] z-10 rounded-full border border-[var(--border-color)]">Or join with</span>
+                </div>
+                
+                <div className="flex justify-center">
+                  <GoogleLogin
+                    onSuccess={handleGoogleSuccess}
+                    onError={() => setError("Google login failed")}
+                    theme="filled_black"
+                    shape="pill"
+                    size="large"
+                    text="signup_with"
+                    width="320"
+                  />
+                </div>
+              </div>
             </>
           ) : (
             <>
               <div className="mb-8 text-center animate-fade-in-up">
-                <div className="w-16 h-16 bg-accent/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail size={28} className="text-accent" />
+                <div className="w-16 h-16 bg-[var(--accent)]/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Mail size={28} className="text-[var(--accent)]" />
                 </div>
-                <h2 className="text-2xl font-extrabold text-white mb-2">Check your email</h2>
-                <p className="text-gray-400 text-sm">
+                <h2 className="text-2xl font-extrabold text-[var(--text-primary)] mb-2">Check your email</h2>
+                <p className="text-[var(--text-secondary)] text-sm">
                   We sent a 6-digit verification code to <br/>
-                  <span className="font-bold text-white">{formData.email}</span>
+                  <span className="font-bold text-[var(--text-primary)]">{formData.email}</span>
                 </p>
               </div>
 
@@ -218,7 +250,7 @@ export default function Signup() {
                     type="text"
                     required
                     maxLength={6}
-                    className="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-4 text-center text-3xl font-mono text-white tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-accent/50 transition-all placeholder:text-gray-700"
+                    className="w-full bg-[var(--bg-secondary)]/50 border border-[var(--border-color)] rounded-2xl px-5 py-4 text-center text-3xl font-mono text-[var(--text-primary)] tracking-[0.5em] focus:outline-none focus:ring-2 focus:ring-[var(--accent)]/20 transition-all placeholder:text-[var(--text-secondary)]/30"
                     placeholder="000000"
                     value={formData.otp}
                     onChange={(e) => setFormData({ ...formData, otp: e.target.value.replace(/\D/g, '') })}
@@ -227,7 +259,7 @@ export default function Signup() {
 
                 <button
                   disabled={loading || formData.otp.length !== 6}
-                  className="w-full py-4 rounded-2xl bg-accent text-main font-bold hover:shadow-[0_0_30px_rgba(151,206,35,0.3)] hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50"
+                  className="w-full py-4 rounded-2xl bg-[var(--accent)] text-white font-bold shadow-lg shadow-[var(--accent)]/20 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 text-sm"
                 >
                   {loading ? "Verifying..." : "Verify & Create Account"}
                 </button>
@@ -237,9 +269,9 @@ export default function Signup() {
                     type="button"
                     onClick={handleSendOtp}
                     disabled={cooldown > 0 || loading}
-                    className="text-sm text-gray-400 hover:text-white transition-colors disabled:opacity-50 disabled:hover:text-gray-400"
+                    className="text-xs font-bold uppercase tracking-widest text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors disabled:opacity-50"
                   >
-                    {cooldown > 0 ? `Resend code in ${cooldown}s` : "Didn't receive code? Resend"}
+                    {cooldown > 0 ? `Resend in ${cooldown}s` : "Resend code"}
                   </button>
                 </div>
               </form>
@@ -247,9 +279,9 @@ export default function Signup() {
           )}
 
           {!otpSent && (
-            <p className="mt-8 text-center text-sm text-gray-400">
+            <p className="mt-8 text-center text-xs text-[var(--text-secondary)]">
               Already have an account?{" "}
-              <Link to="/login" className="text-accent font-medium hover:text-[#a5e027]">
+              <Link to="/login" style={{ color: 'var(--accent)' }} className="font-bold uppercase tracking-widest ml-1 hover:underline">
                 Sign In
               </Link>
             </p>

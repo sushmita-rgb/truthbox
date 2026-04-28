@@ -29,6 +29,7 @@ import {
   Trash2,
   Loader2,
   Archive,
+  Home,
 } from "lucide-react";
 import api from "../api";
 import axios from "axios";
@@ -39,11 +40,13 @@ import PricingModal from "../components/PricingModal";
 import CommandPalette from "../components/CommandPalette";
 import StoryShareModal from "../components/StoryShareModal";
 import { Camera } from "lucide-react";
+import darkCloudBg from "../assets/dark_cloud_bg.png";
 
-const BACKEND_URL = "https://truthbox-production.up.railway.app";
+const isLocal = window.location.hostname === "localhost";
+const BACKEND_URL = isLocal ? "http://localhost:5000" : "https://truthbox-production.up.railway.app";
 
 const POST_TYPES = [
-  { id: "text", label: "Text", icon: FileText, color: "#97ce23", desc: "Publish a written prompt for structured feedback" },
+  { id: "text", label: "Text", icon: FileText, color: "#38BDF8", desc: "Publish a written prompt for structured feedback" },
   { id: "image", label: "Image", icon: ImageIcon, color: "#60a5fa", desc: "Share a visual asset for review and comments" },
   { id: "video", label: "Video", icon: Film, color: "#a78bfa", desc: "Share a video clip and collect responses" },
   { id: "pdf", label: "PDF", icon: FileUp, color: "#f87171", desc: "Upload a PDF document for review" },
@@ -97,7 +100,7 @@ const TEMPLATE_PRESETS = [
     title: "Profile Image Review",
     description: "Let me know what impression this photo and visual style create.",
     content: "",
-    accentColor: "#97ce23",
+    accentColor: "#3B82F6",
     templateKey: "brand",
   },
 ];
@@ -142,7 +145,7 @@ export default function Dashboard() {
   const [branding, setBranding] = useState({
     title: "",
     description: "",
-    accentColor: "#97ce23",
+    accentColor: "#38BDF8",
     templateKey: "custom",
   });
   // ── Plan / usage state
@@ -259,7 +262,7 @@ export default function Dashboard() {
       setBranding({
         title: template.title || "",
         description: template.summary || "",
-        accentColor: template.accent || "#97ce23",
+        accentColor: template.accent || "#3B82F6",
         templateKey: template.id || "custom",
       });
     } catch (err) {
@@ -361,7 +364,7 @@ export default function Dashboard() {
     setBranding({
       title: "",
       description: "",
-      accentColor: "#97ce23",
+      accentColor: "#3B82F6",
       templateKey: "custom",
     });
   };
@@ -579,24 +582,33 @@ export default function Dashboard() {
     setBranding({
       title: "",
       description: "",
-      accentColor: "#97ce23",
+      accentColor: "#3B82F6",
       templateKey: "custom",
     });
     localStorage.removeItem("Verit.selectedTemplate");
   };
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-black text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[#0F172A] text-white">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-brand/30 border-t-brand rounded-full animate-spin" />
-          <span className="text-gray-400 font-sans">Loading your dashboard...</span>
+          <span className="text-[#94A3B8] font-sans">Loading your dashboard...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans flex overflow-hidden">
+    <div className="min-h-screen bg-[#0F172A] text-[#E2E8F0] font-sans flex overflow-hidden relative">
+      <div 
+        className="absolute inset-0 pointer-events-none z-0" 
+        style={{ 
+          backgroundImage: `url(${darkCloudBg})`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center',
+          opacity: 1 
+        }} 
+      />
       <CommandPalette isOpen={cmdKOpen} onClose={() => setCmdKOpen(false)} onSelect={handleCommandSelect} />
       {showTermsModal && <TermsModal onAccept={handleAcceptTerms} />}
       {showSettingsModal && user && (
@@ -621,57 +633,168 @@ export default function Dashboard() {
         />
       )}
 
-      {/* Slim Sidebar */}
-      <aside className="w-20 border-r border-white/5 bg-surface flex flex-col items-center py-6 gap-6 z-20 shrink-0 hidden md:flex glass">
-        <Link to="/" className="w-11 h-11 rounded-2xl bg-brand/10 flex items-center justify-center transition-transform hover:scale-105">
-          <Sparkles className="text-brand" size={20} />
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {sidebarOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setSidebarOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+            />
+            <motion.aside
+              initial={{ x: "-100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "-100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="fixed inset-y-0 left-0 w-72 bg-[#1E293B] border-r border-[#334155] flex flex-col py-6 px-4 gap-6 z-50 md:hidden shadow-2xl"
+            >
+              <div className="px-2 flex items-center justify-between">
+                <Link to="/" className="flex items-center gap-3 group transition-opacity hover:opacity-80">
+                  <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    <Sparkles className="text-[#3B82F6]" size={16} />
+                  </div>
+                  <span className="font-bold text-lg tracking-tight text-[#E2E8F0]">Verit</span>
+                </Link>
+                <button onClick={() => setSidebarOpen(false)} className="p-2 text-[#94A3B8] hover:bg-[#0F172A] rounded-xl transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              
+               
+              <nav className="flex flex-col gap-1 flex-1 mt-2 overflow-y-auto">
+                <Link
+                  to="/"
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all font-medium text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] border border-dashed border-[#334155]/30 mb-2"
+                >
+                  <ArrowLeft size={18} />
+                  <span>Back to Website</span>
+                </Link>
+                {NAV.map(({ id, label, icon: Icon }) => {
+                  const active = activeNav === id;
+                  return (
+                    <button
+                      key={id}
+                      onClick={() => {
+                        handleNavSelect(id);
+                        setSidebarOpen(false);
+                      }}
+                      className={`relative w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all font-medium text-sm ${
+                        active ? "bg-[#3B82F6]/10 text-[#3B82F6]" : "text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A]"
+                      }`}
+                    >
+                      <Icon size={18} />
+                      <span>{label}</span>
+                      {id === "feedback" && unreadFeedback && (
+                        <span className="absolute right-3 w-2 h-2 rounded-full bg-red-500" />
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+              
+              <div className="mt-auto flex flex-col gap-2 border-t border-[#334155] pt-4">
+                <button 
+                  onClick={() => { setShowSettingsModal(true); setSidebarOpen(false); }} 
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] transition-colors font-medium text-sm"
+                >
+                  <Settings size={18} />
+                  <span>Settings</span>
+                </button>
+                
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setSidebarOpen(false);
+                  }}
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl border border-transparent hover:bg-[#0F172A] hover:border-[#334155] transition-colors text-left mt-2"
+                >
+                  <div className="w-8 h-8 rounded-full overflow-hidden border border-[#334155] bg-[#0F172A] flex items-center justify-center shrink-0">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
+                    ) : (
+                      <User className="text-[#94A3B8]" size={16} />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-bold text-[#E2E8F0] truncate">{user?.username || "Guest"}</p>
+                    <p className="text-xs text-[#94A3B8] truncate">Sign out</p>
+                  </div>
+                </button>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
+
+      {/* Expanded Sidebar */}
+      <aside className="w-64 border-r border-[#334155] bg-[#1E293B] flex flex-col py-6 px-4 gap-6 z-20 shrink-0 hidden md:flex">
+        <Link to="/" className="px-2 flex items-center gap-3 group transition-opacity hover:opacity-80">
+          <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+            <Sparkles className="text-[#3B82F6]" size={16} />
+          </div>
+          <span className="font-bold text-lg tracking-tight text-[#E2E8F0]">Verit</span>
         </Link>
         
-        <nav className="flex flex-col gap-3 flex-1 mt-6">
+        
+        <nav className="flex flex-col gap-1 flex-1 mt-2">
+          <Link
+            to="/"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-medium text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] border border-dashed border-[#334155]/30 mb-2"
+          >
+            <ArrowLeft size={18} />
+            <span>Back to Website</span>
+          </Link>
           {NAV.map(({ id, label, icon: Icon }) => {
             const active = activeNav === id;
             return (
               <button
                 key={id}
                 onClick={() => handleNavSelect(id)}
-                title={label}
-                className={`relative w-11 h-11 flex items-center justify-center rounded-2xl transition-all ${
-                  active ? "bg-brand text-black shadow-[0_0_15px_rgba(151,206,35,0.4)]" : "text-gray-400 hover:text-white hover:bg-white/5"
+                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-medium text-sm ${
+                  active ? "bg-[#3B82F6]/10 text-[#3B82F6]" : "text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A]"
                 }`}
               >
-                <Icon size={20} />
+                <Icon size={18} />
+                <span>{label}</span>
                 {id === "feedback" && unreadFeedback && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 rounded-full bg-red-500 border-2 border-surface text-white text-[9px] font-bold flex items-center justify-center">
-                    !
-                  </span>
+                  <span className="absolute right-3 w-2 h-2 rounded-full bg-red-500" />
                 )}
               </button>
             );
           })}
         </nav>
         
-        <div className="mt-auto flex flex-col gap-4 items-center">
+        <div className="mt-auto flex flex-col gap-2 border-t border-[#334155] pt-4">
           <button 
             onClick={() => setShowSettingsModal(true)} 
-            className="w-11 h-11 flex items-center justify-center rounded-2xl text-gray-400 hover:text-white hover:bg-white/5 transition-colors"
-            title="Account Settings"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] transition-colors font-medium text-sm"
           >
-            <Settings size={20} />
+            <Settings size={18} />
+            <span>Settings</span>
           </button>
           
-          <div className="relative">
+          <div className="relative mt-2">
             <button
               onClick={() => setShowProfileCard((prev) => !prev)}
-              className="w-11 h-11 rounded-full overflow-hidden border border-brand/40 bg-[#111111] hover:border-brand/70 transition-colors flex items-center justify-center"
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl border border-transparent hover:bg-[#0F172A] hover:border-[#334155] transition-colors text-left"
             >
-              {avatarUrl ? (
-                <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                <User size={18} className="text-brand" />
-              )}
+              <div className="w-8 h-8 rounded-full overflow-hidden border border-[#334155] bg-[#0F172A] flex items-center justify-center shrink-0">
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                ) : (
+                  <User size={14} className="text-[#94A3B8]" />
+                )}
+              </div>
+              <div className="flex-1 overflow-hidden">
+                <p className="text-sm font-semibold truncate text-[#E2E8F0]">{user?.username || "User"}</p>
+                <p className="text-xs text-[#94A3B8] truncate">{user?.email || "Account"}</p>
+              </div>
             </button>
             {showProfileCard && (
-              <div className="absolute bottom-0 left-[60px] z-50">
+              <div className="absolute bottom-12 left-0 w-full z-50">
                 <ProfileDropdown user={user} onClose={() => setShowProfileCard(false)} />
               </div>
             )}
@@ -680,42 +803,49 @@ export default function Dashboard() {
       </aside>
 
       {/* Main Content Area */}
-      <div className="flex-1 flex flex-col h-screen overflow-hidden">
+      <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
         
         {/* Top Bar */}
-        <header className="h-16 border-b border-white/5 bg-black/80 backdrop-blur-xl flex items-center justify-between px-6 shrink-0 z-10">
+        <header className="h-16 border-b border-[#334155] bg-[#1E293B] flex items-center justify-between px-6 shrink-0 z-10">
           <div className="flex items-center gap-4 flex-1">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="w-10 h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors md:hidden"
+              className="w-10 h-10 rounded-xl border border-[#334155] bg-[#0F172A] hover:bg-[#334155] flex items-center justify-center transition-colors md:hidden text-[#E2E8F0]"
             >
               <Menu size={18} />
             </button>
+
+            <Link to="/" className="md:hidden flex items-center gap-2.5 transition-opacity hover:opacity-80">
+              <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
+                <Sparkles className="text-[#3B82F6]" size={16} />
+              </div>
+              <span className="font-bold text-base tracking-tight text-[#E2E8F0]">Verit</span>
+            </Link>
             
             <button 
               onClick={() => setCmdKOpen(true)} 
-              className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-surface border border-white/5 text-gray-400 text-sm hover:border-white/10 transition-colors w-72 text-left"
+              className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-[#0F172A] border border-[#334155] text-[#94A3B8] text-sm hover:border-[#475569] transition-colors w-72 text-left shadow-sm"
             >
               <Search size={16} />
               <span className="flex-1">Search or jump to...</span>
-              <kbd className="bg-black/60 px-2 py-0.5 rounded text-[10px] font-sans font-bold tracking-wider text-gray-500 border border-white/5">⌘K</kbd>
+              <kbd className="bg-[#1E293B] px-2 py-0.5 rounded text-[10px] font-mono font-bold text-[#94A3B8] border border-[#334155] shadow-sm">⌘K</kbd>
             </button>
           </div>
           
           <div className="flex items-center gap-3">
              <button
                onClick={() => setShowPricingModal(true)}
-               className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:-translate-y-0.5 bg-surface border border-white/5 text-brand"
+               className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-[#0F172A] bg-[#1E293B] border border-[#334155] text-[#E2E8F0] shadow-sm"
              >
-               <Zap size={13} />
+               <Zap size={13} className="text-[#3B82F6]" />
                Upgrade
-               <span className="ml-1 opacity-70 font-normal">
+               <span className="ml-1 text-[#94A3B8] font-normal">
                  {usage.used}/{usage.limit ?? "∞"}
                </span>
              </button>
             <button 
               onClick={handleNewPost} 
-              className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand text-black font-bold text-sm hover:opacity-90 transition-opacity"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-[#3B82F6] text-white font-bold text-sm hover:bg-[#2563EB] transition-colors shadow-sm"
             >
               <Plus size={16} /> <span className="hidden sm:inline">New Post</span>
             </button>
@@ -729,12 +859,12 @@ export default function Dashboard() {
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
-              className="px-6 py-2 border-b border-white/5 overflow-hidden"
+              className="px-6 py-2 border-b border-[#334155] overflow-hidden"
               style={{
                 backgroundColor: 
                   announcement.type === "warning" ? "#ef444422" : 
                   announcement.type === "success" ? "#22c55e22" : 
-                  announcement.type === "brand" ? "#97ce2322" : "#ffffff11"
+                  announcement.type === "brand" ? "#3B82F622" : "#ffffff11"
               }}
             >
               <div className="flex items-center justify-between gap-4 max-w-[1400px] mx-auto">
@@ -745,15 +875,15 @@ export default function Dashboard() {
                       backgroundColor: 
                         announcement.type === "warning" ? "#ef4444" : 
                         announcement.type === "success" ? "#22c55e" : 
-                        announcement.type === "brand" ? "#97ce23" : "#ffffff"
+                        announcement.type === "brand" ? "#3B82F6" : "#ffffff"
                     }} 
                   />
-                  <p className="text-xs font-medium text-gray-200">
+                  <p className="text-xs font-medium text-[#E2E8F0]">
                     {announcement.message}
                   </p>
                 </div>
-                <button onClick={() => setAnnouncement(null)} className="p-1 hover:bg-white/5 rounded-md transition-colors">
-                  <X size={12} className="text-gray-500" />
+                <button onClick={() => setAnnouncement(null)} className="p-1 hover:bg-[#1E293B]/5 rounded-md transition-colors">
+                  <X size={12} className="text-[#94A3B8]" />
                 </button>
               </div>
             </motion.div>
@@ -761,7 +891,7 @@ export default function Dashboard() {
         </AnimatePresence>
 
         {/* Bento Grid */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 scroll-smooth">
+        <main className="flex-1 overflow-y-auto p-4 pb-24 md:p-6 md:pb-6 lg:p-8 lg:pb-8 scroll-smooth">
           <div className="max-w-[1400px] mx-auto grid grid-cols-1 xl:grid-cols-4 gap-6">
             
             {/* The Main Stage (Center) */}
@@ -776,134 +906,65 @@ export default function Dashboard() {
                     exit={{ opacity: 0, y: -10 }}
                     className="space-y-6"
                   >
-                    {links.length === 0 && (
-                      <motion.div 
-                        initial={{ opacity: 0, y: -20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="p-8 rounded-[2.5rem] bg-gradient-to-r from-brand/20 via-brand/5 to-transparent border border-brand/20 flex flex-col md:flex-row items-center justify-between gap-8"
-                      >
-                        <div className="flex items-center gap-5 text-center md:text-left">
-                          <div className="w-16 h-16 rounded-3xl bg-brand/10 border border-brand/20 flex items-center justify-center text-brand shadow-[0_0_30px_rgba(151,206,35,0.1)]">
-                            <Sparkles size={32} />
-                          </div>
-                          <div>
-                            <h3 className="text-2xl font-black text-white tracking-tight">Welcome, {user?.username}!</h3>
-                            <p className="text-gray-400 mt-1">Ready to launch your first anonymous post? Pick a template below to start.</p>
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-3 text-[10px] font-black text-brand uppercase tracking-widest bg-brand/10 px-6 py-3 rounded-full border border-brand/20 shadow-glow">
-                          <div className="w-2 h-2 rounded-full bg-brand animate-ping" />
-                          3 minutes to first response
-                        </div>
-                      </motion.div>
-                    )}
-
-                    <div className="rounded-3xl p-7 space-y-6 border border-white/5 bg-surface shadow-glow">
-                    <div className="flex items-center justify-between gap-4 flex-wrap">
-                      <div>
-                        <p className="text-xs uppercase tracking-[0.25em] text-gray-500">Templates</p>
-                        <h3 className="mt-2 text-xl font-bold text-white">Start from a polished prompt</h3>
-                      </div>
-                      <div className="inline-flex items-center gap-2 rounded-full border border-brand/20 bg-brand/10 px-4 py-2 text-xs font-semibold text-brand">
-                        <Sparkles size={14} /> Faster setup
-                      </div>
+                    <div className="mb-4 md:mb-6">
+                      <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#E2E8F0]">Dashboard</h1>
+                      <p className="text-xs md:text-sm text-[#94A3B8] mt-1">Create and manage anonymous feedback links</p>
                     </div>
 
-                    {selectedTemplate && (
-                      <div className="flex flex-col gap-3 rounded-2xl border border-brand/20 bg-brand/5 p-4 md:flex-row md:items-center md:justify-between">
-                        <div>
-                          <p className="text-xs uppercase tracking-[0.2em] text-brand">Selected template</p>
-                          <p className="mt-2 font-semibold text-white">{selectedTemplate.title}</p>
-                          <p className="text-sm text-gray-400">{selectedTemplate.summary}</p>
-                        </div>
-                        <button
-                          onClick={clearSelectedTemplate}
-                          className="rounded-xl border border-white/10 bg-black/40 px-4 py-2 text-xs font-semibold text-gray-300 hover:bg-white/5"
-                        >
-                          Clear selection
-                        </button>
+                    <div className="rounded-2xl border border-[#334155] bg-[#1E293B] shadow-sm p-4 md:p-6 space-y-4 md:space-y-6">
+                      <div className="flex flex-wrap gap-2">
+                        {POST_TYPES.map((type) => {
+                          const Icon = type.icon;
+                          const active = postType === type.id;
+                          return (
+                            <button
+                              key={type.id}
+                              onClick={() => switchType(type.id)}
+                              className={`flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-colors ${
+                                active ? "bg-[#0F172A] text-[#E2E8F0] border border-[#334155]" : "text-[#94A3B8] hover:bg-[#0F172A] border border-transparent"
+                              }`}
+                            >
+                              <Icon size={12} className="md:w-[14px] md:h-[14px]" />
+                              {type.label}
+                            </button>
+                          );
+                        })}
                       </div>
-                    )}
 
-                    <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
-                      {TEMPLATE_PRESETS.map((template) => (
-                        <button
-                          key={template.id}
-                          onClick={() => applyTemplate(template)}
-                          className="rounded-2xl border border-white/5 bg-black/20 p-4 text-left transition-all hover:-translate-y-1 hover:border-white/10 hover:bg-white/5"
-                        >
-                          <div
-                            className="mb-4 h-10 w-10 rounded-xl"
-                            style={{ background: `${template.accentColor}20`, border: `1px solid ${template.accentColor}40` }}
-                          />
-                          <p className="text-sm font-semibold text-white">{template.label}</p>
-                          <p className="mt-2 text-xs leading-6 text-gray-500">{template.description}</p>
-                        </button>
-                      ))}
-                    </div>
-
-                    <div className="flex flex-wrap gap-2 relative bg-black/40 p-1.5 rounded-2xl w-fit border border-white/5">
-                      {POST_TYPES.map((type) => {
-                        const Icon = type.icon;
-                        const active = postType === type.id;
-                        return (
-                          <button
-                            key={type.id}
-                            onClick={() => switchType(type.id)}
-                            className={`relative z-10 flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-colors ${
-                              active ? "text-black" : "text-gray-400 hover:text-white"
-                            }`}
-                          >
-                            {active && (
-                              <motion.div
-                                layoutId="highlight"
-                                className="absolute inset-0 rounded-xl bg-brand z-[-1]"
-                                transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
-                              />
-                            )}
-                            <Icon size={15} />
-                            {type.label}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="grid gap-5 lg:grid-cols-[1.2fr_0.8fr]">
                       <div className="space-y-4">
                         {postType === "text" && (
                           <div className="relative">
                             <textarea
                               value={content}
                               onChange={(e) => setContent(e.target.value)}
-                              rows={7}
+                              rows={window.innerWidth < 768 ? 3 : 5}
                               placeholder="Ask a question or write something you want feedback on..."
-                              className="w-full p-5 rounded-2xl bg-black border border-white/10 text-white outline-none focus:border-brand/50 transition-colors resize-none placeholder:text-gray-600 text-base"
+                              className="w-full p-3 md:p-4 rounded-xl bg-[#0F172A] border border-[#334155] text-[#E2E8F0] outline-none focus:border-[#3B82F6] transition-colors resize-none placeholder:text-[#64748B] text-sm md:text-base"
                             />
-                            <div className="absolute bottom-3 right-4 text-xs text-gray-500 font-mono">
+                            <div className="absolute bottom-4 right-4 text-xs text-[#64748B] font-mono">
                                {content.length > 0 ? `${content.length} chars` : "Ready"}
                             </div>
                           </div>
                         )}
 
                         {postType === "url" && (
-                          <div className="flex items-center gap-3 bg-black border border-white/10 rounded-2xl px-5 py-4 focus-within:border-brand/50 transition-colors">
-                            <Globe size={20} className="text-gray-500 shrink-0" />
+                          <div className="flex items-center gap-3 bg-[#0F172A] border border-[#334155] rounded-xl px-4 py-3 focus-within:border-[#3B82F6] transition-colors">
+                            <Globe size={20} className="text-[#64748B] shrink-0" />
                             <input
                               type="url"
                               value={content}
                               onChange={(e) => setContent(e.target.value)}
                               placeholder="https://your-website.com"
-                              className="bg-transparent flex-1 focus:outline-none text-white placeholder:text-gray-600 text-base"
+                              className="bg-transparent flex-1 focus:outline-none text-[#E2E8F0] placeholder:text-[#64748B] text-base"
                             />
                           </div>
                         )}
 
                         {["image", "pdf", "video"].includes(postType) && (
-                          <div className="space-y-3">
+                          <div className="space-y-4">
                             {!file ? (
                               <label
-                                className="relative flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-2xl p-10 cursor-pointer transition-all hover:opacity-80"
-                                style={{ borderColor: `${activeType?.color}50`, background: `${activeType?.color}08` }}
+                                className="relative flex flex-col items-center justify-center gap-2 md:gap-3 border border-dashed border-[#475569] bg-[#0F172A] rounded-xl p-6 md:p-8 cursor-pointer transition-all hover:bg-[#1E293B] hover:border-[#64748B]"
                               >
                                 <input
                                   ref={fileInputRef}
@@ -912,25 +973,25 @@ export default function Dashboard() {
                                   accept={postType === "image" ? "image/*" : postType === "video" ? "video/*" : ".pdf"}
                                   onChange={handleFileChange}
                                 />
-                                <div className="w-14 h-14 rounded-2xl flex items-center justify-center" style={{ background: `${activeType?.color}20` }}>
-                                  {postType === "image" && <ImageIcon size={28} style={{ color: activeType?.color }} />}
-                                  {postType === "video" && <Film size={28} style={{ color: activeType?.color }} />}
-                                  {postType === "pdf" && <FileUp size={28} style={{ color: activeType?.color }} />}
+                                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#1E293B] border border-[#334155] shadow-sm">
+                                  {postType === "image" && <ImageIcon size={20} className="text-[#94A3B8]" />}
+                                  {postType === "video" && <Film size={20} className="text-[#94A3B8]" />}
+                                  {postType === "pdf" && <FileUp size={20} className="text-[#94A3B8]" />}
                                 </div>
-                                <p className="font-semibold text-gray-300">
+                                <p className="font-medium text-[#94A3B8] text-sm">
                                   Click to upload {postType === "image" ? "an image" : postType === "video" ? "a video" : "a PDF"}
                                 </p>
                               </label>
                             ) : (
-                              <div className="rounded-2xl border border-white/10 bg-black p-4 flex items-start gap-4">
-                                {postType === "image" && filePreview && <img src={filePreview} alt="Preview" className="w-20 h-20 object-cover rounded-xl" />}
-                                {postType === "video" && <div className="w-16 h-16 bg-purple-500/20 rounded-xl flex items-center justify-center"><Film size={28} className="text-purple-400" /></div>}
-                                {postType === "pdf" && <div className="w-16 h-16 bg-red-500/20 rounded-xl flex items-center justify-center"><FileText size={28} className="text-red-400" /></div>}
-                                <div className="flex-1 min-w-0">
-                                  <p className="font-medium text-white truncate">{file.name}</p>
-                                  <p className="text-xs text-gray-500 mt-0.5">{(file.size / 1048576).toFixed(2)} MB</p>
+                              <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-4 flex items-start gap-4 shadow-sm">
+                                {postType === "image" && filePreview && <img src={filePreview} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />}
+                                {postType === "video" && <div className="w-16 h-16 bg-[#0F172A] border border-[#334155] rounded-lg flex items-center justify-center"><Film size={24} className="text-[#94A3B8]" /></div>}
+                                {postType === "pdf" && <div className="w-16 h-16 bg-[#0F172A] border border-[#334155] rounded-lg flex items-center justify-center"><FileText size={24} className="text-[#94A3B8]" /></div>}
+                                <div className="flex-1 min-w-0 pt-1">
+                                  <p className="font-semibold text-[#E2E8F0] text-sm truncate">{file.name}</p>
+                                  <p className="text-xs text-[#94A3B8] mt-1">{(file.size / 1048576).toFixed(2)} MB</p>
                                 </div>
-                                <button onClick={clearFile} className="p-2 rounded-xl bg-white/5 hover:bg-red-500/20 hover:text-red-400 transition-colors">
+                                <button onClick={clearFile} className="p-2 rounded-lg hover:bg-[#0F172A] text-[#94A3B8] hover:text-red-500 transition-colors">
                                   <X size={16} />
                                 </button>
                               </div>
@@ -940,87 +1001,71 @@ export default function Dashboard() {
                                <textarea
                                  value={content}
                                  onChange={(e) => setContent(e.target.value)}
-                                 rows={3}
+                                 rows={2}
                                  placeholder="Add a caption or question (optional)..."
-                                 className="w-full p-4 rounded-2xl bg-black border border-white/10 text-white outline-none focus:border-white/20 resize-none placeholder:text-gray-600 text-sm"
+                                 className="w-full p-4 rounded-xl bg-[#0F172A] border border-[#334155] text-[#E2E8F0] outline-none focus:border-[#3B82F6] resize-none placeholder:text-[#64748B] text-sm"
                                />
-                               <div className="absolute bottom-3 right-4 text-xs text-gray-500 font-mono">
-                                 {content.length > 0 ? `${content.length} chars` : "Ready"}
-                               </div>
                             </div>
                           </div>
                         )}
                       </div>
 
-                      <div className="space-y-4 rounded-2xl border border-white/5 bg-black/40 p-5">
-                        <div>
-                          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Branding</p>
-                          <h4 className="mt-2 font-bold text-white text-sm">Custom link appearance</h4>
-                        </div>
-
-                        <div>
-                          <input
-                            value={branding.title}
-                            onChange={(e) => setBranding({ ...branding, title: e.target.value })}
-                            placeholder="Title (e.g. Feedback Request)"
-                            className="w-full rounded-xl border border-white/5 bg-black/60 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-brand/50"
-                          />
-                        </div>
-
-                        <div>
-                          <textarea
-                            value={branding.description}
-                            onChange={(e) => setBranding({ ...branding, description: e.target.value })}
-                            placeholder="Tell people what you want feedback on."
-                            rows={3}
-                            className="w-full rounded-xl border border-white/5 bg-black/60 px-4 py-3 text-sm text-white outline-none transition-colors focus:border-brand/50 resize-none"
-                          />
-                        </div>
-
-                        <div>
-                          <div className="flex items-center gap-3">
-                            <input
-                              type="color"
-                              value={branding.accentColor}
-                              onChange={(e) => setBranding({ ...branding, accentColor: e.target.value })}
-                              className="h-10 w-12 cursor-pointer rounded-lg border border-white/5 bg-black/60 p-0.5"
-                            />
-                            <div className="text-xs text-gray-400">Accent Color</div>
-                          </div>
-                        </div>
-
+                      <div className="flex justify-end pt-2">
                         <button
                           disabled={submitting}
                           onClick={handleSubmit}
-                          className={`w-full py-4 rounded-2xl font-bold text-base transition-all flex flex-col items-center justify-center gap-1 relative overflow-hidden ${
+                          className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center gap-2 ${
                             submitting 
-                              ? "bg-white/5 text-gray-500 cursor-not-allowed" 
-                              : "hover:brightness-110 active:scale-[0.98] shadow-[0_20px_40px_rgba(151,206,35,0.2)]"
+                              ? "bg-[#334155] text-[#64748B] cursor-not-allowed" 
+                              : "bg-[#3B82F6] text-white hover:bg-[#2563EB] hover:shadow-md"
                           }`}
-                          style={!submitting ? { background: branding.accentColor, color: "#000" } : {}}
                         >
-                          {submitting && (
-                            <div 
-                              className="absolute bottom-0 left-0 h-1 bg-[#97ce23] transition-all duration-300" 
-                              style={{ width: `${uploadProgress}%`, background: branding.accentColor }}
-                            />
+                          {submitting ? (
+                            <>
+                              <Loader2 className="animate-spin" size={16} />
+                              <span>{uploadProgress > 0 ? `Uploading ${uploadProgress}%...` : "Generating..."}</span>
+                            </>
+                          ) : (
+                            <>
+                              Generate Link
+                            </>
                           )}
-                          <div className="flex items-center gap-2">
-                            {submitting ? (
-                              <>
-                                <Loader2 className="animate-spin" size={20} />
-                                <span>{uploadProgress > 0 ? `Uploading ${uploadProgress}%...` : "Generating..."}</span>
-                              </>
-                            ) : (
-                              "Generate Link"
-                            )}
-                          </div>
                         </button>
                       </div>
                     </div>
-                  </div>
 
-                  <AnimatePresence>
+                    <div className="rounded-2xl border border-[#334155] bg-[#1E293B] shadow-sm p-6 space-y-4">
+                      <div className="flex items-center justify-between">
+                        <h3 className="text-sm font-bold text-[#E2E8F0]">Templates</h3>
+                        {selectedTemplate && (
+                          <button onClick={clearSelectedTemplate} className="text-xs font-semibold text-[#94A3B8] hover:text-[#E2E8F0]">
+                            Clear selection
+                          </button>
+                        )}
+                      </div>
+
+                      <div className="grid gap-3 lg:grid-cols-2">
+                        {TEMPLATE_PRESETS.map((template) => (
+                          <button
+                            key={template.id}
+                            onClick={() => applyTemplate(template)}
+                            className={`flex items-start gap-3 p-3 rounded-xl border transition-all text-left ${
+                              selectedTemplate?.id === template.id ? "border-[#3B82F6] bg-[#3B82F6]/5" : "border-[#334155] bg-[#1E293B] hover:border-[#475569] hover:bg-[#0F172A]"
+                            }`}
+                          >
+                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${template.accentColor}15` }}>
+                               <Sparkles size={14} style={{ color: template.accentColor }} />
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold text-[#E2E8F0]">{template.label}</p>
+                              <p className="text-xs text-[#94A3B8] mt-0.5 leading-snug">{template.description}</p>
+                            </div>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <AnimatePresence>
                       {generatedLink && (
                         <motion.div
                           initial={{ opacity: 0, y: 12 }}
@@ -1032,13 +1077,13 @@ export default function Dashboard() {
                             <CheckCircle size={16} /> Link ready
                           </div>
                           <div className="flex flex-col gap-3 sm:flex-row">
-                            <div className="flex-1 truncate rounded-xl border border-white/10 bg-black px-4 py-3 font-mono text-xs text-gray-300">
+                            <div className="flex-1 truncate rounded-xl border border-[#334155] bg-[#0F172A] px-4 py-3 font-mono text-xs text-[#E2E8F0]">
                               {window.location.origin}/feedback/{generatedLink}
                             </div>
                             <motion.button
                               whileTap={{ scale: 0.95 }}
                               onClick={() => copyLink(generatedLink)}
-                              className="flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold text-black text-sm transition-colors"
+                              className="flex items-center justify-center gap-2 rounded-xl px-5 py-3 font-bold text-white text-sm transition-colors"
                               style={{ background: copied ? "#22c55e" : branding.accentColor }}
                             >
                               {copied ? <><CheckCircle size={16} />Copied</> : <><Copy size={16} />Copy</>}
@@ -1053,6 +1098,10 @@ export default function Dashboard() {
                 {/* We render the other tabs but structured as bento cards */}
                 {activeNav === "analytics" && (
                   <motion.div key="analytics" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                    <div className="mb-6">
+                      <h2 className="text-2xl font-bold tracking-tight text-[#E2E8F0]">Analytics</h2>
+                      <p className="text-[#94A3B8] mt-1">Monitor your feedback performance</p>
+                    </div>
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                       {[
                         { label: "Total links", value: analytics?.summary?.totalLinks ?? 0 },
@@ -1060,21 +1109,20 @@ export default function Dashboard() {
                         { label: "Total responses", value: analytics?.summary?.totalResponses ?? feedback.length },
                         { label: "Responses this week", value: analytics?.summary?.responsesThisWeek ?? 0 },
                       ].map((item) => (
-                        <div key={item.label} className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow">
-                          <p className="text-xs uppercase tracking-[0.2em] text-gray-500">{item.label}</p>
-                          <p className="mt-4 text-4xl font-extrabold text-brand">{item.value}</p>
+                        <div key={item.label} className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 shadow-sm">
+                          <p className="text-[10px] md:text-xs font-semibold text-[#94A3B8] uppercase tracking-widest">{item.label}</p>
+                          <p className="mt-2 md:mt-3 text-2xl md:text-3xl font-bold text-[#E2E8F0]">{item.value}</p>
                         </div>
                       ))}
                     </div>
                     <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                       {/* Keep existing analytics charts */}
-                       <div className="rounded-3xl border border-white/5 bg-surface p-6">
+                        <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 shadow-sm">
                           <div className="flex items-center justify-between gap-3">
                             <div>
-                              <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Last 7 days</p>
-                              <h3 className="mt-2 text-xl font-bold">Response trend</h3>
+                              <h3 className="text-base font-bold text-[#E2E8F0]">Response trend</h3>
+                              <p className="text-sm text-[#94A3B8]">Last 7 days</p>
                             </div>
-                            <BarChart3 className="text-brand" size={18} />
+                            <BarChart3 className="text-[#3B82F6]" size={20} />
                           </div>
                           <div className="mt-8 grid grid-cols-7 gap-3 items-end h-56">
                             {(analytics?.dailyResponses || []).map((item) => {
@@ -1083,32 +1131,32 @@ export default function Dashboard() {
                               return (
                                 <div key={item.label} className="flex flex-col items-center gap-3">
                                   <div className="flex h-44 w-full items-end justify-center">
-                                    <div className="w-full max-w-10 rounded-t-xl" style={{ height: `${height}%`, background: `linear-gradient(180deg, ${branding.accentColor}, rgba(151,206,35,0.1))` }} />
+                                    <div className="w-full max-w-10 rounded-t-lg bg-[#3B82F6]" style={{ height: `${height}%`, opacity: item.value ? 1 : 0.2 }} />
                                   </div>
-                                  <span className="text-xs text-gray-500">{item.label}</span>
+                                  <span className="text-xs font-medium text-[#94A3B8]">{item.label}</span>
                                 </div>
                               );
                             })}
                           </div>
                        </div>
-                       <div className="rounded-3xl border border-white/5 bg-surface p-6 space-y-5">
+                        <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 space-y-4 md:space-y-5 shadow-sm">
                           <div>
-                            <p className="text-xs uppercase tracking-[0.2em] text-gray-500">By post type</p>
-                            <h3 className="mt-2 text-xl font-bold">Where the responses are coming from</h3>
+                            <h3 className="text-base font-bold text-[#E2E8F0]">Post types</h3>
+                            <p className="text-sm text-[#94A3B8]">Where the responses are coming from</p>
                           </div>
                           <div className="space-y-3">
                             {POST_TYPES.map((type) => {
                               const count = analytics?.responseByType?.[type.id] || 0;
                               return (
-                                <div key={type.id} className="rounded-2xl border border-white/5 bg-black/45 p-3">
+                                 <div key={type.id} className="rounded-xl border border-[#334155] bg-[#0F172A] p-3 md:p-4">
                                   <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-xl flex items-center justify-center" style={{ background: `${type.color}18` }}>
-                                        <type.icon size={14} style={{ color: type.color }} />
+                                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-[#334155] bg-[#1E293B]">
+                                        <type.icon size={14} className="text-[#94A3B8]" />
                                       </div>
-                                      <p className="text-sm font-semibold text-white">{type.label}</p>
+                                      <p className="text-sm font-semibold text-[#E2E8F0]">{type.label}</p>
                                     </div>
-                                    <span className="text-lg font-bold text-brand">{count}</span>
+                                    <span className="text-base font-bold text-[#E2E8F0]">{count}</span>
                                   </div>
                                 </div>
                               );
@@ -1122,102 +1170,78 @@ export default function Dashboard() {
                 {activeNav === "links" && (
                   <motion.div key="links" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                     {links.length === 0 ? (
-                      <div className="relative overflow-hidden rounded-[2.5rem] border border-white/5 bg-gradient-to-br from-white/[0.03] to-transparent p-8 sm:p-12 shadow-2xl backdrop-blur-xl">
-                        {/* Background Accents */}
-                        <div className="absolute -top-24 -right-24 w-64 h-64 bg-brand/10 rounded-full blur-[80px]" />
-                        <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px]" />
-
-                        <div className="relative z-10 max-w-2xl mx-auto text-center">
-                          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand/10 border border-brand/20 text-brand text-xs font-black uppercase tracking-widest mb-8">
-                            <Sparkles size={14} /> Welcome to Verit
-                          </div>
-                          <h2 className="text-4xl sm:text-5xl font-black text-white tracking-tighter leading-tight mb-6">
-                            Let's launch your <span className="text-brand">first feedback post.</span>
-                          </h2>
-                          <p className="text-gray-400 text-lg mb-12 leading-relaxed">
-                            Verit helps you collect anonymous, honest feedback through beautiful branded links. Follow these 3 steps to get started.
-                          </p>
-
-                          <div className="grid sm:grid-cols-3 gap-6 text-left mb-12">
-                            {[
-                              { step: "01", title: "Create a link", desc: "Pick a template or media to start.", icon: Plus },
-                              { step: "02", title: "Share on story", desc: "Use our cute Story graphics for IG.", icon: Camera },
-                              { step: "03", title: "Read feedback", desc: "Find honest thoughts in your inbox.", icon: MessageSquare },
-                            ].map((item) => (
-                              <div key={item.step} className="group p-6 rounded-3xl border border-white/5 bg-white/[0.02] hover:bg-white/[0.05] transition-colors">
-                                <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
-                                  <item.icon size={20} className="text-brand" />
-                                </div>
-                                <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">{item.step} STEP</p>
-                                <h4 className="text-white font-bold mb-2">{item.title}</h4>
-                                <p className="text-xs text-gray-500 leading-relaxed">{item.desc}</p>
-                              </div>
-                            ))}
-                          </div>
-
-                          <button 
-                            onClick={() => setActiveNav("create")}
-                            className="group relative px-10 py-5 rounded-2xl bg-brand text-black font-black uppercase tracking-widest text-sm hover:scale-105 active:scale-95 transition-all shadow-[0_0_40px_rgba(151,206,35,0.3)] overflow-hidden"
-                          >
-                            <span className="relative z-10 flex items-center gap-3">
-                              Create your first post <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
-                            </span>
-                          </button>
+                      <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-12 text-center shadow-sm">
+                        <div className="w-16 h-16 rounded-full bg-[#0F172A] border border-[#334155] flex items-center justify-center mx-auto mb-6">
+                          <LinkIcon size={32} className="text-[#94A3B8]" />
                         </div>
+                        <h2 className="text-2xl font-bold text-[#E2E8F0] mb-2">
+                          No links created yet
+                        </h2>
+                        <p className="text-[#94A3B8] max-w-md mx-auto mb-8">
+                          Create your first feedback link to start collecting anonymous responses from your audience.
+                        </p>
+                        <button 
+                          onClick={() => setActiveNav("create")}
+                          className="px-6 py-2.5 rounded-xl bg-[#3B82F6] text-white font-bold text-sm hover:bg-[#2563EB] transition-all shadow-sm"
+                        >
+                          Create Link
+                        </button>
                       </div>
                     ) : (
                       <div className="grid gap-5 xl:grid-cols-2">
                         {links.map((link) => {
-                          const linkColor = link.accentColor || "#97ce23";
+                          const linkColor = "#3B82F6";
                           const responseCount = link.responseCount || 0;
                           return (
-                            <div key={link._id} className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow">
+                            <div key={link._id} className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 shadow-sm flex flex-col justify-between transition-all hover:border-[#475569]">
                               <div className="flex items-start justify-between gap-4">
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">
-                                    <span className="rounded-lg px-2 py-1 text-[10px] font-bold text-black uppercase" style={{ background: linkColor }}>{link.postType}</span>
-                                    <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-gray-400 flex items-center gap-1">
+                                    <span className="rounded-md px-2 py-1 text-[10px] font-bold text-white uppercase" style={{ background: linkColor }}>{link.postType}</span>
+                                    <span className="rounded-md border border-[#334155] bg-[#0F172A] px-2 py-1 text-[10px] text-[#94A3B8] flex items-center gap-1">
                                       <MessageSquare size={10} /> {responseCount} responses
                                     </span>
-                                    <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-gray-400 flex items-center gap-1">
+                                    <span className="rounded-md border border-[#334155] bg-[#0F172A] px-2 py-1 text-[10px] text-[#94A3B8] flex items-center gap-1">
                                       <BarChart3 size={10} /> {link.views || 0} views
                                     </span>
                                   </div>
-                                  <h3 className="mt-3 text-lg font-bold text-white">{link.title || link.templateKey || "Untitled link"}</h3>
-                                  <p className="mt-1 text-xs leading-5 text-gray-400 line-clamp-2">{link.description || "No description."}</p>
+                                   <h3 className="mt-2 text-base md:text-lg font-bold text-[#E2E8F0] line-clamp-1">{link.title || link.templateKey || "Untitled link"}</h3>
+                                  <p className="mt-1 text-xs md:text-sm text-[#94A3B8] line-clamp-1 md:line-clamp-2">{link.description || "No description."}</p>
                                 </div>
-                                <div className="h-10 w-10 rounded-xl border border-white/5" style={{ background: `${linkColor}18` }} />
+                                <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${linkColor}15` }}>
+                                  <LinkIcon size={20} style={{ color: linkColor }} />
+                                </div>
                               </div>
-                              <div className="mt-5 rounded-2xl border border-white/5 bg-black/40 p-3">
-                                <p className="text-[10px] uppercase tracking-[0.2em] text-gray-500">Share URL</p>
-                                <div className="mt-2 flex gap-2">
-                                  <div className="flex-1 truncate rounded-lg border border-white/5 bg-black px-3 py-2 font-mono text-[10px] text-gray-300 flex items-center">
+                              <div className="mt-3 md:mt-5 rounded-xl border border-[#334155] bg-[#0F172A] p-2.5 md:p-3">
+                                <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#64748B]">Share URL</p>
+                                <div className="mt-1.5 flex gap-1.5 md:gap-2">
+                                  <div className="flex-1 truncate rounded-lg border border-[#334155] bg-[#1E293B] px-2 py-1.5 md:px-3 md:py-2 font-mono text-[10px] md:text-xs text-[#94A3B8] flex items-center">
                                     {window.location.origin}/feedback/{link.linkId}
                                   </div>
-                                  <button onClick={() => copyLink(link.linkId)} className="rounded-lg px-3 py-2 text-xs font-bold text-black" style={{ background: linkColor }}>Copy</button>
+                                  <button onClick={() => copyLink(link.linkId)} className="rounded-lg px-2.5 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-bold text-white transition-opacity hover:opacity-90" style={{ background: linkColor }}>Copy</button>
                                 </div>
                               </div>
-                              <div className="mt-4 flex flex-wrap gap-2">
+                              <div className="mt-3 md:mt-4 flex flex-wrap gap-1.5 md:gap-2">
                                 <button 
                                   onClick={() => {
                                     setSelectedLinkDetails(link);
                                     setActiveNav("link_details");
                                   }} 
-                                  className="flex items-center gap-2 rounded-lg border border-brand/20 bg-brand/10 px-3 py-1.5 text-xs font-semibold text-brand hover:bg-brand/20"
+                                  className="flex items-center gap-1.5 rounded-lg border border-[#334155] bg-[#1E293B] px-2.5 py-1.5 md:px-3 md:py-1.5 text-[10px] md:text-xs font-semibold text-[#E2E8F0] hover:bg-[#0F172A] transition-colors"
                                 >
-                                  <MessageSquare size={14} /> View Details
+                                  <MessageSquare size={12} className="text-[#94A3B8]" /> Details
                                 </button>
                                 <button 
                                   onClick={() => {
                                     setSelectedShareLink(link);
                                     setIsShareModalOpen(true);
                                   }} 
-                                  className="flex items-center gap-2 rounded-lg border border-pink-500/20 bg-pink-500/10 px-3 py-1.5 text-xs font-semibold text-pink-300 hover:bg-pink-500/20"
+                                  className="flex items-center gap-1.5 rounded-lg border border-[#334155] bg-[#1E293B] px-2.5 py-1.5 md:px-3 md:py-1.5 text-[10px] md:text-xs font-semibold text-[#E2E8F0] hover:bg-[#0F172A] transition-colors"
                                 >
-                                  <Camera size={14} /> Story
+                                  <Camera size={12} className="text-[#94A3B8]" /> Story
                                 </button>
-                                <button onClick={() => toggleLinkStatus(link.linkId)} className="rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-semibold text-gray-300 hover:bg-white/10">{link.isActive ? "Deactivate" : "Reactivate"}</button>
-                                <button onClick={() => deleteLink(link.linkId)} className="rounded-lg border border-red-500/20 bg-red-500/10 px-3 py-1.5 text-xs font-semibold text-red-300 hover:bg-red-500/20">Delete</button>
+                                <button onClick={() => toggleLinkStatus(link.linkId)} className="rounded-lg border border-[#334155] bg-[#1E293B] px-2.5 py-1.5 md:px-3 md:py-1.5 text-[10px] md:text-xs font-semibold text-[#E2E8F0] hover:bg-[#0F172A] transition-colors">{link.isActive ? "Deactivate" : "Activate"}</button>
+                                <button onClick={() => deleteLink(link.linkId)} className="rounded-lg border border-red-500/20 bg-red-500/10 px-2.5 py-1.5 md:px-3 md:py-1.5 text-[10px] md:text-xs font-semibold text-red-500 hover:bg-red-500/20 transition-colors">Delete</button>
                               </div>
                             </div>
                           );
@@ -1232,34 +1256,34 @@ export default function Dashboard() {
                     <div className="mb-2">
                       <button 
                         onClick={() => { setActiveNav("links"); setSelectedLinkDetails(null); }}
-                        className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors text-sm font-semibold"
+                        className="flex items-center gap-2 text-[#94A3B8] hover:text-white transition-colors text-sm font-semibold"
                       >
                         <ArrowLeft size={16} /> Back
                       </button>
                     </div>
 
-                    <div className="rounded-[2rem] border border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent p-6 sm:p-8 shadow-2xl backdrop-blur-xl">
+                    <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-6 sm:p-8 shadow-sm">
                       <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-black text-white tracking-tight">{selectedLinkDetails.title || "Untitled link"}</h3>
-                        <span className="rounded-full px-3 py-1 text-[10px] font-black text-black uppercase tracking-widest shadow-glow" style={{ background: selectedLinkDetails.accentColor || "#97ce23" }}>
+                        <h3 className="text-2xl font-bold text-[#E2E8F0] tracking-tight">{selectedLinkDetails.title || "Untitled link"}</h3>
+                        <span className="rounded-md px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest" style={{ background: "#3B82F6" }}>
                           {selectedLinkDetails.postType}
                         </span>
                       </div>
                       
                       {selectedLinkDetails.description && (
-                        <p className="text-gray-400 text-sm mb-6 border-l-2 pl-3" style={{ borderColor: selectedLinkDetails.accentColor || "#97ce23" }}>{selectedLinkDetails.description}</p>
+                        <p className="text-[#94A3B8] text-sm mb-6 border-l-2 pl-3" style={{ borderColor: "#3B82F6" }}>{selectedLinkDetails.description}</p>
                       )}
 
-                      <div className="rounded-3xl border border-white/10 bg-black/60 overflow-hidden relative shadow-inner">
+                      <div className="rounded-2xl border border-[#334155] bg-[#0F172A] overflow-hidden relative">
                         {selectedLinkDetails.postType === "text" && (
-                          <div className="p-8 text-xl font-medium leading-relaxed italic text-gray-200">"{selectedLinkDetails.content}"</div>
+                          <div className="p-8 text-xl font-medium leading-relaxed italic text-[#94A3B8]">"{selectedLinkDetails.content}"</div>
                         )}
                         
                         {selectedLinkDetails.postType === "image" && selectedLinkDetails.fileUrl && (
-                          <div className="relative aspect-video max-h-[500px] w-full bg-[#0a0a0a] flex items-center justify-center group">
+                          <div className="relative aspect-video max-h-[500px] w-full bg-[#334155] flex items-center justify-center group">
                             <img src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} alt="Post media" className="max-w-full max-h-[500px] object-contain transition-transform duration-700 group-hover:scale-[1.02]" />
                             {selectedLinkDetails.content && (
-                              <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+                              <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-[#0F172A]/90 via-[#0F172A]/50 to-transparent">
                                 <p className="text-white text-base font-medium">{selectedLinkDetails.content}</p>
                               </div>
                             )}
@@ -1267,10 +1291,10 @@ export default function Dashboard() {
                         )}
                         
                         {selectedLinkDetails.postType === "video" && selectedLinkDetails.fileUrl && (
-                          <div className="relative aspect-video max-h-[500px] w-full bg-[#0a0a0a]">
+                          <div className="relative aspect-video max-h-[500px] w-full bg-[#334155]">
                             <video src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} controls className="w-full h-full object-contain" />
                             {selectedLinkDetails.content && (
-                              <div className="absolute top-0 inset-x-0 p-6 bg-gradient-to-b from-black via-black/80 to-transparent">
+                              <div className="absolute top-0 inset-x-0 p-6 bg-gradient-to-b from-[#0F172A]/90 via-[#0F172A]/50 to-transparent">
                                 <p className="text-white text-base font-medium drop-shadow-lg">{selectedLinkDetails.content}</p>
                               </div>
                             )}
@@ -1279,10 +1303,10 @@ export default function Dashboard() {
 
                         {selectedLinkDetails.postType === "url" && (
                           <div className="p-10 flex flex-col items-center justify-center gap-6">
-                            <div className="p-4 rounded-full bg-brand/10 text-brand">
+                            <div className="p-4 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
                               <Globe size={48} />
                             </div>
-                            <a href={selectedLinkDetails.content} target="_blank" rel="noreferrer" className="text-xl font-bold text-white hover:text-brand transition-colors text-center break-all underline decoration-brand/30 underline-offset-8">
+                            <a href={selectedLinkDetails.content} target="_blank" rel="noreferrer" className="text-xl font-bold text-[#E2E8F0] hover:text-[#3B82F6] transition-colors text-center break-all underline decoration-[#3B82F6]/30 underline-offset-8">
                               {selectedLinkDetails.content}
                             </a>
                           </div>
@@ -1292,15 +1316,15 @@ export default function Dashboard() {
 
                     <div className="pt-6">
                       <div className="flex items-center gap-3 mb-6">
-                        <MessageSquare size={20} className="text-brand" />
-                        <h3 className="text-xl font-black text-white">Responses on this post</h3>
+                        <MessageSquare size={20} className="text-[#3B82F6]" />
+                        <h3 className="text-xl font-bold text-[#E2E8F0]">Responses on this post</h3>
                       </div>
                       
                       {feedback.filter(f => f.linkId === selectedLinkDetails.linkId).length === 0 ? (
-                        <div className="p-12 rounded-[2rem] border border-white/5 text-center bg-white/[0.02] shadow-inner backdrop-blur-md">
-                          <MessageSquare size={48} className="mx-auto mb-5 text-gray-700/50" />
-                          <p className="text-gray-300 font-bold text-lg">No responses yet</p>
-                          <p className="text-gray-500 text-sm mt-2">Share this specific link to get anonymous thoughts.</p>
+                        <div className="p-12 rounded-2xl border border-[#334155] bg-[#1E293B] text-center shadow-sm">
+                          <MessageSquare size={48} className="mx-auto mb-5 text-[#64748B]" />
+                          <p className="text-[#E2E8F0] font-bold text-lg">No responses yet</p>
+                          <p className="text-[#94A3B8] text-sm mt-2">Share this specific link to get anonymous thoughts.</p>
                         </div>
                       ) : (
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -1309,35 +1333,35 @@ export default function Dashboard() {
                             const showBlur = message.isToxic && !isRevealed;
 
                             return (
-                              <div key={message._id} className="group rounded-[2rem] p-6 relative overflow-hidden border border-white/5 bg-gradient-to-br from-white/[0.05] to-transparent shadow-xl hover:border-brand/30 hover:shadow-brand/10 transition-all duration-300 flex flex-col backdrop-blur-xl">
-                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : 'bg-brand shadow-[0_0_15px_rgba(151,206,35,0.5)]'} transition-all duration-500`} />
-                                <div className="absolute -top-6 -right-6 text-white/[0.03] transform rotate-12 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
+                              <div key={message._id} className="group rounded-2xl p-6 relative overflow-hidden border border-[#334155] bg-[#1E293B] shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-[#3B82F6]'} transition-all duration-500`} />
+                                <div className="absolute -top-6 -right-6 text-[#0F172A] transform rotate-12 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
                                   <MessageSquare size={100} />
                                 </div>
                                 
                                 <div className="flex-1 relative z-10 pt-2">
                                   {showBlur && (
-                                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-black/60 backdrop-blur-xl rounded-xl border border-red-500/20">
-                                      <span className="text-3xl mb-3 filter drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">⚠️</span>
-                                      <p className="text-xs text-red-400 font-black tracking-widest uppercase mb-4">Toxic Hidden</p>
+                                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#1E293B]/80 backdrop-blur-md rounded-xl border border-red-100">
+                                      <span className="text-3xl mb-3">⚠️</span>
+                                      <p className="text-xs text-red-600 font-bold tracking-widest uppercase mb-4">Toxic Hidden</p>
                                       <button 
                                         onClick={() => setRevealedMessages(prev => [...prev, message._id])}
-                                        className="px-5 py-2 rounded-xl bg-red-500/20 text-red-300 text-xs font-bold hover:bg-red-500/40 hover:text-white transition-all duration-300"
+                                        className="px-5 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-bold border border-red-200 hover:bg-red-100 transition-colors"
                                       >
                                         Reveal Response
                                       </button>
                                     </div>
                                   )}
-                                  <p className={`text-gray-100 text-[15px] font-medium leading-relaxed pl-3 ${showBlur ? 'opacity-10 blur-[4px] select-none' : ''}`}>
+                                  <p className={`text-[#E2E8F0] text-sm font-medium leading-relaxed pl-3 ${showBlur ? 'opacity-20 blur-[4px] select-none' : ''}`}>
                                     "{message.message}"
                                   </p>
                                 </div>
 
-                                <div className="flex items-center justify-between gap-3 mt-8 pl-3 relative z-10 border-t border-white/5 pt-4">
-                                  <span className="text-[10px] font-bold tracking-wider uppercase text-gray-500">{new Date(message.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                <div className="flex items-center justify-between gap-3 mt-8 pl-3 relative z-10 border-t border-[#334155] pt-4">
+                                  <span className="text-[10px] font-bold tracking-wider uppercase text-[#64748B]">{new Date(message.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                   <button 
                                     onClick={() => deleteFeedback(message._id)}
-                                    className="p-2 rounded-full text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                    className="p-2 rounded-lg text-[#94A3B8] hover:text-red-500 hover:bg-red-50 transition-colors"
                                   >
                                     <Trash2 size={14} />
                                   </button>
@@ -1354,22 +1378,24 @@ export default function Dashboard() {
                 {activeNav === "feedback" && (
                   <motion.div key="feedback" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
                     {feedback.length === 0 ? (
-                      <div className="p-16 rounded-3xl border border-white/5 text-center bg-surface shadow-glow">
-                        <MessageSquare size={48} className="mx-auto mb-4 text-gray-700" />
-                        <p className="text-gray-300 font-semibold">No messages yet</p>
-                        <p className="text-gray-600 text-sm mt-1">Share your link to start collecting honest feedback.</p>
+                      <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-12 text-center shadow-sm">
+                        <div className="w-16 h-16 rounded-full bg-[#0F172A] border border-[#334155] flex items-center justify-center mx-auto mb-6">
+                          <MessageSquare size={32} className="text-[#94A3B8]" />
+                        </div>
+                        <h2 className="text-2xl font-bold text-[#E2E8F0] mb-2">No messages yet</h2>
+                        <p className="text-[#94A3B8] max-w-md mx-auto">Share your link to start collecting honest feedback.</p>
                       </div>
                     ) : (
                       <>
-                        <div className="rounded-3xl border border-white/5 bg-surface p-5 space-y-4">
+                        <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 shadow-sm">
                            <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]">
-                             <input value={feedbackSearch} onChange={(e) => setFeedbackSearch(e.target.value)} placeholder="Search feedback text..." className="rounded-xl border border-white/5 bg-black/50 px-4 py-2 text-sm text-white outline-none focus:border-brand/50" />
-                             <select value={feedbackRange} onChange={(e) => setFeedbackRange(e.target.value)} className="rounded-xl border border-white/5 bg-black/50 px-4 py-2 text-sm text-white outline-none">
+                             <input value={feedbackSearch} onChange={(e) => setFeedbackSearch(e.target.value)} placeholder="Search feedback text..." className="rounded-xl border border-[#334155] bg-[#0F172A] px-4 py-2 text-sm text-[#E2E8F0] outline-none focus:border-[#3B82F6] transition-colors placeholder:text-[#64748B]" />
+                             <select value={feedbackRange} onChange={(e) => setFeedbackRange(e.target.value)} className="rounded-xl border border-[#334155] bg-[#0F172A] px-4 py-2 text-sm text-[#E2E8F0] outline-none focus:border-[#3B82F6] transition-colors cursor-pointer">
                                <option value="all">All time</option>
                                <option value="7d">Last 7 days</option>
                                <option value="30d">Last 30 days</option>
                              </select>
-                             <button onClick={exportFeedbackCsv} className="rounded-xl bg-white/5 border border-white/10 px-4 py-2 text-sm font-semibold text-white hover:bg-white/10">Export CSV</button>
+                             <button onClick={exportFeedbackCsv} className="rounded-xl bg-[#1E293B] border border-[#334155] px-4 py-2 text-sm font-semibold text-[#E2E8F0] hover:bg-[#0F172A] transition-colors">Export CSV</button>
                            </div>
                         </div>
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -1379,38 +1405,38 @@ export default function Dashboard() {
                             const showBlur = message.isToxic && !isRevealed;
 
                             return (
-                              <div key={message._id} className="rounded-2xl md:rounded-3xl p-5 md:p-6 relative overflow-hidden border border-white/5 bg-surface shadow-glow hover:-translate-y-1 transition-transform flex flex-col">
-                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-brand'} rounded-l-3xl`} />
+                              <div key={message._id} className="rounded-2xl p-5 md:p-6 relative overflow-hidden border border-[#334155] bg-[#1E293B] shadow-sm hover:shadow-md transition-shadow flex flex-col">
+                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-[#3B82F6]'} rounded-l-2xl`} />
                                 
                                 <div className="flex-1 relative">
                                   {showBlur && (
-                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-black/40 backdrop-blur-md rounded-xl border border-red-500/20">
+                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#1E293B]/80 backdrop-blur-md rounded-xl border border-red-100">
                                       <span className="text-xl mb-2">⚠️</span>
-                                      <p className="text-xs text-red-400 font-bold tracking-wider uppercase mb-3">Toxic Content Hidden</p>
+                                      <p className="text-xs text-red-600 font-bold tracking-wider uppercase mb-3">Toxic Content Hidden</p>
                                       <button 
                                         onClick={() => setRevealedMessages(prev => [...prev, message._id])}
-                                        className="px-4 py-1.5 rounded-lg bg-red-500/20 text-red-300 text-xs font-semibold hover:bg-red-500/30 transition-colors"
+                                        className="px-4 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 text-xs font-semibold hover:bg-red-100 transition-colors"
                                       >
                                         Reveal Message
                                       </button>
                                     </div>
                                   )}
-                                  <p className={`text-gray-200 text-sm leading-relaxed pl-2 ${showBlur ? 'opacity-20 blur-[2px] select-none' : ''}`}>
+                                  <p className={`text-[#E2E8F0] text-sm leading-relaxed pl-2 ${showBlur ? 'opacity-20 blur-[2px] select-none' : ''}`}>
                                     {message.message}
                                   </p>
                                 </div>
 
                                 <div className="flex items-center justify-between gap-3 mt-5 pl-2">
-                                  <div className="flex items-center gap-3">
-                                    <span className="text-[10px] bg-white/5 px-2 py-1 rounded-md text-gray-500">{linkTitle}</span>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-[10px] bg-[#0F172A] border border-[#334155] px-2 py-1 rounded-md text-[#94A3B8] truncate max-w-[120px]">{linkTitle}</span>
                                     <button 
                                       onClick={() => deleteFeedback(message._id)}
-                                      className="p-1.5 rounded-lg text-gray-600 hover:text-red-400 hover:bg-red-500/10 transition-colors"
+                                      className="p-1.5 rounded-lg text-[#94A3B8] hover:text-red-500 hover:bg-red-50 transition-colors"
                                     >
-                                      <Trash2 size={12} />
+                                      <Trash2 size={14} />
                                     </button>
                                   </div>
-                                  <span className="text-[10px] text-gray-600">{new Date(message.createdAt).toLocaleDateString()}</span>
+                                  <span className="text-[10px] text-[#64748B] font-medium">{new Date(message.createdAt).toLocaleDateString()}</span>
                                 </div>
                               </div>
                             );
@@ -1418,16 +1444,16 @@ export default function Dashboard() {
                         </div>
                         
                         {hasMoreFeedback && (
-                          <div className="pt-8 flex justify-center">
+                          <div className="pt-6 flex justify-center">
                             <button 
                               onClick={loadMoreFeedback}
                               disabled={loadingMoreFeedback}
-                              className="px-8 py-3 rounded-2xl bg-white/5 border border-white/10 text-white text-sm font-bold hover:bg-white/10 hover:border-brand/50 transition-all flex items-center gap-3 disabled:opacity-50 group"
+                              className="px-6 py-2.5 rounded-xl bg-[#1E293B] border border-[#334155] text-[#E2E8F0] text-sm font-semibold hover:bg-[#0F172A] transition-all flex items-center gap-2 disabled:opacity-50"
                             >
                               {loadingMoreFeedback ? (
-                                <Loader2 size={18} className="animate-spin text-brand" />
+                                <Loader2 size={16} className="animate-spin text-[#94A3B8]" />
                               ) : (
-                                <>Load more responses <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" /></>
+                                <>Load more responses <ArrowRight size={14} /></>
                               )}
                             </button>
                           </div>
@@ -1439,39 +1465,43 @@ export default function Dashboard() {
 
                 {activeNav === "trash" && (
                   <motion.div key="trash" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-5">
-                    <div className="flex items-center justify-between gap-4">
+                    <div className="flex items-center justify-between gap-4 mb-6">
                       <div>
-                        <h2 className="text-2xl font-bold text-white">Trash</h2>
-                        <p className="text-sm text-gray-500 mt-1">Deleted links still count toward your plan limit.</p>
+                        <h2 className="text-2xl font-bold tracking-tight text-[#E2E8F0]">Trash</h2>
+                        <p className="text-[#94A3B8] mt-1">Deleted links still count toward your plan limit.</p>
                       </div>
                     </div>
 
                     {loadingDeleted ? (
-                      <div className="p-16 rounded-3xl border border-white/5 text-center bg-surface flex flex-col items-center gap-4 shadow-glow">
-                        <Loader2 className="animate-spin text-brand" size={32} />
-                        <p className="text-gray-400">Loading your trash...</p>
+                      <div className="p-12 rounded-2xl border border-[#334155] bg-[#1E293B] text-center flex flex-col items-center gap-4 shadow-sm">
+                        <Loader2 className="animate-spin text-[#3B82F6]" size={32} />
+                        <p className="text-[#94A3B8]">Loading your trash...</p>
                       </div>
                     ) : deletedLinks.length === 0 ? (
-                      <div className="p-16 rounded-3xl border border-white/5 text-center bg-surface shadow-glow">
-                        <Archive size={48} className="mx-auto mb-4 text-gray-700" />
-                        <p className="text-gray-300 font-semibold">Your trash is empty</p>
-                        <p className="text-gray-600 text-sm mt-1">Links you delete will appear here.</p>
+                      <div className="p-12 rounded-2xl border border-[#334155] bg-[#1E293B] text-center shadow-sm">
+                        <div className="w-16 h-16 rounded-full bg-[#0F172A] border border-[#334155] flex items-center justify-center mx-auto mb-6">
+                          <Archive size={32} className="text-[#94A3B8]" />
+                        </div>
+                        <p className="text-xl font-bold text-[#E2E8F0] mb-2">Your trash is empty</p>
+                        <p className="text-[#94A3B8] text-sm max-w-md mx-auto">Links you delete will appear here.</p>
                       </div>
                     ) : (
                       <div className="grid gap-5 xl:grid-cols-2">
                         {deletedLinks.map((link) => (
-                          <div key={link._id} className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow opacity-60">
+                          <div key={link._id} className="rounded-2xl border border-[#334155] bg-[#1E293B] p-6 shadow-sm opacity-70 hover:opacity-100 transition-opacity">
                             <div className="flex items-start justify-between gap-4">
                               <div>
                                 <div className="flex items-center gap-2 flex-wrap">
-                                  <span className="rounded-lg px-2 py-1 text-[10px] font-bold text-white uppercase bg-gray-700">{link.postType}</span>
-                                  <span className="rounded-lg border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-gray-400">
+                                  <span className="rounded-md px-2 py-1 text-[10px] font-bold text-white uppercase bg-[#94A3B8]">{link.postType}</span>
+                                  <span className="rounded-md border border-[#334155] bg-[#0F172A] px-2 py-1 text-[10px] text-[#94A3B8]">
                                     Deleted {new Date(link.deletedAt).toLocaleDateString()}
                                   </span>
                                 </div>
-                                <h3 className="mt-3 text-lg font-bold text-white/50 line-through">{link.title || link.templateKey || "Untitled link"}</h3>
+                                <h3 className="mt-3 text-lg font-bold text-[#E2E8F0] line-through decoration-[#64748B] text-[#94A3B8]">{link.title || link.templateKey || "Untitled link"}</h3>
                               </div>
-                              <Archive className="text-gray-600" size={20} />
+                              <div className="w-10 h-10 rounded-xl bg-[#0F172A] flex items-center justify-center border border-[#334155]">
+                                <Archive className="text-[#94A3B8]" size={16} />
+                              </div>
                             </div>
                           </div>
                         ))}
@@ -1482,30 +1512,34 @@ export default function Dashboard() {
 
                 {activeNav === "plans" && (
                    <motion.div key="plans" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
-                      <div className="rounded-3xl border border-white/5 bg-surface p-7 shadow-glow flex flex-col md:flex-row md:items-center gap-6">
+                      <div className="mb-6">
+                        <h2 className="text-2xl font-bold tracking-tight text-[#E2E8F0]">Billing & Plans</h2>
+                        <p className="text-[#94A3B8] mt-1">Manage your usage and subscription</p>
+                      </div>
+
+                      <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-6 shadow-sm flex flex-col md:flex-row md:items-center gap-6">
                         <div className="flex items-center gap-4 flex-1">
-                          <div className="w-14 h-14 rounded-2xl bg-brand/10 border border-brand/20 flex items-center justify-center">
-                            <Zap size={24} className="text-brand" />
+                          <div className="w-14 h-14 rounded-2xl bg-[#0F172A] border border-[#334155] flex items-center justify-center">
+                            <Zap size={24} className="text-[#3B82F6]" />
                           </div>
                           <div>
-                            <p className="text-xs uppercase tracking-widest text-gray-500 font-bold">Current Plan</p>
-                            <p className="text-xl font-bold text-white mt-1">{usage.plan.toUpperCase()}</p>
+                            <p className="text-xs font-semibold uppercase tracking-widest text-[#94A3B8]">Current Plan</p>
+                            <p className="text-xl font-bold text-[#E2E8F0] mt-1">{usage.plan.toUpperCase()}</p>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <div className="h-1.5 w-full rounded-full bg-white/10 overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: `${usage.percentage ?? 0}%` }} className="h-full rounded-full bg-brand" />
+                          <div className="h-2 w-full rounded-full bg-[#0F172A] border border-[#334155] overflow-hidden">
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${usage.percentage ?? 0}%` }} className="h-full rounded-full bg-[#3B82F6]" />
                           </div>
-                          <p className="text-[10px] text-gray-500 mt-2">{usage.used} / {usage.limit ?? "∞"} links used</p>
+                          <p className="text-xs font-medium text-[#94A3B8] mt-2 text-right">{usage.used} / {usage.limit ?? "∞"} links used</p>
                         </div>
                       </div>
                       
                       <div className="grid gap-5 md:grid-cols-3">
-                         {/* Plan cards here, just keeping it simple for the layout rebuild */}
                          {["free", "pro", "ultra"].map(planId => (
-                            <div key={planId} className="rounded-3xl border border-white/5 bg-surface p-6">
-                               <p className="text-lg font-bold text-white capitalize">{planId}</p>
-                               <button onClick={() => setShowPricingModal(true)} className="w-full mt-4 py-2 rounded-xl bg-white/5 text-white text-sm font-semibold hover:bg-brand hover:text-black transition-colors">View details</button>
+                            <div key={planId} className={`rounded-2xl border ${usage.plan === planId ? 'border-[#3B82F6] bg-[#3B82F6]/5' : 'border-[#334155] bg-[#1E293B]'} p-6 shadow-sm`}>
+                               <p className="text-lg font-bold text-[#E2E8F0] capitalize">{planId}</p>
+                               <button onClick={() => setShowPricingModal(true)} className="w-full mt-4 py-2.5 rounded-xl border border-[#334155] bg-[#1E293B] text-[#E2E8F0] text-sm font-semibold hover:bg-[#0F172A] transition-colors shadow-sm">View details</button>
                             </div>
                          ))}
                       </div>
@@ -1516,28 +1550,31 @@ export default function Dashboard() {
 
             {/* The Insights Grid (Right side) */}
             <div className="xl:col-span-1 space-y-6 hidden xl:block">
-              <div className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow">
-                <h3 className="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-[0.2em]">Insights Overview</h3>
+              <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-6 shadow-sm">
+                <h3 className="text-xs font-bold text-[#94A3B8] mb-4 uppercase tracking-widest">Insights Overview</h3>
                 <div className="space-y-3">
-                  <div className="p-4 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
-                    <p className="text-xs text-gray-400">Total Feedback</p>
-                    <p className="text-xl font-bold text-white">{analytics?.summary?.totalResponses ?? feedback.length}</p>
+                  <div className="p-4 rounded-xl bg-[#0F172A] border border-[#334155] flex items-center justify-between">
+                    <p className="text-sm text-[#94A3B8] font-medium">Total Feedback</p>
+                    <p className="text-xl font-bold text-[#E2E8F0]">{analytics?.summary?.totalResponses ?? feedback.length}</p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-black/40 border border-white/5 flex items-center justify-between">
-                    <p className="text-xs text-gray-400">Active Links</p>
-                    <p className="text-xl font-bold text-white">{analytics?.summary?.activeLinks ?? 0}</p>
+                  <div className="p-4 rounded-xl bg-[#0F172A] border border-[#334155] flex items-center justify-between">
+                    <p className="text-sm text-[#94A3B8] font-medium">Active Links</p>
+                    <p className="text-xl font-bold text-[#E2E8F0]">{analytics?.summary?.activeLinks ?? 0}</p>
                   </div>
-                  <div className="p-4 rounded-2xl bg-brand/10 border border-brand/20 flex items-center justify-between">
-                    <p className="text-xs text-brand">Responses (7d)</p>
-                    <p className="text-xl font-bold text-brand">{analytics?.summary?.responsesThisWeek ?? 0}</p>
+                  <div className="p-4 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/20 flex items-center justify-between">
+                    <p className="text-sm text-[#3B82F6] font-bold">Responses (7d)</p>
+                    <p className="text-xl font-bold text-[#3B82F6]">{analytics?.summary?.responsesThisWeek ?? 0}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-3xl border border-white/5 bg-surface p-6 shadow-glow">
-                <h3 className="text-[10px] font-bold text-gray-500 mb-4 uppercase tracking-[0.2em]">Pro Tip</h3>
-                <p className="text-xs text-gray-400 leading-relaxed">
-                  Use <kbd className="bg-white/10 px-1 py-0.5 rounded text-[10px] font-mono text-gray-300">Cmd+K</kbd> to quickly jump between views, create new links, or access your account settings from anywhere.
+              <div className="rounded-2xl border border-[#334155] bg-[#0F172A] p-6">
+                <div className="flex items-center gap-2 mb-3">
+                  <Zap size={16} className="text-[#3B82F6]" />
+                  <h3 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-widest">Pro Tip</h3>
+                </div>
+                <p className="text-sm text-[#94A3B8] leading-relaxed">
+                  Use <kbd className="bg-[#1E293B] px-1.5 py-0.5 rounded text-xs font-mono text-[#E2E8F0] border border-[#334155] shadow-sm">Cmd+K</kbd> to quickly jump between views, create new links, or access your account settings from anywhere.
                 </p>
               </div>
             </div>
@@ -1547,9 +1584,12 @@ export default function Dashboard() {
       </div>
 
       {/* Mobile navigation bar */}
-      <nav className="fixed bottom-0 inset-x-0 h-16 border-t border-white/10 bg-black/90 backdrop-blur-xl flex items-center justify-around z-40 md:hidden">
+      <nav className="fixed bottom-0 inset-x-0 h-16 border-t border-[#334155] bg-[#1E293B]/90 backdrop-blur-xl flex items-center justify-around z-40 md:hidden px-2">
+        <Link to="/" className="p-3 rounded-xl text-[#94A3B8] transition-colors hover:text-[#E2E8F0]">
+           <Home size={20} />
+        </Link>
         {NAV.slice(0, 4).map(({ id, icon: Icon }) => (
-          <button key={id} onClick={() => handleNavSelect(id)} className={`p-3 rounded-xl transition-colors ${activeNav === id ? "text-brand bg-brand/10" : "text-gray-500"}`}>
+          <button key={id} onClick={() => handleNavSelect(id)} className={`p-3 rounded-xl transition-colors ${activeNav === id ? "text-[#3B82F6] bg-[#3B82F6]/10" : "text-[#94A3B8]"}`}>
              <Icon size={20} />
           </button>
         ))}

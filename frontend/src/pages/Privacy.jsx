@@ -15,20 +15,20 @@ export default function Privacy() {
             <Lock size={32} className="text-brand" />
           </div>
           <div>
-            <h1 className="text-4xl font-black text-white">Privacy Policy</h1>
-            <p className="text-gray-500 mt-1">Last updated: April 26, 2026</p>
+            <h1 className="text-4xl font-black text-[var(--text-primary)]">Privacy Policy</h1>
+            <p className="text-[var(--text-secondary)] mt-1">Last updated: April 26, 2026</p>
           </div>
         </div>
 
-        <div className="glass p-8 md:p-12 rounded-[2rem] space-y-10 leading-relaxed border-white/5">
+        <div className="glass p-8 md:p-12 rounded-[2rem] space-y-10 leading-relaxed border-[var(--border-color)]">
           <section>
-            <h2 className="text-xl font-bold text-white flex items-center gap-3 mb-4">
+            <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3 mb-4">
               <Eye size={20} className="text-brand" /> 1. Information We Collect
             </h2>
-            <p className="mb-4">
+            <p className="mb-4 text-[var(--text-secondary)]">
               We collect minimal information to provide a safe and functional anonymous platform:
             </p>
-            <ul className="list-disc pl-6 space-y-2 text-sm">
+            <ul className="list-disc pl-6 space-y-2 text-sm text-[var(--text-secondary)]">
               <li><strong>Account Info:</strong> Email, Username, and Password (hashed).</li>
               <li><strong>Feedback Content:</strong> The messages, images, or files sent to you.</li>
               <li><strong>Usage Data:</strong> IP address (for geo-mapping and security), browser type, and interaction data.</li>
@@ -36,22 +36,22 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white flex items-center gap-3 mb-4">
+            <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3 mb-4">
               <Database size={20} className="text-brand" /> 2. How We Use Your Data
             </h2>
-            <p>
+            <p className="text-[var(--text-secondary)]">
               Your data is used to maintain your account, process payments, and facilitate the anonymous feedback loop. We use Gemini AI to scan feedback for toxicity to ensure user safety.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white flex items-center gap-3 mb-4">
+            <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3 mb-4">
               <Share2 size={20} className="text-brand" /> 3. Data Sharing
             </h2>
-            <p>
+            <p className="text-[var(--text-secondary)]">
               We **never** sell your data. We only share information with third-party services necessary for the app to function:
             </p>
-            <ul className="list-disc pl-6 mt-4 space-y-2 text-sm text-gray-400">
+            <ul className="list-disc pl-6 mt-4 space-y-2 text-sm text-[var(--text-secondary)]">
               <li><strong>Razorpay:</strong> For secure payment processing.</li>
               <li><strong>Cloudinary:</strong> For secure image and file hosting.</li>
               <li><strong>Resend:</strong> For transactional emails and OTPs.</li>
@@ -60,21 +60,21 @@ export default function Privacy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-4">4. Your Rights</h2>
-            <p>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">4. Your Rights</h2>
+            <p className="text-[var(--text-secondary)]">
               You have the right to access, download, or delete your personal data. You can delete your account and all associated data directly from your dashboard settings.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-bold text-white mb-4">5. Security</h2>
-            <p>
+            <h2 className="text-xl font-bold text-[var(--text-primary)] mb-4">5. Security</h2>
+            <p className="text-[var(--text-secondary)]">
               We implement industry-standard security measures, including HTTPS encryption and hashed passwords, to protect your data from unauthorized access.
             </p>
           </section>
 
-          <div className="pt-10 border-t border-white/5 text-center">
-            <p className="text-sm text-gray-500">
+          <div className="pt-10 border-t border-[var(--border-color)] text-center">
+            <p className="text-sm text-[var(--text-secondary)]">
               By using Verit, you consent to our Privacy Policy.
             </p>
           </div>

@@ -44,18 +44,18 @@ const FEATURE_COLUMNS = [
 
 const STEPS = [
   {
-    title: "Create a link",
-    description: "Choose a template, add branding, and publish a feedback page in seconds.",
+    title: "1. Create your anonymous link",
+    description: "Sign up and instantly generate a beautifully branded TruthBox link. Customize the template to ask the exact right questions for your audience.",
     icon: Wand2,
   },
   {
-    title: "Share anywhere",
-    description: "Send it by bio link, DM, QR code, or embed it in your content.",
+    title: "2. Share with your audience",
+    description: "Drop your link in your Instagram bio, Twitter profile, or send it directly via DM. Anyone can respond effortlessly without logging in.",
     icon: Globe,
   },
   {
-    title: "Read the pattern",
-    description: "Track responses, spot themes, and improve with data instead of guesswork.",
+    title: "3. Get honest, structured feedback",
+    description: "View responses in a private, secure dashboard. Track patterns, filter the noise, and gain actionable insights from raw, authentic honesty.",
     icon: CheckCircle2,
   },
 ];
@@ -123,6 +123,16 @@ const reveal = {
   },
 };
 
+const fadeUp = {
+  hidden: { opacity: 0, y: 30, filter: "blur(8px)" },
+  show: { opacity: 1, y: 0, filter: "blur(0px)", transition: { duration: 0.72, ease: [0.22, 1, 0.36, 1] } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  show: { opacity: 1, transition: { staggerChildren: 0.15 } }
+};
+
 function ZigzagSection({ id, flip = false, left, right }) {
   return (
     <section id={id} className="w-full px-6 py-16 lg:px-12 2xl:px-20 xl:py-24">
@@ -152,6 +162,13 @@ function ZigzagSection({ id, flip = false, left, right }) {
   );
 }
 
+
+
+// ... existing code (FEATURE_COLUMNS, STEPS, TEMPLATES, reveal, ZigzagSection)
+
+import lightCloudBg from "../assets/light_cloud_bg.png";
+import darkCloudBg from "../assets/dark_cloud_bg.png";
+
 export default function Home() {
   const navigate = useNavigate();
   const [activeTemplate, setActiveTemplate] = useState(TEMPLATES[0]);
@@ -167,8 +184,8 @@ export default function Home() {
   const statTiles = useMemo(
     () => [
       { value: "30 sec", label: "to publish a link" },
-      { value: "100%", label: "anonymous responses" },
-      { value: "5 min", label: "to launch a branded page" },
+      { value: "100%", label: "anonymous" },
+      { value: "5 min", label: "to launch" },
     ],
     []
   );
@@ -185,31 +202,50 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(151,206,35,0.18),transparent_30%),radial-gradient(circle_at_80%_20%,rgba(255,255,255,0.08),transparent_24%),linear-gradient(180deg,rgba(0,0,0,0.22),rgba(0,0,0,0.58))]" />
+    <div className="relative min-h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,var(--accent-soft),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(151,206,35,0.05),transparent_30%)]" />
+      <div 
+        className="absolute inset-0 pointer-events-none z-0 dark:hidden" 
+        style={{ 
+          backgroundImage: `url(${lightCloudBg})`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center',
+          opacity: 1 
+        }} 
+      />
+      <div 
+        className="absolute inset-0 pointer-events-none z-0 hidden dark:block" 
+        style={{ 
+          backgroundImage: `url(${darkCloudBg})`, 
+          backgroundSize: 'cover', 
+          backgroundPosition: 'center',
+          opacity: 1 
+        }} 
+      />
 
-      <header className="relative z-[100] w-full border-b border-white/10">
+      <header className="relative z-[100] w-full border-b border-[var(--border-color)]">
         <div className="flex w-full items-center justify-between px-6 py-4 lg:py-6 lg:px-12 2xl:px-20">
           <Link to="/" className="flex items-center">
-            <VeritLogo className="h-12 lg:h-16 w-auto" showTagline={false} />
+            <VeritLogo className="h-16 lg:h-20 w-auto" showTagline={false} />
           </Link>
 
           {/* Desktop Nav */}
           <div className="hidden items-center gap-8 md:flex">
             {menuLinks.map((link) => (
-              <a key={link.name} href={link.href} className="text-sm font-medium text-gray-400 transition-colors hover:text-white">
+              <a key={link.name} href={link.href} className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
                 {link.name}
               </a>
             ))}
+            <div className="h-6 w-px bg-[var(--border-color)] mx-2" />
             <Link
               to="/login"
-              className="text-sm font-bold text-gray-300 transition-colors hover:text-white"
+              className="text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
               Sign in
             </Link>
             <Link
               to="/signup"
-              className="rounded-full bg-accent px-6 py-2.5 text-sm font-black text-main transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.35)]"
+              className="rounded-full bg-[var(--accent)] px-6 py-2.5 text-sm font-black text-white shadow-lg transition-all hover:-translate-y-0.5"
             >
               Get started
             </Link>
@@ -217,121 +253,117 @@ export default function Home() {
 
           {/* Mobile Actions */}
           <div className="flex items-center gap-4 md:hidden">
-            <Link
-              to="/login"
-              className="text-sm font-bold text-gray-300"
-            >
-              Sign in
-            </Link>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
-              className="p-2 bg-white/5 rounded-xl border border-white/10 text-white"
+              className="p-2 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)] text-[var(--text-primary)]"
             >
               {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
             </button>
           </div>
         </div>
-
-        {/* Mobile Menu Side Drawer */}
-        <AnimatePresence>
-          {isMenuOpen && (
-            <>
-              {/* Backdrop */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsMenuOpen(false)}
-                className="fixed inset-0 z-[110] bg-black/60 backdrop-blur-sm md:hidden"
-              />
-              
-              {/* Drawer */}
-              <motion.div
-                initial={{ x: "100%" }}
-                animate={{ x: 0 }}
-                exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 z-[120] h-full w-[280px] border-l border-white/10 bg-black/40 p-8 pt-24 backdrop-blur-2xl md:hidden"
-                style={{
-                  background: "linear-gradient(180deg, rgba(20,20,20,0.8), rgba(0,0,0,0.9))",
-                }}
-              >
-                <button 
-                  onClick={() => setIsMenuOpen(false)}
-                  className="absolute top-6 right-6 p-2 text-gray-400 hover:text-white"
-                >
-                  <X size={24} />
-                </button>
-
-                <div className="flex flex-col gap-8">
-                  {menuLinks.map((link) => (
-                    <a 
-                      key={link.name} 
-                      href={link.href} 
-                      onClick={() => setIsMenuOpen(false)}
-                      className="text-sm font-bold tracking-widest uppercase text-gray-400 hover:text-accent transition-colors"
-                    >
-                      {link.name}
-                    </a>
-                  ))}
-                  <div className="h-px bg-white/5 my-2" />
-                  <Link
-                    to="/signup"
-                    onClick={() => setIsMenuOpen(false)}
-                    className="flex items-center justify-center gap-2 rounded-xl bg-accent px-6 py-4 text-sm font-black text-main shadow-glow"
-                  >
-                    Get started <ArrowRight size={16} />
-                  </Link>
-                </div>
-              </motion.div>
-            </>
-          )}
-        </AnimatePresence>
       </header>
+
+      {/* Mobile Menu Overlay */}
+      <AnimatePresence>
+        {isMenuOpen && (
+          <>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsMenuOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[110] md:hidden"
+            />
+            <motion.aside
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", bounce: 0, duration: 0.3 }}
+              className="fixed inset-y-0 right-0 w-72 bg-[var(--bg-secondary)] border-l border-[var(--border-color)] flex flex-col py-6 px-6 gap-6 z-[120] md:hidden shadow-2xl"
+            >
+              <div className="flex items-center justify-between">
+                <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">Menu</span>
+                <button onClick={() => setIsMenuOpen(false)} className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] rounded-xl transition-colors">
+                  <X size={20} />
+                </button>
+              </div>
+              
+              <nav className="flex flex-col gap-2 mt-4">
+                {menuLinks.map((link) => (
+                  <a
+                    key={link.name}
+                    href={link.href}
+                    onClick={() => setIsMenuOpen(false)}
+                    className="text-lg font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)] py-2"
+                  >
+                    {link.name}
+                  </a>
+                ))}
+              </nav>
+              
+              <div className="mt-auto flex flex-col gap-3 pt-6 border-t border-[var(--border-color)]">
+                <Link
+                  to="/login"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full text-center py-3 rounded-xl border border-[var(--border-color)] font-bold text-[var(--text-primary)] hover:bg-[var(--bg-primary)] transition-all"
+                >
+                  Sign in
+                </Link>
+                <Link
+                  to="/signup"
+                  onClick={() => setIsMenuOpen(false)}
+                  className="w-full text-center py-3 rounded-xl bg-[var(--accent)] font-bold text-white shadow-lg transition-all"
+                >
+                  Get started
+                </Link>
+              </div>
+            </motion.aside>
+          </>
+        )}
+      </AnimatePresence>
 
       <main className="relative z-10 w-full">
         <ZigzagSection
           left={
             <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-gray-300">
-                <MousePointerClick size={14} className="text-accent" />
-                Built for honest, anonymous feedback
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--text-secondary)] shadow-sm">
+                <MousePointerClick size={14} className="text-[var(--accent)]" />
+                Professional anonymous feedback
               </div>
 
               <div className="space-y-5">
-                <h2 className="max-w-3xl text-5xl font-extrabold leading-[1.02] tracking-tight md:text-7xl xl:text-[5.2rem]">
+                <h2 className="max-w-3xl text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl xl:text-[5.5rem] text-[var(--text-primary)]">
                   Make feedback feel
-                  <span className="text-accent"> premium</span>,
-                  not basic.
+                  <span className="text-[var(--accent)]"> premium</span>
                 </h2>
-                <p className="max-w-2xl text-lg leading-8 text-gray-300 md:text-xl">
-                  Verit helps creators, students, and builders collect anonymous feedback through
-                  branded links, useful templates, and a dashboard that actually tells them what to do next.
+                <p className="max-w-2xl text-lg leading-8 text-[var(--text-secondary)] md:text-xl">
+                  TruthBox helps creators and builders collect anonymous feedback through
+                  branded links and a dashboard that actually provides insights.
                 </p>
               </div>
 
               <div className="flex flex-wrap gap-4">
                 <Link
                   to="/signup"
-                  className="inline-flex items-center gap-2 rounded-full bg-accent px-7 py-4 text-sm font-bold text-main transition-all hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.35)]"
+                  className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-7 py-4 text-sm font-bold text-white transition-all hover:-translate-y-0.5 shadow-lg shadow-[var(--accent)]/20"
                 >
                   Create your first link
                   <ArrowRight size={16} />
                 </Link>
                 <a
                   href="#live-demo"
-                  className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-7 py-4 text-sm font-semibold text-white transition-colors hover:bg-white/10"
+                  className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] px-7 py-4 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-secondary)]/80"
                 >
-                  Try the live demo
+                  Try live demo
                   <ChevronRight size={16} />
                 </a>
               </div>
 
               <div className="grid gap-4 sm:grid-cols-3">
                 {statTiles.map((tile) => (
-                  <div key={tile.label} className="rounded-3xl border border-white/10 bg-black/35 px-5 py-4 backdrop-blur-xl">
-                    <p className="text-2xl font-extrabold text-white">{tile.value}</p>
-                    <p className="text-sm text-gray-500">{tile.label}</p>
+                  <div key={tile.label} className="rounded-3xl border border-[var(--border-color)] bg-[var(--bg-secondary)]/50 px-5 py-4 backdrop-blur-xl">
+                    <p className="text-2xl font-extrabold text-[var(--text-primary)]">{tile.value}</p>
+                    <p className="text-sm text-[var(--text-secondary)]">{tile.label}</p>
                   </div>
                 ))}
               </div>
@@ -342,12 +374,12 @@ export default function Home() {
               {FEATURE_COLUMNS.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={feature.title} className="rounded-[1.6rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-accent">
+                  <div key={feature.title} className="rounded-[1.6rem] border border-[var(--border-color)] bg-[var(--bg-secondary)]/40 p-6 backdrop-blur-xl group hover:bg-[var(--bg-secondary)]/80 transition-all">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/15 text-[var(--accent)]">
                       <Icon size={22} />
                     </div>
-                    <h3 className="text-xl font-bold">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-gray-400">{feature.description}</p>
+                    <h3 className="text-xl font-bold text-[var(--text-primary)]">{feature.title}</h3>
+                    <p className="mt-2 text-sm leading-7 text-[var(--text-secondary)]">{feature.description}</p>
                   </div>
                 );
               })}
@@ -360,107 +392,78 @@ export default function Home() {
           flip
           left={
             <div className="space-y-5">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Live Demo</p>
-              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl">
-                See the feedback page update as you pick templates.
+              <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--accent)]">Live Demo</p>
+              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl text-[var(--text-primary)]">
+                Real-time template preview.
               </h3>
-              <p className="max-w-xl text-base leading-8 text-gray-400 md:text-lg">
-                This block is fully active: selecting template chips updates the preview instantly,
-                and your selected template is carried into signup and dashboard.
+              <p className="max-w-xl text-base leading-8 text-[var(--text-secondary)] md:text-lg">
+                Choose a template and see how your feedback page will look to your visitors instantly.
               </p>
             </div>
           }
           right={
             <div className="relative w-full">
-              <div className="absolute -left-8 top-8 h-28 w-28 rounded-full bg-accent/20 blur-3xl" />
-              <div className="absolute -right-6 bottom-12 h-36 w-36 rounded-full bg-white/10 blur-3xl" />
-
-              <div className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-[rgba(10,10,10,0.82)] shadow-[0_30px_80px_rgba(0,0,0,0.45)]">
-                <div className="grid gap-0 border-b border-white/10 bg-white/5 md:grid-cols-[0.95fr_1.05fr]">
-                  <div className="p-6">
-                    <div className="mb-4 flex items-center gap-3">
-                      <div className="h-12 w-12 rounded-2xl border border-white/10 bg-black/50 p-2">
+              <div className="absolute -left-8 top-8 h-28 w-28 rounded-full bg-[var(--accent)]/20 blur-3xl" />
+              
+              <div className="relative overflow-hidden rounded-[2.5rem] border border-[var(--border-color)] bg-[var(--bg-secondary)]/80 shadow-2xl backdrop-blur-xl">
+                {/* Browser-like Header */}
+                <div className="flex items-center gap-2 px-6 py-4 border-b border-[var(--border-color)] bg-[var(--bg-primary)]/50">
+                  <div className="h-3 w-3 rounded-full bg-red-400/80" />
+                  <div className="h-3 w-3 rounded-full bg-amber-400/80" />
+                  <div className="h-3 w-3 rounded-full bg-green-400/80" />
+                  <div className="ml-4 flex-1 rounded-md bg-[var(--bg-secondary)] py-1.5 px-3 text-xs text-[var(--text-secondary)] text-center border border-[var(--border-color)] shadow-sm font-mono">
+                    truthbox.io/p/preview
+                  </div>
+                </div>
+                <div className="grid gap-0 md:grid-cols-[0.95fr_1.05fr]">
+                  <div className="p-8 border-b md:border-b-0 md:border-r border-[var(--border-color)]">
+                    <div className="mb-6 flex items-center gap-4">
+                      <div className="h-12 w-12 rounded-2xl bg-[var(--bg-primary)] p-2 border border-[var(--border-color)] shadow-sm">
                         <img src={heroArt} alt="Verit preview" className="h-full w-full object-contain" />
                       </div>
                       <div>
-                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Live preview</p>
-                        <h3 className="text-2xl font-bold leading-tight">How a feedback page feels</h3>
+                        <h3 className="text-xl font-bold text-[var(--text-primary)]">Live Preview</h3>
+                        <p className="text-xs text-[var(--text-secondary)] mt-0.5">Interact with the template</p>
                       </div>
                     </div>
 
-                    <div className="space-y-4 rounded-3xl border border-white/10 bg-black/45 p-4">
-                      <div className="flex items-center justify-between gap-3">
-                        <div>
-                          <p className="text-3xl font-bold leading-tight text-white">{activeTemplate.headline}</p>
-                          <p className="text-sm text-gray-500">Anonymous response preview</p>
-                        </div>
-                        <div className="rounded-full px-3 py-1 text-xs font-semibold" style={{ background: `${activeTemplate.accent}20`, color: activeTemplate.accent }}>
-                          {activeTemplate.title}
-                        </div>
-                      </div>
-
-                      <div className="rounded-2xl border border-white/10 bg-black/60 p-4 text-sm text-gray-300">
-                        {activeTemplate.prompt}
-                      </div>
-
+                    <div className="space-y-4 rounded-3xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-6">
+                      <p className="text-2xl font-bold text-[var(--text-primary)]">{activeTemplate.headline}</p>
                       <textarea
                         value={demoNote}
                         onChange={(e) => setDemoNote(e.target.value)}
-                        className="min-h-28 w-full rounded-2xl border border-white/10 bg-black/50 p-4 text-sm text-white outline-none transition-colors placeholder:text-gray-600 focus:border-accent/50"
-                        placeholder="Write your response here..."
+                        className="min-h-24 w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4 text-sm text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
+                        placeholder="Write something..."
                       />
-
-                      <div className="rounded-2xl border p-4" style={{ background: `${activeTemplate.accent}10`, borderColor: `${activeTemplate.accent}26` }}>
-                        <p className="text-xs uppercase tracking-[0.2em]" style={{ color: activeTemplate.accent }}>
-                          Example reply
-                        </p>
-                        <p className="mt-2 text-sm leading-relaxed text-gray-200">{activeTemplate.response}</p>
+                      <div className="rounded-2xl p-4 bg-[var(--accent)]/5 border border-[var(--accent)]/10">
+                        <p className="text-xs font-bold uppercase text-[var(--accent)] mb-1">Example Reply</p>
+                        <p className="text-sm text-[var(--text-secondary)]">{activeTemplate.response}</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="border-t border-white/10 p-6 md:border-l md:border-t-0">
-                    <div className="mb-4 flex flex-wrap gap-2">
-                      {TEMPLATES.map((template) => {
-                        const active = template.id === activeTemplate.id;
-                        return (
-                          <button
-                            key={template.id}
-                            onClick={() => handleTemplateSelect(template)}
-                            className={`rounded-full px-4 py-2 text-xs font-semibold transition-colors ${
-                              active
-                                ? "bg-accent text-main"
-                                : "border border-white/10 bg-white/5 text-gray-300 hover:bg-white/10"
-                            }`}
-                          >
-                            {template.title}
-                          </button>
-                        );
-                      })}
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="rounded-3xl border border-white/10 bg-black/40 p-5">
-                        <p className="text-xs uppercase tracking-[0.2em] text-gray-500">Selected template</p>
-                        <h4 className="mt-3 text-xl font-bold">{activeTemplate.title}</h4>
-                        <p className="mt-2 text-sm leading-7 text-gray-400">{activeTemplate.summary}</p>
-                      </div>
-
-                      <div className="grid gap-3">
-                        <div className="rounded-2xl border border-white/10 bg-black/40 p-4">
-                          <p className="text-xs uppercase tracking-[0.18em] text-gray-500">Current note</p>
-                          <p className="mt-2 text-sm text-gray-200">{demoNote}</p>
-                        </div>
+                  <div className="p-8 bg-[var(--bg-primary)]/30">
+                    <div className="mb-6 flex flex-wrap gap-2">
+                      {TEMPLATES.map((template) => (
                         <button
-                          onClick={continueWithTemplate}
-                          className="inline-flex items-center justify-center gap-2 rounded-2xl px-5 py-4 text-sm font-bold text-main"
-                          style={{ background: activeTemplate.accent }}
+                          key={template.id}
+                          onClick={() => handleTemplateSelect(template)}
+                          className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
+                            template.id === activeTemplate.id
+                              ? "bg-[var(--accent)] text-white shadow-md"
+                              : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:bg-[var(--bg-secondary)]/80"
+                          }`}
                         >
-                          Use this template
-                          <Copy size={15} />
+                          {template.title}
                         </button>
-                      </div>
+                      ))}
                     </div>
+                    <button
+                      onClick={continueWithTemplate}
+                      className="w-full py-4 rounded-2xl text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.02] bg-[var(--accent)] hover:bg-[var(--accent)]/90"
+                    >
+                      Use this template
+                    </button>
                   </div>
                 </div>
               </div>
@@ -468,256 +471,105 @@ export default function Home() {
           }
         />
 
-        <ZigzagSection
-          id="how-it-works"
-          left={
-            <div className="space-y-5">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">How it works</p>
-              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl">
-                Three steps from idea to insight.
-              </h3>
-              <p className="max-w-xl text-base leading-8 text-gray-400 md:text-lg">
-                Every step is simple by itself, but together they create a feedback loop that feels professional.
-              </p>
-            </div>
-          }
-          right={
-            <div className="grid gap-5 lg:grid-cols-3 xl:grid-cols-1">
-              {STEPS.map((step, index) => {
-                const Icon = step.icon;
-                return (
-                  <div key={step.title} className="rounded-[1.75rem] border border-white/10 bg-white/5 p-6 backdrop-blur-xl">
-                    <div className="mb-5 flex items-center justify-between">
-                      <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-accent/15 text-accent">
-                        <Icon size={22} />
-                      </div>
-                      <span className="text-sm text-gray-600">0{index + 1}</span>
-                    </div>
-                    <h4 className="text-xl font-bold">{step.title}</h4>
-                    <p className="mt-3 text-sm leading-7 text-gray-400">{step.description}</p>
-                  </div>
-                );
-              })}
-            </div>
-          }
-        />
+        <section id="how-it-works" className="w-full px-6 py-20 lg:px-12 2xl:px-20 relative">
+          <motion.div 
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
+            className="text-center mb-16 max-w-3xl mx-auto space-y-5"
+          >
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--accent)]">How it works</p>
+            <h3 className="text-4xl font-extrabold text-[var(--text-primary)] md:text-6xl">Simple and professional.</h3>
+            <p className="text-lg text-[var(--text-secondary)]">Get up and running in less than a minute. No complex setups, just clear, honest feedback from your audience.</p>
+          </motion.div>
 
-        <ZigzagSection
-          id="templates"
-          flip
-          left={
-            <div className="space-y-5">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Templates</p>
-              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl">
-                Start with a strong prompt instead of a blank screen.
-              </h3>
-              <p className="max-w-xl text-base leading-8 text-gray-400 md:text-lg">
-                Select any card and it becomes active immediately in the live preview and onboarding flow.
-              </p>
-            </div>
-          }
-          right={
-            <div className="grid gap-5 md:grid-cols-2">
-              {TEMPLATES.map((item) => (
-                <button
-                  key={item.id}
-                  onClick={() => handleTemplateSelect(item)}
-                  className={`rounded-[1.75rem] border p-6 text-left transition-all hover:-translate-y-1 hover:bg-white/10 ${
-                    activeTemplate.id === item.id
-                      ? "border-accent/60 bg-accent/10 shadow-[0_0_0_1px_rgba(151,206,35,0.3)]"
-                      : "border-white/10 bg-[#111111]"
-                  }`}
-                >
-                  <div className="mb-6 flex items-center justify-between">
-                    <div className="h-3 w-3 rounded-full" style={{ backgroundColor: item.accent }} />
-                    <LayoutTemplate size={18} style={{ color: item.accent }} />
-                  </div>
-                  <h4 className="text-xl font-bold">{item.title}</h4>
-                  <p className="mt-3 text-sm leading-7 text-gray-400">{item.summary}</p>
-                  <div className="mt-6 inline-flex items-center gap-2 text-sm font-semibold" style={{ color: item.accent }}>
-                    {activeTemplate.id === item.id ? "Selected" : "Use template"}
-                    <ChevronRight size={15} />
-                  </div>
-                </button>
-              ))}
-            </div>
-          }
-        />
+          <motion.div 
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+            className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto relative"
+          >
+            {/* Connecting line for desktop */}
+            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent z-0" />
+            
+            {STEPS.map((step, index) => (
+              <motion.div 
+                key={step.title} 
+                variants={fadeUp}
+                className="relative z-10 rounded-[2.5rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] p-8 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 group overflow-hidden"
+              >
+                <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[var(--accent)]/5 blur-2xl group-hover:bg-[var(--accent)]/10 transition-colors" />
+                
+                <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--accent)]/10 text-[var(--accent)] shadow-inner">
+                  <step.icon size={28} />
+                </div>
+                
+                <h4 className="text-xl font-bold text-[var(--text-primary)] mb-3">{step.title}</h4>
+                <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{step.description}</p>
+              </motion.div>
+            ))}
+          </motion.div>
+        </section>
 
         {/* ── Pricing Section ───────────────────────────────────────────── */}
         <section id="pricing" className="w-full px-6 pb-28 pt-10 lg:px-12 2xl:px-20">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, amount: 0.15 }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="text-center mb-14"
+          <motion.div 
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={fadeUp}
+            className="text-center mb-16"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-accent">Pricing</p>
-            <h3 className="mx-auto mt-4 max-w-3xl text-4xl font-extrabold md:text-5xl">
-              Simple plans, honest prices.
-            </h3>
-            <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-gray-400">
-              Start free. Upgrade when you're ready to scale your feedback operation.
-            </p>
+            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--accent)]">Pricing</p>
+            <h3 className="mt-4 text-4xl font-extrabold text-[var(--text-primary)] md:text-5xl">Simple plans.</h3>
           </motion.div>
 
-          <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
+          <motion.div 
+            initial="hidden"
+            whileInView="show"
+            viewport={{ once: true, amount: 0.2 }}
+            variants={staggerContainer}
+            className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto"
+          >
             {[
-              {
-                id: "free",
-                name: "Free",
-                price: "₹0",
-                subPrice: null,
-                period: "forever",
-                icon: Sparkles,
-                color: "#6b7280",
-                links: "5 links",
-                features: [
-                  "5 feedback links",
-                  "All post types",
-                  "Anonymous responses",
-                  "Basic dashboard",
-                ],
-                locked: ["Analytics", "CSV export", "Priority support"],
-                cta: "Get started free",
-                href: "/signup",
-                ctaStyle: "border border-white/10 bg-white/5 text-white hover:bg-white/10",
-                badge: null,
-                glow: null,
-              },
-              {
-                id: "pro",
-                name: "Pro",
-                price: "₹499",
-                subPrice: "≈ $6",
-                period: "per month",
-                icon: Zap,
-                color: "#97ce23",
-                links: "20 links",
-                features: [
-                  "20 feedback links",
-                  "All post types",
-                  "Anonymous responses",
-                  "Full analytics dashboard",
-                  "CSV export",
-                  "Priority support",
-                ],
-                locked: ["Custom branding"],
-                cta: "Get Pro — ₹499/mo",
-                href: "/signup?plan=pro",
-                ctaStyle: "bg-accent text-black font-bold hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.45)]",
-                badge: "Most Popular",
-                glow: "0 0 60px rgba(151,206,35,0.20)",
-              },
-              {
-                id: "ultra",
-                name: "Pro Ultra",
-                price: "₹999",
-                subPrice: "≈ $12",
-                period: "per month",
-                icon: Crown,
-                color: "#ffffff",
-                links: "Unlimited",
-                features: [
-                  "Unlimited feedback links",
-                  "All post types",
-                  "Anonymous responses",
-                  "Full analytics dashboard",
-                  "CSV export",
-                  "Priority support",
-                  "Custom branding",
-                  "Early access to features",
-                ],
-                locked: [],
-                cta: "Get Ultra — ₹999/mo",
-                href: "/signup?plan=ultra",
-                ctaStyle: "bg-white text-black font-bold hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(255,255,255,0.25)]",
-                badge: "Best Value",
-                glow: "0 0 60px rgba(255,255,255,0.10)",
-              },
-            ].map((plan, i) => {
-              const Icon = plan.icon;
-              return (
-                <motion.div
-                  key={plan.id}
-                  initial={{ opacity: 0, y: 32 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true, amount: 0.15 }}
-                  transition={{ duration: 0.5, ease: "easeOut", delay: i * 0.1 }}
-                  className="relative rounded-[1.75rem] border p-7 flex flex-col gap-5"
-                  style={{
-                    borderColor: plan.id === "pro" ? "rgba(151,206,35,0.4)" : plan.id === "ultra" ? "rgba(255,255,255,0.15)" : "rgba(255,255,255,0.08)",
-                    background: plan.id === "pro" ? "rgba(151,206,35,0.05)" : "rgba(255,255,255,0.02)",
-                    boxShadow: plan.glow || "none",
-                  }}
-                >
-                  {/* Badge */}
-                  {plan.badge && (
-                    <div
-                      className="absolute -top-3.5 left-1/2 -translate-x-1/2 px-4 py-1 rounded-full text-xs font-bold"
-                      style={{ background: plan.color, color: "#000" }}
-                    >
-                      {plan.badge}
-                    </div>
-                  )}
-
-                  {/* Icon + name */}
-                  <div className="flex items-center gap-3">
-                    <div
-                      className="w-11 h-11 rounded-2xl flex items-center justify-center"
-                      style={{ background: `${plan.color}18`, border: `1px solid ${plan.color}30` }}
-                    >
-                      <Icon size={20} style={{ color: plan.color }} />
-                    </div>
-                    <div>
-                      <p className="font-bold text-white text-lg">{plan.name}</p>
-                      <p className="text-xs text-gray-500">{plan.links}</p>
-                    </div>
+              { id: "free", name: "Free", price: "₹0", color: "#6b7280", features: ["5 links", "All post types", "Basic dashboard"] },
+              { id: "pro", name: "Pro", price: "₹499", color: "var(--accent)", features: ["20 links", "Analytics", "Priority support"], popular: true },
+              { id: "ultra", name: "Ultra", price: "₹999", color: "#38bdf8", features: ["Unlimited links", "Custom branding", "Early access"] },
+            ].map((plan) => (
+              <motion.div 
+                key={plan.id}
+                variants={fadeUp}
+                className={`relative rounded-[2.5rem] border p-8 flex flex-col gap-6 transition-all hover:shadow-2xl ${
+                  plan.popular ? "border-[var(--accent)] bg-[var(--accent)]/5 scale-105" : "border-[var(--border-color)] bg-[var(--bg-secondary)]/50"
+                }`}
+              >
+                {plan.popular && (
+                  <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest rounded-full">Popular</span>
+                )}
+                <div>
+                  <h4 className="text-2xl font-bold text-[var(--text-primary)]">{plan.name}</h4>
+                  <div className="mt-4 flex items-baseline gap-1">
+                    <span className="text-4xl font-black text-[var(--text-primary)]">{plan.price}</span>
+                    <span className="text-sm text-[var(--text-secondary)]">/mo</span>
                   </div>
-
-                  {/* Price */}
-                  <div className="border-b border-white/8 pb-5">
-                    <span className="text-4xl font-extrabold text-white">{plan.price}</span>
-                    <span className="text-sm text-gray-500 ml-2">/{plan.period}</span>
-                    {plan.subPrice && (
-                      <p className="text-xs text-gray-600 mt-1">{plan.subPrice} approx.</p>
-                    )}
-                  </div>
-
-                  {/* Features */}
-                  <ul className="space-y-2.5 flex-1">
-                    {plan.features.map((f) => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm text-gray-300">
-                        <Check size={15} style={{ color: plan.color, flexShrink: 0 }} />
-                        {f}
-                      </li>
-                    ))}
-                    {plan.locked.map((f) => (
-                      <li key={f} className="flex items-center gap-2.5 text-sm text-gray-600">
-                        <X size={15} className="text-gray-700 shrink-0" />
-                        <span className="line-through">{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  {/* CTA */}
-                  <Link
-                    to={plan.href}
-                    className={`w-full py-3.5 rounded-2xl text-sm text-center transition-all inline-flex items-center justify-center gap-2 ${plan.ctaStyle}`}
-                  >
-                    {plan.cta}
-                    <ArrowRight size={15} />
-                  </Link>
-                </motion.div>
-              );
-            })}
-          </div>
-
-          <p className="text-center text-xs text-gray-600 mt-10">
-            All plans include anonymous responses. No credit card required for Free.
-            Questions? <a href="mailto:support@verit.app" className="text-accent hover:underline">Contact us</a>.
-          </p>
+                </div>
+                <ul className="space-y-4 flex-1">
+                  {plan.features.map(f => (
+                    <li key={f} className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
+                      <Check size={18} className="text-[var(--accent)]" /> {f}
+                    </li>
+                  ))}
+                </ul>
+                <Link to="/signup" className={`w-full py-4 rounded-2xl text-sm font-bold text-center transition-all ${
+                  plan.popular ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)]"
+                }`}>
+                  Get Started
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
         </section>
       </main>
       <Footer />

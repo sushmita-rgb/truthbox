@@ -1,20 +1,42 @@
 @import "tailwindcss";
 
+:root {
+  --bg-primary: #F8F9FA;
+  --bg-secondary: #FFFFFF;
+  --text-primary: #111827;
+  --text-secondary: #4B5563;
+  --accent: #2563EB;
+  --accent-soft: rgba(37, 99, 235, 0.1);
+  --border-color: rgba(0, 0, 0, 0.08);
+  --glass-bg: rgba(255, 255, 255, 0.7);
+}
+
+.dark {
+  --bg-primary: #0F172A;
+  --bg-secondary: #1E293B;
+  --text-primary: #F1F5F9;
+  --text-secondary: #94A3B8;
+  --accent: #3B82F6;
+  --accent-soft: rgba(59, 130, 246, 0.1);
+  --border-color: rgba(255, 255, 255, 0.05);
+  --glass-bg: rgba(15, 23, 42, 0.6);
+}
+
 @theme {
   --font-sans: "Inter", sans-serif;
   --font-heading: "Poppins", sans-serif;
-  --color-main: #141414;
-  --color-accent: #97ce23;
-  --color-brand: #97ce23;
-  --color-surface: #0A0A0A;
-  --shadow-glow: 0 0 20px rgba(151, 206, 35, 0.15);
+  --color-main: var(--bg-primary);
+  --color-accent: var(--accent);
+  --color-brand: var(--accent);
+  --color-surface: var(--bg-secondary);
+  --shadow-glow: 0 0 20px var(--accent-soft);
   --radius-xl: 1rem;
 }
 
 @layer utilities {
   .glass {
     @apply backdrop-blur-2xl border border-white/10 shadow-2xl;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--glass-bg);
   }
 }
 
@@ -22,13 +44,15 @@ body {
   margin: 0;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: #141414;
-  color: white;
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
   font-family: var(--font-sans);
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-heading);
+  color: var(--text-primary);
 }
 
 /* Hide scrollbar */

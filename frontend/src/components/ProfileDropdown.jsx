@@ -1,7 +1,8 @@
 import { User as UserIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-const BACKEND_URL = "https://truthbox-production.up.railway.app";
+const isLocal = window.location.hostname === "localhost";
+const BACKEND_URL = isLocal ? "http://localhost:5000" : "https://truthbox-production.up.railway.app";
 
 export default function ProfileDropdown({ user, onClose }) {
   const dropdownRef = useRef(null);
@@ -31,6 +32,7 @@ export default function ProfileDropdown({ user, onClose }) {
               src={user.avatar.startsWith("/uploads") ? `${BACKEND_URL}${user.avatar}` : user.avatar}
               alt="Avatar"
               className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
             />
           ) : (
             <UserIcon size={28} className="text-[#97ce23]" />

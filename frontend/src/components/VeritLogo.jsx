@@ -11,16 +11,16 @@ export default function VeritLogo({ className = "h-14 w-auto", showTagline = tru
       aria-label="Verit"
     >
       <defs>
-        {/* Lime green gradient — site accent #97ce23 */}
+        {/* Vibrant Blue gradient */}
         <linearGradient id="gold" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%"   stopColor="#c8f563" />
-          <stop offset="55%"  stopColor="#97ce23" />
-          <stop offset="100%" stopColor="#6aa018" />
+          <stop offset="0%"   stopColor="#60A5FA" />
+          <stop offset="55%"  stopColor="#2563EB" />
+          <stop offset="100%" stopColor="#1E40AF" />
         </linearGradient>
-        {/* Bright white-green for top highlights */}
+        {/* Bright white-blue for top highlights */}
         <linearGradient id="goldLight" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%"   stopColor="#ffffff" />
-          <stop offset="100%" stopColor="#97ce23" />
+          <stop offset="100%" stopColor="#2563EB" />
         </linearGradient>
       </defs>
 
@@ -72,13 +72,13 @@ export default function VeritLogo({ className = "h-14 w-auto", showTagline = tru
         fontSize="17"
         fontWeight="bold"
         letterSpacing="8"
-        fill="#ffffff"
+        fill="var(--text-primary)"
       >
         VERIT
       </text>
 
       {/* ── Thin divider line ── */}
-      <line x1="68" y1="83" x2="192" y2="83" stroke="#97ce23" strokeWidth="0.6" opacity="0.7" />
+      <line x1="68" y1="83" x2="192" y2="83" stroke="var(--accent)" strokeWidth="0.6" opacity="0.7" />
 
       {/* ── Tagline ── */}
       {showTagline && (
@@ -89,7 +89,7 @@ export default function VeritLogo({ className = "h-14 w-auto", showTagline = tru
           fontFamily="'Georgia', 'Times New Roman', serif"
           fontSize="6.5"
           letterSpacing="2.5"
-          fill="#97ce23"
+          fill="#2563EB"
           opacity="0.8"
         >
           AUTHENTIC. PRIVATE. POWERFUL.

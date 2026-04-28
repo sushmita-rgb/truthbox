@@ -18,6 +18,8 @@ import CloudCanvas from "./components/CloudCanvas";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import AdminUserDetails from "./pages/AdminUserDetails";
+import PremiumDashboard from "./pages/PremiumDashboard";
+import { ThemeProvider } from "./context/ThemeContext";
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -38,6 +40,7 @@ function AnimatedRoutes() {
         <Route path="/admin/login"    element={<PageTransition><AdminLogin /></PageTransition>} />
         <Route path="/admin"          element={<PageTransition><AdminDashboard /></PageTransition>} />
         <Route path="/admin/users/:id" element={<PageTransition><AdminUserDetails /></PageTransition>} />
+        <Route path="/premium-dashboard" element={<PageTransition><PremiumDashboard /></PageTransition>} />
       </Routes>
     </AnimatePresence>
   );
@@ -116,9 +119,11 @@ function AppShell() {
 
 function App() {
   return (
-    <Router>
-      <AppShell />
-    </Router>
+    <ThemeProvider>
+      <Router>
+        <AppShell />
+      </Router>
+    </ThemeProvider>
   );
 }
 
