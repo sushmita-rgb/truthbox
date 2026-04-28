@@ -275,7 +275,7 @@ router.post("/google-login", async (req, res) => {
       device: agent.device.toString() === "Other 0.0.0" ? agent.os.toString() : agent.device.toString(),
       browser: agent.toAgent(),
     };
-    await sendLoginAlert(user.email, user.username, deviceInfo);
+    sendLoginAlert(user.email, user.username, deviceInfo);
 
     const isProd = process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT === "production";
     res.cookie("token", token, { 
@@ -338,7 +338,7 @@ router.post("/login", async (req, res) => {
       device: agent.device.toString() === "Other 0.0.0" ? agent.os.toString() : agent.device.toString(),
       browser: agent.toAgent(),
     };
-    await sendLoginAlert(user.email, user.username, deviceInfo);
+    sendLoginAlert(user.email, user.username, deviceInfo);
 
     res.json({
       token,
