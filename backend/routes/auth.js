@@ -29,7 +29,12 @@ const uploadAvatarMiddleware = (req, res, next) => {
   });
 };
 
-const transporter = require("../utils/mailer");
+const { OAuth2Client } = require("google-auth-library");
+const useragent = require("useragent");
+const requestIp = require("request-ip");
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+const { transporter, sendLoginAlert } = require("../utils/mailer");
 const Otp = require("../models/Otp");
 
 // 1. SEND OTP API
@@ -94,12 +99,12 @@ router.post("/signup", async (req, res) => {
   try {
     const { username, email, password, otp } = req.body;
 
-    // Optional: Verify OTP only if it was provided
-    if (otp) {
-      const validOtp = await Otp.findOne({ email, code: otp });
-      if (!validOtp) return res.status(400).json({ message: "Invalid or expired verification code" });
-      await Otp.deleteOne({ _id: validOtp._id });
-    }
+    // Verify OTP (Mandatory for standard signup)
+    if (!otp) return res.status(400).json({ message: "Verification code is required" });
+    
+    const validOtp = await Otp.findOne({ email, code: otp });
+    if (!validOtp) return res.status(400).json({ message: "Invalid or expired verification code" });
+    await Otp.deleteOne({ _id: validOtp._id });
 
     // Check if email is already registered
     const existingEmail = await User.findOne({ email });
@@ -217,6 +222,79 @@ router.post("/reset-password", async (req, res) => {
   }
 });
 
+// 1.8 GOOGLE LOGIN API
+router.post("/google-login", async (req, res) => {
+  try {
+    const { token: googleToken, isSignup } = req.body;
+    if (!googleToken) return res.status(400).json({ message: "Google token is required" });
+
+    // Verify Google Token
+    const ticket = await client.verifyIdToken({
+      idToken: googleToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+    const { sub, email, name, picture } = ticket.getPayload();
+
+    let user = await User.findOne({ $or: [{ googleId: sub }, { email: email }] });
+
+    if (isSignup && user) {
+      return res.status(400).json({ message: "An account with this email already exists. Please use the Login page to sign in." });
+    }
+
+    if (!user) {
+      // Create new user if not exists
+      // Generate a unique username from name
+      let username = name.replace(/\s+/g, '').toLowerCase() + Math.floor(Math.random() * 1000);
+      
+      user = new User({
+        username,
+        email,
+        googleId: sub,
+        avatar: picture,
+      });
+      await user.save();
+    } else if (!user.googleId) {
+      // Link Google ID if user exists by email but hasn't used Google before
+      user.googleId = sub;
+      if (!user.avatar) user.avatar = picture;
+      await user.save();
+    }
+
+    // Generate JWT
+    const token = jwt.sign(
+      { id: user._id, username: user.username },
+      process.env.JWT_SECRET,
+      { expiresIn: "1d" }
+    );
+
+    // Send Login Notification
+    const clientIp = requestIp.getClientIp(req);
+    const agent = useragent.parse(req.headers["user-agent"]);
+    const deviceInfo = {
+      ip: clientIp,
+      device: agent.device.toString() === "Other 0.0.0" ? agent.os.toString() : agent.device.toString(),
+      browser: agent.toAgent(),
+    };
+    await sendLoginAlert(user.email, user.username, deviceInfo);
+
+    const isProd = process.env.NODE_ENV === "production" || process.env.RAILWAY_ENVIRONMENT === "production";
+    res.cookie("token", token, { 
+      httpOnly: true, 
+      secure: isProd, 
+      sameSite: isProd ? "none" : "lax", 
+      maxAge: 3600000 
+    });
+
+    res.json({
+      token,
+      user: { id: user._id, username: user.username, email: user.email, avatar: user.avatar, plan: user.plan || "free" }
+    });
+  } catch (err) {
+    console.error("Google Login Error:", err);
+    res.status(500).json({ message: "Failed to authenticate with Google" });
+  }
+});
+
 // 2. LOGIN API (Matches POST /api/auth/login in the diagram)
 router.post("/login", async (req, res) => {
   try {
@@ -252,6 +330,16 @@ router.post("/login", async (req, res) => {
       sameSite: isProd ? "none" : "lax", 
       maxAge: 3600000 
     });
+    // Send Login Notification
+    const clientIp = requestIp.getClientIp(req);
+    const agent = useragent.parse(req.headers["user-agent"]);
+    const deviceInfo = {
+      ip: clientIp,
+      device: agent.device.toString() === "Other 0.0.0" ? agent.os.toString() : agent.device.toString(),
+      browser: agent.toAgent(),
+    };
+    await sendLoginAlert(user.email, user.username, deviceInfo);
+
     res.json({
       token,
       user: { id: user._id, username: user.username, email: user.email, termsAccepted: user.termsAccepted, avatar: user.avatar, instagramHandle: user.instagramHandle || "" },
