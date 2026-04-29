@@ -10,24 +10,24 @@ const BACKEND = "https://truthbox-production.up.railway.app";
 const getFullUrl = (url) => {
   if (!url) return "";
   
-  let finalUrl = url;
   if (url.startsWith("http")) {
-    // Proxy Cloudinary through Vercel to bypass ISP blocks
-    if (url.includes("res.cloudinary.com")) {
-      // Force attachment mode for PDFs to bypass browser rendering issues
-      let proxiedUrl = url.replace("https://res.cloudinary.com", "/files");
-      if (proxiedUrl.toLowerCase().endsWith('.pdf') && !proxiedUrl.includes('fl_attachment')) {
-        proxiedUrl = proxiedUrl.replace('/upload/', '/upload/fl_attachment/');
+    // If it's a PDF, go DIRECT to Cloudinary with force-download to bypass proxy issues
+    if (url.toLowerCase().endsWith('.pdf')) {
+      let directUrl = url;
+      if (!directUrl.includes('fl_attachment')) {
+        directUrl = directUrl.replace('/upload/', '/upload/fl_attachment/');
       }
-      
-      const separator = proxiedUrl.includes('?') ? '&' : '?';
-      finalUrl = proxiedUrl + `${separator}v=${Date.now()}`;
+      return directUrl + (directUrl.includes('?') ? '&' : '?') + `v=${Date.now()}`;
     }
-  } else {
-    finalUrl = `${BACKEND}${url}`;
+    
+    // For images/videos, we can still use the proxy to bypass ISP blocks
+    if (url.includes("res.cloudinary.com")) {
+      return url.replace("https://res.cloudinary.com", "/files") + (url.includes('?') ? '&' : '?') + `v=${Date.now()}`;
+    }
+    return url;
   }
-
-  return finalUrl;
+  
+  return `${BACKEND}${url}`;
 };
 
 function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
