@@ -26,6 +26,10 @@ export default function Signup() {
   }
 
   useEffect(() => {
+    // Clear any existing session to ensure a fresh signup/login
+    localStorage.removeItem("Verit.token");
+    localStorage.removeItem("Verit.user");
+    
     let timer;
     if (cooldown > 0) {
       timer = setInterval(() => setCooldown(c => c - 1), 1000);

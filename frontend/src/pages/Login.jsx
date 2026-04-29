@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import api from "../api";
 import VeritLogo from "../components/VeritLogo";
@@ -14,6 +14,12 @@ export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const planIntent = searchParams.get("plan"); // "pro" | "ultra" | null
+17: 
+  useEffect(() => {
+    // Clear any existing session to ensure a fresh login
+    localStorage.removeItem("Verit.token");
+    localStorage.removeItem("Verit.user");
+  }, []);
 
   const togglePassword = () => {
     setShowPassword(true);
