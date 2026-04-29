@@ -20,8 +20,11 @@ const { uploadFeedback, cloudinary } = require("../config/cloudinary");
 router.get("/sign-upload", authMiddleware, async (req, res) => {
   try {
     const timestamp = Math.round(new Date().getTime() / 1000);
-    const folder = "Verit/feedback";
+    const folder = "verit_uploads";
     
+    // Allow frontend to specify resource_type if needed, or default to auto
+    const resource_type = req.query.resource_type || "auto";
+
     // Generate signature
     const signature = cloudinary.utils.api_sign_request(
       {
@@ -37,6 +40,7 @@ router.get("/sign-upload", authMiddleware, async (req, res) => {
       cloudName: process.env.CLOUDINARY_CLOUD_NAME,
       apiKey: process.env.CLOUDINARY_API_KEY,
       folder,
+      resource_type
     });
   } catch (err) {
     console.error("Signature error:", err);

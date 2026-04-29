@@ -382,7 +382,8 @@ export default function Dashboard() {
       // ── Step 1: Direct Upload to Cloudinary (if file exists) ──
       if (file && ["image", "video", "pdf"].includes(postType)) {
         // A. Get signature from backend
-        const { data: signData } = await api.get("/links/sign-upload");
+        const resource_type = postType === "pdf" ? "raw" : "auto";
+        const { data: signData } = await api.get(`/links/sign-upload?resource_type=${resource_type}`);
         
         // B. Prepare Cloudinary FormData
         const cloudData = new FormData();
@@ -394,7 +395,7 @@ export default function Dashboard() {
 
         // C. Upload directly to Cloudinary
         const cloudRes = await axios.post(
-          `https://api.cloudinary.com/v1_1/${signData.cloudName}/auto/upload`,
+          `https://api.cloudinary.com/v1_1/${signData.cloudName}/${resource_type}/upload`,
           cloudData,
           {
             onUploadProgress: (progressEvent) => {
