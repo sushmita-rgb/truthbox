@@ -43,21 +43,21 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
 
   if (postType === "image") {
     return (
-      <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-black/40 shadow-2xl">
-        <div className="flex items-center gap-2 bg-white/5 p-4 text-xs font-bold uppercase tracking-widest text-blue-400">
-          <ImageIcon size={14} />
+      <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-xl">
+        <div className="flex items-center gap-2 bg-white/5 p-3 text-[10px] font-bold uppercase tracking-widest text-blue-400">
+          <ImageIcon size={12} />
           Shared Image
         </div>
-        <div className="relative group">
+        <div className="relative group p-1 bg-black/20">
           <img 
             src={getFullUrl(fileUrl)} 
             alt={fileName || "image"} 
-            className="w-full h-auto max-h-[70vh] object-contain block mx-auto transition-transform duration-500 group-hover:scale-[1.02]" 
+            className="w-full h-auto max-h-[50vh] md:max-h-[70vh] object-contain block mx-auto transition-transform duration-500 group-hover:scale-[1.01]" 
           />
         </div>
         {content && (
-          <div className="border-t border-white/5 bg-white/5 p-6">
-            <p className="text-base leading-relaxed text-gray-300 italic">"{content}"</p>
+          <div className="border-t border-white/5 bg-white/5 p-4 md:p-6">
+            <p className="text-sm md:text-base leading-relaxed text-gray-300 italic">"{content}"</p>
           </div>
         )}
       </div>
