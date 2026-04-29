@@ -100,14 +100,7 @@ router.post("/send-otp", async (req, res) => {
 // 1.5 SIGNUP API (Part of "Create Account" in User Flow)
 router.post("/signup", async (req, res) => {
   try {
-    const { username, email, password, otp } = req.body;
-
-    // Verify OTP (Mandatory for standard signup)
-    if (!otp) return res.status(400).json({ message: "Verification code is required" });
-    
-    const validOtp = await Otp.findOne({ email, code: otp });
-    if (!validOtp) return res.status(400).json({ message: "Invalid or expired verification code" });
-    await Otp.deleteOne({ _id: validOtp._id });
+    const { username, email, password } = req.body;
 
     // Check if email is already registered
     const existingEmail = await User.findOne({ email });
@@ -121,7 +114,7 @@ router.post("/signup", async (req, res) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Saving to the Database
+    // Saving to the Database (Direct Signup - No OTP needed as per user request)
     const user = new User({
       username,
       email,
@@ -130,6 +123,19 @@ router.post("/signup", async (req, res) => {
 
     await user.save();
     
+    // Send notification to Verit Admin
+    try {
+      const mailOptions = {
+        from: `"Verit System" <${process.env.EMAIL_USER}>`,
+        to: process.env.EMAIL_USER,
+        subject: "New User Joined: " + username,
+        html: `<h3>New Signup Detected</h3><p>User <b>${username}</b> (${email}) just joined TruthBox!</p>`
+      };
+      transporter.sendMail(mailOptions); // Non-blocking
+    } catch (e) {
+      console.log("Admin notification failed, but user created.");
+    }
+
     // Auto-login: Create JWT token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
       expiresIn: "1d",

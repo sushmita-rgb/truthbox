@@ -89,8 +89,22 @@ export default function Signup() {
       setError("Please agree to the Terms and Conditions");
       return;
     }
-    // Instead of signing up directly, we send the OTP first
-    handleSendOtp();
+    
+    setLoading(true);
+    setError("");
+    try {
+      const res = await api.post("/auth/signup", formData);
+      
+      // Auto-login: Store token and user
+      localStorage.setItem("Verit.token", res.data.token);
+      localStorage.setItem("Verit.user", JSON.stringify(res.data.user));
+      
+      window.location.href = "/welcome";
+    } catch (err) {
+      setError(err.response?.data?.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleVerifyAndSignup = async (e) => {
@@ -208,7 +222,7 @@ export default function Signup() {
                   disabled={loading}
                   className="w-full py-4 mt-2 rounded-2xl bg-[var(--accent)] text-white font-bold shadow-lg shadow-[var(--accent)]/20 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 text-sm"
                 >
-                  {loading ? "Sending code..." : "Create Account"}
+                  {loading ? "Creating account..." : "Create Account"}
                 </button>
               </form>
 
