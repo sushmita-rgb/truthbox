@@ -14,7 +14,7 @@ export default function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const planIntent = searchParams.get("plan"); // "pro" | "ultra" | null
-17: 
+
   useEffect(() => {
     // Clear any existing session to ensure a fresh login
     localStorage.removeItem("Verit.token");
