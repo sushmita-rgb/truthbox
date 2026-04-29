@@ -12,6 +12,9 @@ const path = require("path");
 dotenv.config();
 const app = express();
 
+// Trust proxy for Railway/Vercel (fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR)
+app.set("trust proxy", 1);
+
 if (!process.env.JWT_SECRET) {
   console.error("Missing JWT_SECRET environment variable.");
   process.exit(1);

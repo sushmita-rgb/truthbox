@@ -4,7 +4,8 @@ const nodemailer = require("nodemailer");
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 465,
-  secure: true, // Use SSL/TLS
+  secure: true,
+  family: 4, // Force IPv4 to avoid ENETUNREACH errors on cloud hosts
   pool: true,
   maxConnections: 5,
   connectionTimeout: 10000,
