@@ -62,9 +62,38 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
         )}
       </div>
     );
+  }  if (postType === "pdf") {
+    return (
+      <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
+        <div className="flex items-center gap-2 bg-white/5 p-4 text-xs font-bold uppercase tracking-widest text-orange-400">
+          <FileText size={14} />
+          Shared PDF Document
+        </div>
+        <div className="aspect-[3/4] md:aspect-square w-full bg-white/5">
+          <iframe 
+            src={getFullUrl(fileUrl)} 
+            className="w-full h-full border-none"
+            title="PDF Preview"
+          />
+        </div>
+        <div className="bg-white/5 p-4 flex justify-center border-t border-white/5">
+           <a 
+             href={getFullUrl(fileUrl)} 
+             target="_blank" 
+             rel="noopener noreferrer"
+             className="px-6 py-2 rounded-xl bg-orange-500/20 text-orange-400 text-xs font-bold border border-orange-500/30 hover:bg-orange-500/30 transition-all flex items-center gap-2"
+           >
+             <ExternalLink size={14} /> View Full PDF
+           </a>
+        </div>
+        {content && (
+          <div className="border-t border-white/5 bg-white/5 p-6">
+            <p className="text-base leading-relaxed text-gray-300 italic">"{content}"</p>
+          </div>
+        )}
+      </div>
+    );
   }
-
-
 
   if (postType === "video") {
     return (
