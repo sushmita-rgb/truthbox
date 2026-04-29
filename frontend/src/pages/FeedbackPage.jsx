@@ -94,7 +94,7 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
           
           <div className="flex flex-col gap-3 w-full max-w-xs">
             <a 
-              href={pdfUrl} 
+              href={`https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl.startsWith('/') ? window.location.origin + pdfUrl : pdfUrl)}`} 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-full py-4 rounded-2xl bg-orange-500 text-white text-center font-bold text-sm shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
