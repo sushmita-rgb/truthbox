@@ -110,7 +110,7 @@ export default function FeedbackPage() {
       } catch (err) {
         // Fallback to a cleaner native fetch without extra headers
         try {
-          const targetUrl = `https://truthbox-production.up.railway.app/api/links/${linkId}`;
+          const targetUrl = `/api/links/${linkId}`;
           const response = await fetch(targetUrl, {
             method: 'GET',
             headers: {
