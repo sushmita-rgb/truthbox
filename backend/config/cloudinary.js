@@ -28,14 +28,14 @@ const feedbackStorage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: async (req, file) => {
     // Determine resource type based on mime type
-    let resourceType = "raw";
-    if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") {
-      resourceType = "image";
-    } else if (file.mimetype.startsWith("video/")) {
+    let resourceType = "image";
+    if (file.mimetype.startsWith("video/")) {
       resourceType = "video";
+    } else if (file.mimetype === "application/pdf") {
+      resourceType = "raw";
     }
 
-    // Sanitize filename correctly
+    // Sanitize filename: Remove spaces or special characters
     const baseName = path.parse(file.originalname).name;
     const sanitizedName = baseName
       .replace(/[^a-z0-9]/gi, '_') 
@@ -44,7 +44,7 @@ const feedbackStorage = new CloudinaryStorage({
     const publicId = sanitizedName + "_" + Date.now();
 
     return {
-      folder: "Verit/feedback",
+      folder: "verit_uploads",
       resource_type: resourceType,
       public_id: publicId,
     };
