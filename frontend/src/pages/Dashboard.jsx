@@ -642,14 +642,14 @@ export default function Dashboard() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSidebarOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40"
             />
             <motion.aside
               initial={{ x: "-100%" }}
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="fixed inset-y-0 left-0 w-72 bg-[#1E293B] border-r border-[#334155] flex flex-col py-6 px-4 gap-6 z-50 md:hidden shadow-2xl"
+              className="fixed inset-y-0 left-0 w-72 bg-[#1E293B] border-r border-[#334155] flex flex-col py-6 px-4 gap-6 z-50 shadow-2xl"
             >
               <div className="px-2 flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-3 group transition-opacity hover:opacity-80">
@@ -729,78 +729,6 @@ export default function Dashboard() {
         )}
       </AnimatePresence>
 
-      {/* Expanded Sidebar */}
-      <aside className="w-64 border-r border-[#334155] bg-[#1E293B] flex flex-col py-6 px-4 gap-6 z-20 shrink-0 hidden md:flex">
-        <Link to="/" className="px-2 flex items-center gap-3 group transition-opacity hover:opacity-80">
-          <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
-            <Sparkles className="text-[#3B82F6]" size={16} />
-          </div>
-          <span className="font-bold text-lg tracking-tight text-[#E2E8F0]">Verit</span>
-        </Link>
-        
-        
-        <nav className="flex flex-col gap-1 flex-1 mt-2">
-          <Link
-            to="/"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-medium text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] border border-dashed border-[#334155]/30 mb-2"
-          >
-            <ArrowLeft size={18} />
-            <span>Back to Website</span>
-          </Link>
-          {NAV.map(({ id, label, icon: Icon }) => {
-            const active = activeNav === id;
-            return (
-              <button
-                key={id}
-                onClick={() => handleNavSelect(id)}
-                className={`relative w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all font-medium text-sm ${
-                  active ? "bg-[#3B82F6]/10 text-[#3B82F6]" : "text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A]"
-                }`}
-              >
-                <Icon size={18} />
-                <span>{label}</span>
-                {id === "feedback" && unreadFeedback && (
-                  <span className="absolute right-3 w-2 h-2 rounded-full bg-red-500" />
-                )}
-              </button>
-            );
-          })}
-        </nav>
-        
-        <div className="mt-auto flex flex-col gap-2 border-t border-[#334155] pt-4">
-          <button 
-            onClick={() => setShowSettingsModal(true)} 
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] transition-colors font-medium text-sm"
-          >
-            <Settings size={18} />
-            <span>Settings</span>
-          </button>
-          
-          <div className="relative mt-2">
-            <button
-              onClick={() => setShowProfileCard((prev) => !prev)}
-              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl border border-transparent hover:bg-[#0F172A] hover:border-[#334155] transition-colors text-left"
-            >
-              <div className="w-8 h-8 rounded-full overflow-hidden border border-[#334155] bg-[#0F172A] flex items-center justify-center shrink-0">
-                {avatarUrl ? (
-                  <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                ) : (
-                  <User size={14} className="text-[#94A3B8]" />
-                )}
-              </div>
-              <div className="flex-1 overflow-hidden">
-                <p className="text-sm font-semibold truncate text-[#E2E8F0]">{user?.username || "User"}</p>
-                <p className="text-xs text-[#94A3B8] truncate">{user?.email || "Account"}</p>
-              </div>
-            </button>
-            {showProfileCard && (
-              <div className="absolute bottom-12 left-0 w-full z-50">
-                <ProfileDropdown user={user} onClose={() => setShowProfileCard(false)} />
-              </div>
-            )}
-          </div>
-        </div>
-      </aside>
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
@@ -810,12 +738,12 @@ export default function Dashboard() {
           <div className="flex items-center gap-4 flex-1">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="w-10 h-10 rounded-xl border border-[#334155] bg-[#0F172A] hover:bg-[#334155] flex items-center justify-center transition-colors md:hidden text-[#E2E8F0]"
+              className="w-10 h-10 rounded-xl border border-[#334155] bg-[#0F172A] hover:bg-[#334155] flex items-center justify-center transition-colors text-[#E2E8F0]"
             >
               <Menu size={18} />
             </button>
 
-            <Link to="/" className="md:hidden flex items-center gap-2.5 transition-opacity hover:opacity-80">
+            <Link to="/" className="flex items-center gap-2.5 transition-opacity hover:opacity-80">
               <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
                 <Sparkles className="text-[#3B82F6]" size={16} />
               </div>
