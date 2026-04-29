@@ -104,14 +104,22 @@ export default function FeedbackPage() {
 
     const fetchPost = async () => {
       try {
-        // Try with API instance first
+        // Try the standard API first
         const r = await api.get(`/links/${linkId}`);
         setPostData(r.data);
       } catch (err) {
-        console.warn("API instance fetch failed, trying native fetch fallback...");
+        // Fallback to a cleaner native fetch without extra headers
         try {
-          // Native fetch fallback - sometimes bypasses strict Axios CORS on mobile
-          const response = await fetch(`https://truthbox-production.up.railway.app/api/links/${linkId}`);
+          const targetUrl = `https://truthbox-production.up.railway.app/api/links/${linkId}`;
+          const response = await fetch(targetUrl, {
+            method: 'GET',
+            headers: {
+              'Accept': 'application/json',
+              'Content-Type': 'application/json'
+            },
+            mode: 'cors'
+          });
+          
           if (response.ok) {
             const data = await response.json();
             setPostData(data);
@@ -119,12 +127,11 @@ export default function FeedbackPage() {
             throw new Error(`Server returned ${response.status}`);
           }
         } catch (fallbackErr) {
-          console.error("All fetch attempts failed:", fallbackErr);
           if (retries < maxRetries) {
             retries++;
             setTimeout(fetchPost, 1000 * retries);
           } else {
-            setErrorMsg(`Connection error (${fallbackErr.message}). Please check your internet and refresh.`);
+            setErrorMsg(`Mobile Security Block (${fallbackErr.message}). Try opening in a different browser or turning off Private Mode.`);
             setStatus("error");
           }
         }
