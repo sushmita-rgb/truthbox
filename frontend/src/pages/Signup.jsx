@@ -208,7 +208,7 @@ export default function Signup() {
                   disabled={loading}
                   className="w-full py-4 mt-2 rounded-2xl bg-[var(--accent)] text-white font-bold shadow-lg shadow-[var(--accent)]/20 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 text-sm"
                 >
-                  {loading ? "Creating account..." : "Create Account"}
+                  {loading ? "Sending code..." : "Create Account"}
                 </button>
               </form>
 
@@ -261,7 +261,7 @@ export default function Signup() {
                   disabled={loading || formData.otp.length !== 6}
                   className="w-full py-4 rounded-2xl bg-[var(--accent)] text-white font-bold shadow-lg shadow-[var(--accent)]/20 hover:-translate-y-0.5 active:translate-y-0 transition-all disabled:opacity-50 text-sm"
                 >
-                  {loading ? "Verifying..." : "Verify & Create Account"}
+                  {loading ? "Creating account..." : "Verify & Create Account"}
                 </button>
 
                 <div className="text-center">

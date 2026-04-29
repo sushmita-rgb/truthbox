@@ -3,6 +3,10 @@ const nodemailer = require("nodemailer");
 // Simple Gmail configuration
 const transporter = nodemailer.createTransport({
   service: "gmail",
+  pool: true, // Use a pool to keep connections open
+  maxConnections: 5,
+  maxMessages: 100,
+  connectionTimeout: 10000, // 10 seconds timeout
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
