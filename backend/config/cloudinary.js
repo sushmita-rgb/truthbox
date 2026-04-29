@@ -29,9 +29,11 @@ const feedbackStorage = new CloudinaryStorage({
   params: async (req, file) => {
     // Determine resource type based on mime type
     let resourceType = "raw";
-    if (file.mimetype.startsWith("image/")) resourceType = "image";
-    else if (file.mimetype.startsWith("video/")) resourceType = "video";
-    else if (file.mimetype === "application/pdf") resourceType = "raw";
+    if (file.mimetype.startsWith("image/") || file.mimetype === "application/pdf") {
+      resourceType = "image";
+    } else if (file.mimetype.startsWith("video/")) {
+      resourceType = "video";
+    }
 
     // Sanitize filename correctly
     const baseName = path.parse(file.originalname).name;
