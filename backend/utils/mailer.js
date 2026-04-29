@@ -2,25 +2,26 @@ const nodemailer = require("nodemailer");
 
 // Simple Gmail configuration
 const transporter = nodemailer.createTransport({
-  service: "gmail",
-  pool: true, // Use a pool to keep connections open
+  host: "smtp.gmail.com",
+  port: 465,
+  secure: true, // Use SSL/TLS
+  pool: true,
   maxConnections: 5,
-  maxMessages: 100,
-  connectionTimeout: 10000, // 10 seconds timeout
+  connectionTimeout: 10000,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS,
   },
 });
 
-// Verify connection configuration (Disabled as per user request)
-// transporter.verify(function (error, success) {
-//   if (error) {
-//     console.log("❌ Mailer Connection Error:", error);
-//   } else {
-//     console.log("✅ Mailer is ready to send emails");
-//   }
-// });
+// Verify connection configuration on startup
+transporter.verify(function (error, success) {
+  if (error) {
+    console.log("❌ Mailer Connection Error:", error);
+  } else {
+    console.log("✅ Mailer is ready to send emails");
+  }
+});
 
 const sendLoginAlert = async (email, username, deviceInfo) => {
   const mailOptions = {
