@@ -104,16 +104,29 @@ export default function FeedbackPage() {
 
     const fetchPost = async () => {
       try {
+        // Try with API instance first
         const r = await api.get(`/links/${linkId}`);
         setPostData(r.data);
       } catch (err) {
-        console.error("Fetch failed:", err);
-        if (retries < maxRetries) {
-          retries++;
-          setTimeout(fetchPost, 1000 * retries);
-        } else {
-          setErrorMsg("Could not load the shared content. Please refresh the page.");
-          setStatus("error");
+        console.warn("API instance fetch failed, trying native fetch fallback...");
+        try {
+          // Native fetch fallback - sometimes bypasses strict Axios CORS on mobile
+          const response = await fetch(`https://truthbox-production.up.railway.app/api/links/${linkId}`);
+          if (response.ok) {
+            const data = await response.json();
+            setPostData(data);
+          } else {
+            throw new Error(`Server returned ${response.status}`);
+          }
+        } catch (fallbackErr) {
+          console.error("All fetch attempts failed:", fallbackErr);
+          if (retries < maxRetries) {
+            retries++;
+            setTimeout(fetchPost, 1000 * retries);
+          } else {
+            setErrorMsg(`Connection error (${fallbackErr.message}). Please check your internet and refresh.`);
+            setStatus("error");
+          }
         }
       }
     };

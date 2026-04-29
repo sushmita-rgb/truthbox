@@ -87,6 +87,7 @@ app.get("/", (req, res) => {
   res.send("Verit Server is Live!");
 });
 
+// Start server - v1.0.1
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
