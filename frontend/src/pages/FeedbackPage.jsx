@@ -14,9 +14,14 @@ const getFullUrl = (url) => {
   if (url.startsWith("http")) {
     // Proxy Cloudinary through Vercel to bypass ISP blocks
     if (url.includes("res.cloudinary.com")) {
-      // Add a cache buster to force refresh if it previously failed
-      const separator = url.includes('?') ? '&' : '?';
-      finalUrl = url.replace("https://res.cloudinary.com", "/files") + `${separator}v=${Date.now()}`;
+      // Force attachment mode for PDFs to bypass browser rendering issues
+      let proxiedUrl = url.replace("https://res.cloudinary.com", "/files");
+      if (proxiedUrl.toLowerCase().endsWith('.pdf') && !proxiedUrl.includes('fl_attachment')) {
+        proxiedUrl = proxiedUrl.replace('/upload/', '/upload/fl_attachment/');
+      }
+      
+      const separator = proxiedUrl.includes('?') ? '&' : '?';
+      finalUrl = proxiedUrl + `${separator}v=${Date.now()}`;
     }
   } else {
     finalUrl = `${BACKEND}${url}`;
@@ -94,12 +99,13 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
           
           <div className="flex flex-col gap-3 w-full max-w-xs">
             <a 
-              href={`https://docs.google.com/viewer?url=${encodeURIComponent(fileUrl)}&embedded=true`} 
+              href={pdfUrl} 
               target="_blank" 
               rel="noopener noreferrer"
+              download={fileName || "document.pdf"}
               className="w-full py-4 rounded-2xl bg-orange-500 text-white text-center font-bold text-sm shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
             >
-              <ExternalLink size={16} /> Open Document
+              <ExternalLink size={16} /> View Full Document
             </a>
             <p className="text-[10px] text-center text-gray-500 uppercase tracking-widest font-bold">Safe & Secure Viewer</p>
           </div>
