@@ -63,31 +63,38 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
       </div>
     );
   }  if (postType === "pdf") {
+    const pdfUrl = getFullUrl(fileUrl);
+    // Google PDF Viewer is the most reliable way to show PDFs on mobile
+    const googleViewerUrl = `https://docs.google.com/viewer?url=${encodeURIComponent(pdfUrl)}&embedded=true`;
+
     return (
       <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
         <div className="flex items-center gap-2 bg-white/5 p-4 text-xs font-bold uppercase tracking-widest text-orange-400">
           <FileText size={14} />
           Shared PDF Document
         </div>
-        <div className="aspect-[3/4] md:aspect-square w-full bg-white/5">
-          <iframe 
-            src={getFullUrl(fileUrl)} 
-            className="w-full h-full border-none"
-            title="PDF Preview"
-          />
+        
+        <div className="p-8 flex flex-col items-center justify-center bg-white/5 border-b border-white/5">
+          <div className="w-20 h-20 bg-orange-500/10 rounded-2xl flex items-center justify-center mb-4 border border-orange-500/20">
+            <FileText size={40} className="text-orange-400" />
+          </div>
+          <p className="text-sm font-medium text-gray-300 mb-6 truncate max-w-xs">{fileName || "document.pdf"}</p>
+          
+          <div className="flex flex-col gap-3 w-full max-w-xs">
+            <a 
+              href={pdfUrl} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="w-full py-4 rounded-2xl bg-orange-500 text-white text-center font-bold text-sm shadow-lg shadow-orange-500/20 hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+            >
+              <ExternalLink size={16} /> Open Document
+            </a>
+            <p className="text-[10px] text-center text-gray-500 uppercase tracking-widest font-bold">Safe & Secure Viewer</p>
+          </div>
         </div>
-        <div className="bg-white/5 p-4 flex justify-center border-t border-white/5">
-           <a 
-             href={getFullUrl(fileUrl)} 
-             target="_blank" 
-             rel="noopener noreferrer"
-             className="px-6 py-2 rounded-xl bg-orange-500/20 text-orange-400 text-xs font-bold border border-orange-500/30 hover:bg-orange-500/30 transition-all flex items-center gap-2"
-           >
-             <ExternalLink size={14} /> View Full PDF
-           </a>
-        </div>
+
         {content && (
-          <div className="border-t border-white/5 bg-white/5 p-6">
+          <div className="p-6 bg-black/20">
             <p className="text-base leading-relaxed text-gray-300 italic">"{content}"</p>
           </div>
         )}
