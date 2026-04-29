@@ -9,14 +9,20 @@ const BACKEND = "https://truthbox-production.up.railway.app";
 
 const getFullUrl = (url) => {
   if (!url) return "";
+  
+  let finalUrl = url;
   if (url.startsWith("http")) {
     // Proxy Cloudinary through Vercel to bypass ISP blocks
     if (url.includes("res.cloudinary.com")) {
-      return url.replace("https://res.cloudinary.com", "/files");
+      // Add a cache buster to force refresh if it previously failed
+      const separator = url.includes('?') ? '&' : '?';
+      finalUrl = url.replace("https://res.cloudinary.com", "/files") + `${separator}v=${Date.now()}`;
     }
-    return url;
+  } else {
+    finalUrl = `${BACKEND}${url}`;
   }
-  return `${BACKEND}${url}`;
+
+  return finalUrl;
 };
 
 function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
