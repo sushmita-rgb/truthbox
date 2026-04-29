@@ -9,7 +9,13 @@ const BACKEND = "https://truthbox-production.up.railway.app";
 
 const getFullUrl = (url) => {
   if (!url) return "";
-  if (url.startsWith("http")) return url;
+  if (url.startsWith("http")) {
+    // Proxy Cloudinary through Vercel to bypass ISP blocks
+    if (url.includes("res.cloudinary.com")) {
+      return url.replace("https://res.cloudinary.com", "/files");
+    }
+    return url;
+  }
   return `${BACKEND}${url}`;
 };
 

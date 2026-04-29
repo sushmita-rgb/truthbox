@@ -5,7 +5,11 @@
       "destination": "https://truthbox-production.up.railway.app/api/:path*"
     },
     {
-      "source": "/((?!api/).*)",
+      "source": "/files/:path*",
+      "destination": "https://res.cloudinary.com/:path*"
+    },
+    {
+      "source": "/((?!api/|files/).*)",
       "destination": "/index.html"
     }
   ]
