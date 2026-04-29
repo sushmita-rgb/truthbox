@@ -99,7 +99,26 @@ export default function FeedbackPage() {
   const [showTerms, setShowTerms] = useState(false);
 
   useEffect(() => {
-    api.get(`/links/${linkId}`).then((r) => setPostData(r.data)).catch(() => {});
+    let retries = 0;
+    const maxRetries = 3;
+
+    const fetchPost = async () => {
+      try {
+        const r = await api.get(`/links/${linkId}`);
+        setPostData(r.data);
+      } catch (err) {
+        console.error("Fetch failed:", err);
+        if (retries < maxRetries) {
+          retries++;
+          setTimeout(fetchPost, 1000 * retries);
+        } else {
+          setErrorMsg("Could not load the shared content. Please refresh the page.");
+          setStatus("error");
+        }
+      }
+    };
+
+    fetchPost();
     // Increment view count
     api.post(`/links/${linkId}/view`).catch(() => {});
   }, [linkId]);
@@ -189,7 +208,17 @@ export default function FeedbackPage() {
               <p className="mb-2 text-sm text-gray-400">{postData?.description || "Be honest. The recipient will never know who you are."}</p>
               <p className="mb-6 text-xs text-gray-500">This page is branded for the creator, but your message stays anonymous.</p>
 
-              {postData && <PostPreview {...postData} accentColor={accentColor} />}
+              {postData ? (
+                <PostPreview {...postData} accentColor={accentColor} />
+              ) : status === "error" ? (
+                <div className="mb-6 rounded-2xl border border-red-500/20 bg-red-500/10 p-4 text-xs text-red-400">
+                  ⚠️ {errorMsg}
+                </div>
+              ) : (
+                <div className="mb-6 h-32 w-full animate-pulse rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center">
+                  <span className="text-xs text-gray-500 font-medium">Loading content...</span>
+                </div>
+              )}
 
               <form onSubmit={handleSubmit} className="space-y-4">
                 <textarea
