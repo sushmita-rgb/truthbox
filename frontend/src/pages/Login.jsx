@@ -15,7 +15,7 @@ export default function Login() {
   const [searchParams] = useSearchParams();
   const planIntent = searchParams.get("plan"); // "pro" | "ultra" | null
 
-  // Force clean build update to resolve Vercel queue
+
   useEffect(() => {
     // Clear any existing session to ensure a fresh login
     localStorage.removeItem("Verit.token");
