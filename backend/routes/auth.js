@@ -125,15 +125,28 @@ router.post("/signup", async (req, res) => {
     
     // Send notification to Verit Admin
     try {
+      console.log(`🚀 Attempting to send Admin notification for new user: ${username}...`);
       const mailOptions = {
         from: `"Verit System" <${process.env.EMAIL_USER}>`,
         to: process.env.EMAIL_USER,
         subject: "New User Joined: " + username,
-        html: `<h3>New Signup Detected</h3><p>User <b>${username}</b> (${email}) just joined TruthBox!</p>`
+        html: `
+          <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; border-radius: 10px;">
+            <h2 style="color: #3B82F6;">New Signup Detected</h2>
+            <p>A new user has just joined TruthBox!</p>
+            <ul style="list-style: none; padding: 0;">
+              <li><strong>Username:</strong> ${username}</li>
+              <li><strong>Email:</strong> ${email}</li>
+              <li><strong>Signup Time:</strong> ${new Date().toLocaleString()}</li>
+            </ul>
+            <p style="font-size: 12px; color: #94A3B8; margin-top: 20px;">This is an automated notification from Verit System.</p>
+          </div>
+        `
       };
-      transporter.sendMail(mailOptions); // Non-blocking
+      const info = await transporter.sendMail(mailOptions);
+      console.log("✅ Admin notification sent successfully:", info.messageId);
     } catch (e) {
-      console.log("Admin notification failed, but user created.");
+      console.error("❌ Admin notification failed:", e.message);
     }
 
     // Auto-login: Create JWT token
