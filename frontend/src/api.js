@@ -6,7 +6,8 @@ if (!import.meta.env.VITE_API_URL) {
 }
 
 export const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
-export const BACKEND_URL = import.meta.env.VITE_API_URL || (isLocal ? "http://localhost:5000" : "https://truthbox-production.up.railway.app");
+// Use the environment variable if provided, otherwise fallback to local dev or empty string (for Vercel proxy)
+export const BACKEND_URL = import.meta.env.VITE_API_URL || (isLocal ? "http://localhost:5000" : "");
 
 const API = axios.create({ 
   baseURL: `${BACKEND_URL}/api`,
