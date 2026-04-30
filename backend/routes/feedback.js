@@ -76,6 +76,17 @@ router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
 
     await newFeedback.save();
 
+    // ── Emit Real-time Update via Socket.io ──────────────────────────────
+    try {
+      const io = req.app.get("socketio");
+      if (io) {
+        // Emit to a specific room or just a namespaced event
+        io.emit(`new-feedback-${link.userId}`, newFeedback);
+      }
+    } catch (socketErr) {
+      console.error("Socket emit failed:", socketErr);
+    }
+
     // Trigger Email Notification in the background (no await)
     try {
       const receiver = await User.findById(link.userId);

@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
+import { io } from "socket.io-client";
 import {
   ArrowRight,
   ArrowLeft,
@@ -303,6 +304,34 @@ export default function Dashboard() {
     loadDashboard();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate]);
+
+  // ── Real-time Socket.io listener ──────────────────────────────────────────
+  useEffect(() => {
+    if (user?.id) {
+      const socket = io(BACKEND_URL);
+      
+      socket.on(`new-feedback-${user.id}`, (data) => {
+        setFeedback((prev) => [data, ...prev]);
+        setUnreadFeedback(true);
+        
+        // Update analytics if they exist
+        if (analytics) {
+          setAnalytics(prev => ({
+            ...prev,
+            summary: {
+              ...prev.summary,
+              totalResponses: prev.summary.totalResponses + 1,
+              responsesThisWeek: prev.summary.responsesThisWeek + 1
+            }
+          }));
+        }
+      });
+
+      return () => {
+        socket.disconnect();
+      };
+    }
+  }, [user?.id, BACKEND_URL, analytics]);
 
   const handleAcceptTerms = async () => {
     try {

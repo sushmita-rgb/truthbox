@@ -30,6 +30,8 @@ const globalLimiter = rateLimit({
 });
 
 const cookieParser = require("cookie-parser");
+const http = require("http");
+const { Server } = require("socket.io");
 
 // ✅ FIXED ORDER
 app.use(cors({
@@ -56,6 +58,18 @@ app.use(cors({
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept"]
 }));
+
+const server = http.createServer(app);
+const io = new Server(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  }
+});
+
+// Pass socket.io instance to the app
+app.set("socketio", io);
+
 app.use(cookieParser());
 // Capture raw body for Razorpay Webhooks
 app.use(express.json({
@@ -100,7 +114,15 @@ app.get("/", (req, res) => {
   res.send("Verit Server is Live!");
 });
 
-// Start server - v1.0.1
-app.listen(PORT, () => {
+// Real-time connection handler
+io.on("connection", (socket) => {
+  console.log("A user connected:", socket.id);
+  socket.on("disconnect", () => {
+    console.log("User disconnected:", socket.id);
+  });
+});
+
+// Start server using the HTTP server instance - v1.1.0
+server.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
