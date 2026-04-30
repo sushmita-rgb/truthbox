@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { body, query, validationResult } = require("express-validator");
 const Link = require("../models/Link");
 const Feedback = require("../models/Feedback");
 const User = require("../models/User");
@@ -17,7 +18,14 @@ const PLAN_LIMITS = { free: 5, pro: 20, ultra: Infinity };
 const { uploadFeedback, cloudinary } = require("../config/cloudinary");
 
 // ── Get Cloudinary Signature for Direct Upload ───────────────────────────────
-router.get("/sign-upload", authMiddleware, async (req, res) => {
+router.get("/sign-upload", [
+  authMiddleware,
+  query("resource_type").optional().isIn(["image", "video", "raw", "auto"]).withMessage("Invalid resource type")
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const timestamp = Math.round(new Date().getTime() / 1000);
     const folder = "verit_uploads";
@@ -121,7 +129,16 @@ router.post(
   authMiddleware,
   requireTerms,
   uploadFeedbackMiddleware,
+  [
+    body("postType").isIn(["text", "image", "video", "pdf", "url"]).withMessage("Invalid post type"),
+    body("title").trim().isLength({ max: 100 }).withMessage("Title too long"),
+    body("description").trim().isLength({ max: 500 }).withMessage("Description too long")
+  ],
   async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
     try {
       const userId = req.user.id;
       const {

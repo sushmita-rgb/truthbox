@@ -8,11 +8,21 @@ const feedbackRoutes = require("./routes/feedback");
 const paymentRoutes = require("./routes/payment");
 const cors = require("cors");
 const path = require("path");
+const helmet = require("helmet");
+const xss = require("xss-clean");
+const hpp = require("hpp");
 
 dotenv.config();
 const app = express();
 
-// Trust proxy for Railway/Vercel (fixes ERR_ERL_UNEXPECTED_X_FORWARDED_FOR)
+// 1. Security Headers
+app.use(helmet());
+
+// 2. Data Sanitization
+app.use(xss()); // Against XSS
+app.use(hpp()); // Against HTTP Parameter Pollution
+
+// Trust proxy for Railway/Vercel
 app.set("trust proxy", 1);
 
 if (!process.env.JWT_SECRET) {
@@ -27,30 +37,34 @@ const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 100,
   message: { message: "Too many requests from this IP. Please try again later." },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 const cookieParser = require("cookie-parser");
 const http = require("http");
 const { Server } = require("socket.io");
 
-// ✅ FIXED ORDER
+// ✅ Tightened CORS Configuration
+const allowedOrigins = [
+  process.env.FRONTEND_URL, // e.g. https://verit-chi.vercel.app
+  "https://verit-chi.vercel.app",
+  "https://rit-chi.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000"
+].filter(Boolean);
+
 app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (like mobile apps or curl)
     if (!origin) return callback(null, true);
     
-    const allowedOrigins = [
-      process.env.FRONTEND_URL,
-      "https://verit-chi.vercel.app",
-      "https://rit-chi.vercel.app",
-      "http://localhost:5173",
-      "http://localhost:5174",
-      "http://localhost:3000"
-    ];
-
-    if (allowedOrigins.includes(origin) || origin.endsWith(".vercel.app") || origin.includes("localhost")) {
+    // Strict origin check
+    if (allowedOrigins.includes(origin) || (process.env.NODE_ENV !== "production" && origin.includes("localhost"))) {
       callback(null, true);
     } else {
+      console.warn(`[SECURITY] Blocked request from unauthorized origin: ${origin}`);
       callback(new Error("Not allowed by CORS"));
     }
   },
@@ -62,18 +76,17 @@ app.use(cors({
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: "*",
-    methods: ["GET", "POST"]
+    origin: allowedOrigins,
+    methods: ["GET", "POST"],
+    credentials: true
   }
 });
 
-// Pass socket.io instance to the app
 app.set("socketio", io);
-
 app.use(cookieParser());
-// Capture raw body for Razorpay Webhooks
+
 app.use(express.json({
-  limit: "100mb",
+  limit: "10mb", // Restricted size
   verify: (req, res, buf) => {
     req.rawBody = buf.toString();
   }
@@ -81,17 +94,10 @@ app.use(express.json({
 
 app.use(globalLimiter);
 
-// Uploads now handled securely via Cloudinary
-
+// Routes
 const shareRoutes = require("./routes/share");
 const adminRoutes = require("./routes/admin");
 const systemRoutes = require("./routes/system");
-
-const adminLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 50,
-  message: { message: "Too many admin requests from this IP. Please try again later." },
-});
 
 app.use("/api/ai", aiRoutes);
 app.use("/api/auth", authRoutes);
@@ -99,11 +105,16 @@ app.use("/api/links", linkRoutes);
 app.use("/api/feedback", feedbackRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/share", shareRoutes);
-app.use("/api/admin", adminLimiter, adminRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/system", systemRoutes);
 
 const PORT = process.env.PORT || 5000;
-const mongoURI = process.env.MONGO_URI || "mongodb://localhost:27017/Verit";
+const mongoURI = process.env.MONGO_URI;
+
+if (!mongoURI) {
+  console.error("Missing MONGO_URI environment variable.");
+  process.exit(1);
+}
 
 mongoose
   .connect(mongoURI)
@@ -116,13 +127,25 @@ app.get("/", (req, res) => {
 
 // Real-time connection handler
 io.on("connection", (socket) => {
-  console.log("A user connected:", socket.id);
-  socket.on("disconnect", () => {
-    console.log("User disconnected:", socket.id);
+  socket.on("disconnect", () => {});
+});
+
+// ✅ Centralized Error Handling Middleware
+app.use((err, req, res, next) => {
+  console.error(`[ERROR] ${err.message}`, {
+    stack: process.env.NODE_ENV === "production" ? "🥞" : err.stack,
+    path: req.path,
+    method: req.method
+  });
+
+  const statusCode = err.status || 500;
+  res.status(statusCode).json({
+    message: process.env.NODE_ENV === "production" 
+      ? "An internal server error occurred" 
+      : err.message
   });
 });
 
-// Start server using the HTTP server instance - v1.1.0
 server.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
+  console.log(`Server is running on port ${PORT}`);
 });

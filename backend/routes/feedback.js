@@ -7,6 +7,7 @@ const authMiddleware = require("../middleware/authMiddleware");
 const requireTerms = require("../middleware/requireTerms");
 const transporter = require("../utils/mailer");
 
+const { body, validationResult } = require("express-validator");
 const rateLimit = require("express-rate-limit");
 
 // Rate limit: 5 feedback submissions per 10 minutes per IP
@@ -14,10 +15,19 @@ const feedbackLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   max: 5,
   message: { message: "Too many feedback submissions from this IP. Please try again after 10 minutes." },
+  standardHeaders: true,
+  legacyHeaders: false,
 });
 
 // POST /api/feedback/send-feedback/:linkId
-router.post("/send-feedback/:linkId", feedbackLimiter, async (req, res) => {
+router.post("/send-feedback/:linkId", [
+  feedbackLimiter,
+  body("message").trim().notEmpty().withMessage("Message is required").isLength({ max: 500 }).withMessage("Message is too long")
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const { linkId } = req.params;
     const { message } = req.body;

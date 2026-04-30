@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+const { body, validationResult } = require("express-validator");
 const User = require("../models/User"); // Import the User blueprint
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
@@ -38,7 +39,13 @@ const { transporter, sendLoginAlert } = require("../utils/mailer");
 const Otp = require("../models/Otp");
 
 // 1. SEND OTP API
-router.post("/send-otp", async (req, res) => {
+router.post("/send-otp", [
+  body("email").isEmail().withMessage("Valid email is required").normalizeEmail()
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const { email } = req.body;
     
@@ -56,7 +63,7 @@ router.post("/send-otp", async (req, res) => {
     const newOtp = new Otp({ email, code });
     await newOtp.save();
 
-    console.log(`🔑 DEBUG: OTP for ${email} is [ ${code} ]`);
+    // Log removed for security
 
     // Send email using Nodemailer
     const mailOptions = {
@@ -97,8 +104,16 @@ router.post("/send-otp", async (req, res) => {
   }
 });
 
-// 1.5 SIGNUP API (Part of "Create Account" in User Flow)
-router.post("/signup", async (req, res) => {
+// 1.5 SIGNUP API
+router.post("/signup", [
+  body("username").trim().isLength({ min: 3 }).withMessage("Username must be at least 3 characters"),
+  body("email").isEmail().withMessage("Valid email is required").normalizeEmail(),
+  body("password").isLength({ min: 6 }).withMessage("Password must be at least 6 characters")
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const { username, email, password } = req.body;
 
@@ -317,8 +332,15 @@ router.post("/google-login", async (req, res) => {
   }
 });
 
-// 2. LOGIN API (Matches POST /api/auth/login in the diagram)
-router.post("/login", async (req, res) => {
+// 2. LOGIN API
+router.post("/login", [
+  body("username").trim().notEmpty().withMessage("Username is required"),
+  body("password").notEmpty().withMessage("Password is required")
+], async (req, res) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() });
+  }
   try {
     const { username, password } = req.body;
     const jwtSecret = process.env.JWT_SECRET;
@@ -377,7 +399,8 @@ router.post("/admin-login", async (req, res) => {
   try {
     const email = req.body.email?.trim();
     const password = req.body.password?.trim();
-    console.log("Admin Login Attempt:", { email, envEmail: process.env.ADMIN_EMAIL });
+    // Admin Login Attempt logged securely (no creds)
+    console.log(`[ADMIN] Login attempt for: ${email}`);
     
     // Validate against .env variables
     if (email === process.env.ADMIN_EMAIL && password === process.env.ADMIN_PASSWORD) {
