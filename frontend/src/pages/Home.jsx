@@ -417,86 +417,103 @@ export default function Home() {
           id="live-demo"
           flip
           left={
-            <div className="space-y-5">
-              <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--accent)]">Live Demo</p>
-              <h3 className="max-w-2xl text-4xl font-extrabold leading-tight md:text-6xl text-[var(--text-primary)]">
-                Real-time template preview.
+            <div className="space-y-6">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/5 px-4 py-2 text-[10px] font-black uppercase tracking-[0.3em] text-[var(--accent)] shadow-sm">
+                <Sparkles size={12} className="animate-pulse" />
+                Live Demo
+              </div>
+              <h3 className="max-w-2xl text-4xl font-black leading-[1.1] tracking-tight md:text-6xl text-[var(--text-primary)]">
+                Real-time template <span className="text-[var(--accent)]">preview.</span>
               </h3>
-              <p className="max-w-xl text-base leading-8 text-[var(--text-secondary)] md:text-lg">
-                Choose a template and see how your feedback page will look to your visitors instantly.
+              <p className="max-w-xl text-base leading-relaxed text-[var(--text-secondary)] md:text-lg font-medium">
+                Choose a template and see how your feedback page will look to your visitors instantly. Experience the premium interface your audience will see.
               </p>
             </div>
           }
           right={
             <div className="relative w-full">
+              {/* Decorative glow */}
               <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-[var(--accent)]/10 blur-[100px] animate-pulse" />
               
               <div className="relative overflow-hidden rounded-[2.5rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-2xl transition-colors duration-500">
                 {/* Browser-like Header */}
                 <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
                   <div className="flex gap-1.5">
-                    <div className="h-3 w-3 rounded-full bg-red-400" />
-                    <div className="h-3 w-3 rounded-full bg-amber-400" />
-                    <div className="h-3 w-3 rounded-full bg-green-400" />
+                    <div className="h-3 w-3 rounded-full bg-[#FF5F56]" />
+                    <div className="h-3 w-3 rounded-full bg-[#FFBD2E]" />
+                    <div className="h-3 w-3 rounded-full bg-[#27C93F]" />
                   </div>
                   <div className="ml-4 flex-1 rounded-xl bg-[var(--bg-muted)] py-2 px-4 text-[10px] text-[var(--text-muted)] text-center border border-[var(--border-color)] font-mono tracking-tight">
-                    truthbox.io/p/preview
+                    verit.io/p/preview
                   </div>
                 </div>
                 
-                <div className="grid gap-0 md:grid-cols-[0.95fr_1.05fr]">
-                  <div className="p-8 border-b md:border-b-0 md:border-r border-[var(--border-color)]">
-                    <div className="mb-8 flex items-center gap-4">
-                      <div className="h-14 w-14 rounded-2xl bg-[var(--accent)]/10 p-3 border border-[var(--accent)]/20 shadow-inner">
-                        <VeritLogo showTagline={false} />
-                      </div>
-                      <div>
-                        <h3 className="text-xl font-black text-[var(--text-primary)]">Live Preview</h3>
-                        <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-widest">Active Template</p>
+                <div className="grid gap-0 lg:grid-cols-[1fr_1.1fr]">
+                  {/* Left Column: Preview */}
+                  <div className="p-8 border-b lg:border-b-0 lg:border-r border-[var(--border-color)] flex flex-col bg-[var(--bg-primary)]/30 backdrop-blur-sm">
+                    <div className="mb-10 flex items-center gap-5">
+                      {/* Removed icon and fixed overlap */}
+                      <div className="pt-1">
+                        <h3 className="text-2xl font-black text-[var(--text-primary)] leading-none mb-2 tracking-tight">Live Preview</h3>
+                        <p className="text-[10px] font-black text-[var(--accent)] uppercase tracking-[0.2em]">Active Template</p>
                       </div>
                     </div>
 
-                    <div className="space-y-6 rounded-3xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-6 shadow-inner">
-                      <p className="text-2xl font-black text-[var(--text-primary)] leading-tight">{activeTemplate.headline}</p>
-                      <textarea
-                        value={demoNote}
-                        onChange={(e) => setDemoNote(e.target.value)}
-                        className="min-h-32 w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-5 text-sm text-[var(--text-primary)] outline-none focus:ring-4 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)] transition-all font-medium placeholder:text-[var(--text-muted)]"
-                        placeholder="Type your response here..."
-                      />
-                      <div className="rounded-2xl p-5 bg-[var(--accent)]/5 border border-[var(--accent)]/10">
-                        <div className="flex items-center gap-2 mb-2">
-                          <Crown size={14} className="text-[var(--accent)]" />
-                          <p className="text-[10px] font-black uppercase text-[var(--accent)] tracking-widest">Creator Note</p>
+                    <div className="flex-1 space-y-6 rounded-[2rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] p-8 shadow-xl shadow-black/5">
+                      <p className="text-3xl font-black text-[var(--text-primary)] leading-tight tracking-tight">{activeTemplate.headline}</p>
+                      
+                      <div className="relative group">
+                        <textarea
+                          readOnly
+                          value={activeTemplate.note}
+                          className="min-h-40 w-full rounded-2xl border-2 border-[var(--border-color)] bg-[var(--bg-muted)]/50 p-6 text-sm text-[var(--text-secondary)] outline-none font-medium resize-none leading-relaxed"
+                        />
+                        <div className="absolute bottom-4 right-4 opacity-20">
+                          <Wand2 size={16} className="text-[var(--accent)]" />
                         </div>
-                        <p className="text-sm text-[var(--text-secondary)] font-medium leading-relaxed italic">"{activeTemplate.response}"</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-8 bg-[var(--bg-muted)]/50 flex flex-col justify-center">
-                    <p className="text-xs font-black uppercase text-[var(--text-muted)] tracking-[0.2em] mb-6 px-2">Select a style</p>
-                    <div className="mb-10 flex flex-wrap gap-3">
-                      {TEMPLATES.map((template) => (
-                        <button
-                          key={template.id}
-                          onClick={() => handleTemplateSelect(template)}
-                          className={`rounded-2xl px-5 py-3 text-xs font-black transition-all ${
-                            template.id === activeTemplate.id
-                              ? "bg-[var(--accent)] text-white shadow-xl shadow-[var(--accent)]/30 scale-105"
-                              : "bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)] hover:border-[var(--accent)] hover:shadow-md"
-                          }`}
-                        >
-                          {template.title}
-                        </button>
-                      ))}
+                  {/* Right Column: Selector */}
+                  <div className="p-10 bg-[var(--bg-muted)]/30 flex flex-col justify-between backdrop-blur-sm">
+                    <div>
+                      <p className="text-[11px] font-black uppercase text-[var(--text-muted)] tracking-[0.3em] mb-8">Select a style</p>
+                      <div className="grid grid-cols-2 gap-4 mb-12">
+                        {TEMPLATES.map((template) => (
+                          <button
+                            key={template.id}
+                            onClick={() => handleTemplateSelect(template)}
+                            className={`relative group rounded-2xl p-4 text-xs font-black transition-all border-2 text-left h-24 flex flex-col justify-between overflow-hidden cursor-pointer ${
+                              template.id === activeTemplate.id
+                                ? "bg-[var(--accent)] border-[var(--accent)] text-white shadow-xl shadow-[var(--accent)]/20"
+                                : "bg-[var(--bg-secondary)] text-[var(--text-primary)] border-[var(--border-color)] hover:border-[var(--accent)]/50"
+                            }`}
+                          >
+                            <span className="relative z-10">{template.title}</span>
+                            {template.id === activeTemplate.id && (
+                              <CheckCircle2 size={16} className="relative z-10 ml-auto" />
+                            )}
+                            
+                            <div className={`absolute -right-2 -bottom-2 opacity-[0.05] transition-transform duration-500 group-hover:scale-110 ${
+                              template.id === activeTemplate.id ? "opacity-[0.15]" : ""
+                            }`}>
+                              <LayoutTemplate size={64} />
+                            </div>
+                          </button>
+                        ))}
+                      </div>
                     </div>
+
                     <button
                       onClick={continueWithTemplate}
-                      className="btn-primary w-full !py-4 shadow-2xl"
+                      className="group relative w-full overflow-hidden rounded-2xl bg-[var(--accent)] py-5 text-sm font-black uppercase tracking-[0.2em] text-white shadow-2xl shadow-[var(--accent)]/20 transition-all hover:scale-[1.02] active:scale-[0.98]"
                     >
-                      Use this template
-                      <ArrowRight size={18} />
+                      <span className="relative z-10 flex items-center justify-center gap-3">
+                        Use this template
+                        <ArrowRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                      </span>
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                     </button>
                   </div>
                 </div>
@@ -504,6 +521,9 @@ export default function Home() {
             </div>
           }
         />
+
+
+
 
         <section id="how-it-works" className="w-full px-6 py-24 lg:px-12 2xl:px-20 relative overflow-hidden">
           <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
