@@ -1,8 +1,8 @@
 import { User as UserIcon } from "lucide-react";
 import { useEffect, useRef } from "react";
+import { BACKEND_URL } from "../api";
 
-const isLocal = window.location.hostname === "localhost";
-const BACKEND_URL = isLocal ? "http://localhost:5000" : "https://truthbox-production.up.railway.app";
+// BACKEND_URL is now imported from api.js
 
 export default function ProfileDropdown({ user, onClose }) {
   const dropdownRef = useRef(null);

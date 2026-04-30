@@ -32,7 +32,7 @@ const feedbackStorage = new CloudinaryStorage({
     if (file.mimetype.startsWith("video/")) {
       resourceType = "video";
     } else if (file.mimetype === "application/pdf") {
-      resourceType = "raw";
+      resourceType = "image";
     }
 
     // Sanitize filename: Remove spaces or special characters

@@ -2,10 +2,10 @@ import { useEffect, useMemo, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, ShieldCheck, CheckCircle, FileUp, Film, Globe, FileText, Image as ImageIcon, ExternalLink } from "lucide-react";
-import api from "../api";
+import api, { BACKEND_URL } from "../api";
 import TermsModal from "../components/TermsModal";
 
-const BACKEND = "https://truthbox-production.up.railway.app";
+// BACKEND is now imported from api.js
 
 const getFullUrl = (url) => {
   if (!url) return "";
@@ -27,7 +27,7 @@ const getFullUrl = (url) => {
     return url;
   }
   
-  return `${BACKEND}${url}`;
+  return `${BACKEND_URL}${url}`;
 };
 
 function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
@@ -95,7 +95,7 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
           
           <div className="flex flex-col gap-4 w-full max-w-xs">
             <a 
-              href={fileUrl} 
+              href={getFullUrl(fileUrl)} 
               target="_blank" 
               rel="noopener noreferrer"
               className="w-full py-5 rounded-2xl bg-orange-500 text-white text-center font-bold text-sm shadow-xl shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"

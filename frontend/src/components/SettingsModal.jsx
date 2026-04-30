@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import { AlertTriangle, Check, Image as ImageIcon, LogOut, ShieldCheck, Upload, UserCircle2, X } from "lucide-react";
-import api from "../api";
+import api, { BACKEND_URL } from "../api";
 
-const BACKEND_URL = "https://truthbox-production.up.railway.app";
+// BACKEND_URL is now imported from api.js
 
 export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
   const [selectedSections, setSelectedSections] = useState({

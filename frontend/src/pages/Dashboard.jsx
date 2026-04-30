@@ -31,7 +31,7 @@ import {
   Archive,
   Home,
 } from "lucide-react";
-import api from "../api";
+import api, { BACKEND_URL } from "../api";
 import axios from "axios";
 import ProfileDropdown from "../components/ProfileDropdown";
 import SettingsModal from "../components/SettingsModal";
@@ -42,8 +42,7 @@ import StoryShareModal from "../components/StoryShareModal";
 import { Camera } from "lucide-react";
 import darkCloudBg from "../assets/dark_cloud_bg.png";
 
-const isLocal = window.location.hostname === "localhost";
-const BACKEND_URL = isLocal ? "http://localhost:5000" : "https://truthbox-production.up.railway.app";
+// BACKEND_URL is now imported from api.js
 
 const POST_TYPES = [
   { id: "text", label: "Text", icon: FileText, color: "#38BDF8", desc: "Publish a written prompt for structured feedback" },
@@ -382,7 +381,7 @@ export default function Dashboard() {
       // ── Step 1: Direct Upload to Cloudinary (if file exists) ──
       if (file && ["image", "video", "pdf"].includes(postType)) {
         // A. Get signature from backend
-        const resource_type = postType === "pdf" ? "raw" : "auto";
+        const resource_type = postType === "pdf" ? "image" : "auto";
         const { data: signData } = await api.get(`/links/sign-upload?resource_type=${resource_type}`);
         
         // B. Prepare Cloudinary FormData
