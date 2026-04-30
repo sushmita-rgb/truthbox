@@ -4,23 +4,23 @@ import Footer from "../components/Footer";
 
 export default function Privacy() {
   return (
-    <div className="min-h-screen bg-main/45 flex flex-col font-sans selection:bg-brand/30">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col font-sans selection:bg-brand/30 transition-colors duration-500">
       <div className="flex-1 max-w-4xl mx-auto px-6 pt-12 pb-20 w-full">
         <Link to="/" className="inline-flex items-center gap-2 text-brand hover:gap-3 transition-all mb-12">
           <ArrowLeft size={18} /> Back to Home
         </Link>
 
         <div className="flex items-center gap-4 mb-8">
-          <div className="w-16 h-16 rounded-2xl bg-brand/10 border border-brand/20 flex items-center justify-center">
+          <div className="w-16 h-16 rounded-2xl bg-brand/10 border border-brand/20 flex items-center justify-center shadow-inner">
             <Lock size={32} className="text-brand" />
           </div>
           <div>
             <h1 className="text-4xl font-black text-[var(--text-primary)]">Privacy Policy</h1>
-            <p className="text-[var(--text-secondary)] mt-1">Last updated: April 26, 2026</p>
+            <p className="text-[var(--text-secondary)] mt-1 font-medium">Last updated: April 26, 2026</p>
           </div>
         </div>
 
-        <div className="glass p-8 md:p-12 rounded-[2rem] space-y-10 leading-relaxed border-[var(--border-color)]">
+        <div className="bg-[var(--bg-secondary)] p-8 md:p-12 rounded-[2rem] space-y-10 leading-relaxed border border-[var(--border-color)] shadow-xl">
           <section>
             <h2 className="text-xl font-bold text-[var(--text-primary)] flex items-center gap-3 mb-4">
               <Eye size={20} className="text-brand" /> 1. Information We Collect
