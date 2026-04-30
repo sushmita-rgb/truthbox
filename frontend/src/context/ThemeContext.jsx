@@ -1,18 +1,28 @@
-import React, { createContext, useContext, useEffect } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 
 const ThemeContext = createContext();
 
 export function ThemeProvider({ children }) {
-  const theme = "dark";
+  const [theme, setTheme] = useState(() => {
+    // Check localStorage
+    const savedTheme = localStorage.getItem("Verit.theme");
+    if (savedTheme) return savedTheme;
+    // Check system preference
+    return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+  });
 
   useEffect(() => {
     const root = window.document.documentElement;
-    root.classList.add("dark");
-    localStorage.setItem("Verit.theme", "dark");
-  }, []);
+    if (theme === "dark") {
+      root.classList.add("dark");
+    } else {
+      root.classList.remove("dark");
+    }
+    localStorage.setItem("Verit.theme", theme);
+  }, [theme]);
 
   const toggleTheme = () => {
-    // No-op, dark mode is permanently enabled
+    setTheme((prev) => (prev === "dark" ? "light" : "dark"));
   };
 
   return (

@@ -7,21 +7,30 @@ import {
   ArrowRight,
   Check,
   CheckCircle2,
+  CheckCircle,
+  Globe,
+  Layout,
+  Mail,
+  Menu,
+  MessageSquare,
+  Play,
+  Shield,
+  Sparkles,
+  Star,
+  User,
+  X,
+  Sun,
+  Moon,
   ChevronRight,
   Copy,
   Crown,
-  Globe,
   LayoutTemplate,
   Lock,
-  Menu,
-  MessageSquare,
   MousePointerClick,
-  Sparkles,
-  Shield,
   Wand2,
-  X,
   Zap,
 } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 import heroArt from "../assets/hero.png";
 
 const FEATURE_COLUMNS = [
@@ -173,6 +182,7 @@ export default function Home() {
   const navigate = useNavigate();
   const [activeTemplate, setActiveTemplate] = useState(TEMPLATES[0]);
   const [demoNote, setDemoNote] = useState(TEMPLATES[0].note);
+  const { theme, toggleTheme } = useTheme();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const menuLinks = [
@@ -202,28 +212,31 @@ export default function Home() {
   };
 
   return (
-    <div className="relative min-h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-300">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,var(--accent-soft),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(151,206,35,0.05),transparent_30%)]" />
-      <div 
-        className="absolute inset-0 pointer-events-none z-0 dark:hidden" 
-        style={{ 
-          backgroundImage: `url(${lightCloudBg})`, 
-          backgroundSize: 'cover', 
-          backgroundPosition: 'center',
-          opacity: 1 
-        }} 
-      />
-      <div 
-        className="absolute inset-0 pointer-events-none z-0 hidden dark:block" 
-        style={{ 
-          backgroundImage: `url(${darkCloudBg})`, 
-          backgroundSize: 'cover', 
-          backgroundPosition: 'center',
-          opacity: 1 
-        }} 
-      />
+    <div className="relative min-h-screen overflow-hidden bg-[var(--bg-primary)] text-[var(--text-primary)] transition-colors duration-500">
+      {/* Global Atmospheric Background System */}
+      <div className="fixed inset-0 z-0 pointer-events-none">
+        {/* Base Layer - Theme Aware */}
+        <div className="absolute inset-0 bg-[var(--bg-primary)] transition-colors duration-500" />
+        
+        {/* Subtle Accent Glows */}
+        <div className="absolute top-0 right-0 w-[60%] h-[60%] bg-[radial-gradient(circle_at_top_right,var(--accent-soft),transparent_70%)] opacity-70" />
+        <div className="absolute bottom-0 left-0 w-[60%] h-[60%] bg-[radial-gradient(circle_at_bottom_left,var(--accent-soft),transparent_70%)] opacity-50" />
+        
+        {/* Global Cloud Texture - Continuous from top to bottom */}
+        <div className="absolute inset-0 opacity-40 dark:opacity-60 transition-opacity duration-500">
+          <img 
+            src={theme === "dark" ? darkCloudBg : lightCloudBg} 
+            alt="" 
+            className="w-full h-full object-cover blur-[1px] scale-105"
+            style={{ 
+              mixBlendMode: theme === "dark" ? 'screen' : 'multiply',
+              filter: theme === "dark" ? 'brightness(1.1)' : 'none'
+            }}
+          />
+        </div>
+      </div>
 
-      <header className="relative z-[100] w-full border-b border-[var(--border-color)]">
+      <header className="relative z-[100] w-full border-b border-[var(--border-color)] backdrop-blur-md bg-transparent sticky top-0">
         <div className="flex w-full items-center justify-between px-6 py-4 lg:py-6 lg:px-12 2xl:px-20">
           <Link to="/" className="flex items-center">
             <VeritLogo className="h-16 lg:h-20 w-auto" showTagline={false} />
@@ -232,27 +245,40 @@ export default function Home() {
           {/* Desktop Nav */}
           <div className="hidden items-center gap-8 md:flex">
             {menuLinks.map((link) => (
-              <a key={link.name} href={link.href} className="text-sm font-medium text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
+              <a key={link.name} href={link.href} className="text-sm font-semibold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]">
                 {link.name}
               </a>
             ))}
-            <div className="h-6 w-px bg-[var(--border-color)] mx-2" />
+            <div className="h-4 w-px bg-[var(--border-color)] mx-2" />
             <Link
               to="/login"
               className="text-sm font-bold text-[var(--text-secondary)] transition-colors hover:text-[var(--text-primary)]"
             >
-              Sign in
+              Log in
             </Link>
             <Link
               to="/signup"
-              className="rounded-full bg-[var(--accent)] px-6 py-2.5 text-sm font-black text-white shadow-lg transition-all hover:-translate-y-0.5"
+              className="btn-primary !py-2.5 !px-6 !text-sm"
             >
               Get started
             </Link>
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 bg-[var(--bg-secondary)] rounded-full border border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--accent)] transition-all shadow-sm"
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
+            </button>
           </div>
 
           {/* Mobile Actions */}
           <div className="flex items-center gap-4 md:hidden">
+            <button
+              onClick={toggleTheme}
+              className="p-2 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)] text-[var(--text-primary)]"
+            >
+              {theme === "dark" ? <Sun size={20} /> : <Moon size={20} />}
+            </button>
             <button 
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="p-2 bg-[var(--bg-secondary)] rounded-xl border border-[var(--border-color)] text-[var(--text-primary)]"
@@ -325,61 +351,61 @@ export default function Home() {
       <main className="relative z-10 w-full">
         <ZigzagSection
           left={
-            <div className="space-y-8">
-              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-2 text-xs font-semibold uppercase tracking-widest text-[var(--text-secondary)] shadow-sm">
-                <MousePointerClick size={14} className="text-[var(--accent)]" />
-                Professional anonymous feedback
+            <div className="space-y-10">
+              <div className="inline-flex items-center gap-2 rounded-full border border-[var(--accent)]/20 bg-[var(--accent)]/5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-[var(--accent)] shadow-sm">
+                <Sparkles size={14} className="animate-pulse" />
+                The new standard for feedback
               </div>
 
-              <div className="space-y-5">
-                <h2 className="max-w-3xl text-5xl font-extrabold leading-[1.05] tracking-tight md:text-7xl xl:text-[5.5rem] text-[var(--text-primary)]">
+              <div className="space-y-6">
+                <h1 className="max-w-3xl text-5xl font-black leading-[1.05] tracking-tight md:text-7xl xl:text-[6rem] text-[var(--text-primary)]">
                   Make feedback feel
-                  <span className="text-[var(--accent)]"> premium</span>
-                </h2>
-                <p className="max-w-2xl text-lg leading-8 text-[var(--text-secondary)] md:text-xl">
+                  <span className="text-[var(--accent)]"> premium.</span>
+                </h1>
+                <p className="max-w-2xl text-lg leading-relaxed text-[var(--text-secondary)] md:text-xl font-medium">
                   TruthBox helps creators and builders collect anonymous feedback through
-                  branded links and a dashboard that actually provides insights.
+                  high-end branded links and a dashboard that actually provides insights.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-4">
+              <div className="flex flex-wrap gap-4 items-center">
                 <Link
                   to="/signup"
-                  className="inline-flex items-center gap-2 rounded-full bg-[var(--accent)] px-7 py-4 text-sm font-bold text-white transition-all hover:-translate-y-0.5 shadow-lg shadow-[var(--accent)]/20"
+                  className="btn-primary !px-8 !py-4 text-base"
                 >
-                  Create your first link
-                  <ArrowRight size={16} />
+                  Get started for free
+                  <ArrowRight size={18} />
                 </Link>
                 <a
                   href="#live-demo"
-                  className="inline-flex items-center gap-2 rounded-full border border-[var(--border-color)] bg-[var(--bg-secondary)] px-7 py-4 text-sm font-semibold text-[var(--text-primary)] transition-colors hover:bg-[var(--bg-secondary)]/80"
+                  className="btn-secondary !px-8 !py-4 text-base"
                 >
-                  Try live demo
-                  <ChevronRight size={16} />
+                  View demo
+                  <Play size={18} className="fill-current" />
                 </a>
               </div>
 
-              <div className="grid gap-4 sm:grid-cols-3">
+              <div className="grid gap-6 sm:grid-cols-3 pt-6">
                 {statTiles.map((tile) => (
-                  <div key={tile.label} className="rounded-3xl border border-[var(--border-color)] bg-[var(--bg-secondary)]/50 px-5 py-4 backdrop-blur-xl">
-                    <p className="text-2xl font-extrabold text-[var(--text-primary)]">{tile.value}</p>
-                    <p className="text-sm text-[var(--text-secondary)]">{tile.label}</p>
+                  <div key={tile.label} className="premium-card p-5 !rounded-3xl">
+                    <p className="text-3xl font-black text-[var(--text-primary)]">{tile.value}</p>
+                    <p className="text-xs font-bold uppercase tracking-widest text-[var(--text-muted)] mt-1">{tile.label}</p>
                   </div>
                 ))}
               </div>
             </div>
           }
           right={
-            <div className="grid gap-4 md:grid-cols-3 xl:grid-cols-1">
+            <div className="grid gap-6">
               {FEATURE_COLUMNS.map((feature) => {
                 const Icon = feature.icon;
                 return (
-                  <div key={feature.title} className="rounded-[1.6rem] border border-[var(--border-color)] bg-[var(--bg-secondary)]/40 p-6 backdrop-blur-xl group hover:bg-[var(--bg-secondary)]/80 transition-all">
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-[var(--accent)]/15 text-[var(--accent)]">
-                      <Icon size={22} />
+                  <div key={feature.title} className="premium-card p-6 !rounded-[2rem] group">
+                    <div className="mb-5 flex h-14 w-14 items-center justify-center rounded-2xl bg-[var(--accent)]/10 text-[var(--accent)] group-hover:scale-110 transition-transform duration-500">
+                      <Icon size={26} />
                     </div>
-                    <h3 className="text-xl font-bold text-[var(--text-primary)]">{feature.title}</h3>
-                    <p className="mt-2 text-sm leading-7 text-[var(--text-secondary)]">{feature.description}</p>
+                    <h3 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">{feature.title}</h3>
+                    <p className="mt-3 text-base leading-relaxed text-[var(--text-secondary)] font-medium">{feature.description}</p>
                   </div>
                 );
               })}
@@ -403,55 +429,62 @@ export default function Home() {
           }
           right={
             <div className="relative w-full">
-              <div className="absolute -left-8 top-8 h-28 w-28 rounded-full bg-[var(--accent)]/20 blur-3xl" />
+              <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-[var(--accent)]/10 blur-[100px] animate-pulse" />
               
-              <div className="relative overflow-hidden rounded-[2.5rem] border border-[var(--border-color)] bg-[var(--bg-secondary)]/80 shadow-2xl backdrop-blur-xl">
+              <div className="relative overflow-hidden rounded-[2.5rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-2xl transition-colors duration-500">
                 {/* Browser-like Header */}
-                <div className="flex items-center gap-2 px-6 py-4 border-b border-[var(--border-color)] bg-[var(--bg-primary)]/50">
-                  <div className="h-3 w-3 rounded-full bg-red-400/80" />
-                  <div className="h-3 w-3 rounded-full bg-amber-400/80" />
-                  <div className="h-3 w-3 rounded-full bg-green-400/80" />
-                  <div className="ml-4 flex-1 rounded-md bg-[var(--bg-secondary)] py-1.5 px-3 text-xs text-[var(--text-secondary)] text-center border border-[var(--border-color)] shadow-sm font-mono">
+                <div className="flex items-center gap-3 px-6 py-4 border-b border-[var(--border-color)] bg-[var(--bg-primary)]">
+                  <div className="flex gap-1.5">
+                    <div className="h-3 w-3 rounded-full bg-red-400" />
+                    <div className="h-3 w-3 rounded-full bg-amber-400" />
+                    <div className="h-3 w-3 rounded-full bg-green-400" />
+                  </div>
+                  <div className="ml-4 flex-1 rounded-xl bg-[var(--bg-muted)] py-2 px-4 text-[10px] text-[var(--text-muted)] text-center border border-[var(--border-color)] font-mono tracking-tight">
                     truthbox.io/p/preview
                   </div>
                 </div>
+                
                 <div className="grid gap-0 md:grid-cols-[0.95fr_1.05fr]">
                   <div className="p-8 border-b md:border-b-0 md:border-r border-[var(--border-color)]">
-                    <div className="mb-6 flex items-center gap-4">
-                      <div className="h-12 w-12 rounded-2xl bg-[var(--bg-primary)] p-2 border border-[var(--border-color)] shadow-sm">
-                        <img src={heroArt} alt="Verit preview" className="h-full w-full object-contain" />
+                    <div className="mb-8 flex items-center gap-4">
+                      <div className="h-14 w-14 rounded-2xl bg-[var(--accent)]/10 p-3 border border-[var(--accent)]/20 shadow-inner">
+                        <VeritLogo showTagline={false} />
                       </div>
                       <div>
-                        <h3 className="text-xl font-bold text-[var(--text-primary)]">Live Preview</h3>
-                        <p className="text-xs text-[var(--text-secondary)] mt-0.5">Interact with the template</p>
+                        <h3 className="text-xl font-black text-[var(--text-primary)]">Live Preview</h3>
+                        <p className="text-xs font-bold text-[var(--accent)] uppercase tracking-widest">Active Template</p>
                       </div>
                     </div>
 
-                    <div className="space-y-4 rounded-3xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-6">
-                      <p className="text-2xl font-bold text-[var(--text-primary)]">{activeTemplate.headline}</p>
+                    <div className="space-y-6 rounded-3xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-6 shadow-inner">
+                      <p className="text-2xl font-black text-[var(--text-primary)] leading-tight">{activeTemplate.headline}</p>
                       <textarea
                         value={demoNote}
                         onChange={(e) => setDemoNote(e.target.value)}
-                        className="min-h-24 w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-4 text-sm text-[var(--text-primary)] outline-none focus:ring-2 focus:ring-[var(--accent)]/20"
-                        placeholder="Write something..."
+                        className="min-h-32 w-full rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-5 text-sm text-[var(--text-primary)] outline-none focus:ring-4 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)] transition-all font-medium placeholder:text-[var(--text-muted)]"
+                        placeholder="Type your response here..."
                       />
-                      <div className="rounded-2xl p-4 bg-[var(--accent)]/5 border border-[var(--accent)]/10">
-                        <p className="text-xs font-bold uppercase text-[var(--accent)] mb-1">Example Reply</p>
-                        <p className="text-sm text-[var(--text-secondary)]">{activeTemplate.response}</p>
+                      <div className="rounded-2xl p-5 bg-[var(--accent)]/5 border border-[var(--accent)]/10">
+                        <div className="flex items-center gap-2 mb-2">
+                          <Crown size={14} className="text-[var(--accent)]" />
+                          <p className="text-[10px] font-black uppercase text-[var(--accent)] tracking-widest">Creator Note</p>
+                        </div>
+                        <p className="text-sm text-[var(--text-secondary)] font-medium leading-relaxed italic">"{activeTemplate.response}"</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="p-8 bg-[var(--bg-primary)]/30">
-                    <div className="mb-6 flex flex-wrap gap-2">
+                  <div className="p-8 bg-[var(--bg-muted)]/50 flex flex-col justify-center">
+                    <p className="text-xs font-black uppercase text-[var(--text-muted)] tracking-[0.2em] mb-6 px-2">Select a style</p>
+                    <div className="mb-10 flex flex-wrap gap-3">
                       {TEMPLATES.map((template) => (
                         <button
                           key={template.id}
                           onClick={() => handleTemplateSelect(template)}
-                          className={`rounded-full px-4 py-2 text-xs font-bold transition-all ${
+                          className={`rounded-2xl px-5 py-3 text-xs font-black transition-all ${
                             template.id === activeTemplate.id
-                              ? "bg-[var(--accent)] text-white shadow-md"
-                              : "bg-[var(--bg-secondary)] text-[var(--text-secondary)] border border-[var(--border-color)] hover:bg-[var(--bg-secondary)]/80"
+                              ? "bg-[var(--accent)] text-white shadow-xl shadow-[var(--accent)]/30 scale-105"
+                              : "bg-[var(--bg-secondary)] text-[var(--text-primary)] border border-[var(--border-color)] hover:border-[var(--accent)] hover:shadow-md"
                           }`}
                         >
                           {template.title}
@@ -460,9 +493,10 @@ export default function Home() {
                     </div>
                     <button
                       onClick={continueWithTemplate}
-                      className="w-full py-4 rounded-2xl text-sm font-bold text-white shadow-lg transition-all hover:scale-[1.02] bg-[var(--accent)] hover:bg-[var(--accent)]/90"
+                      className="btn-primary w-full !py-4 shadow-2xl"
                     >
                       Use this template
+                      <ArrowRight size={18} />
                     </button>
                   </div>
                 </div>
@@ -471,17 +505,22 @@ export default function Home() {
           }
         />
 
-        <section id="how-it-works" className="w-full px-6 py-20 lg:px-12 2xl:px-20 relative">
+        <section id="how-it-works" className="w-full px-6 py-24 lg:px-12 2xl:px-20 relative overflow-hidden">
+          <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+            <div className="absolute top-0 left-1/4 w-96 h-96 bg-[var(--accent)]/10 blur-[120px] rounded-full" />
+            <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-[var(--accent)]/5 blur-[120px] rounded-full" />
+          </div>
+
           <motion.div 
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             variants={fadeUp}
-            className="text-center mb-16 max-w-3xl mx-auto space-y-5"
+            className="relative z-10 text-center mb-20 max-w-3xl mx-auto space-y-6"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--accent)]">How it works</p>
-            <h3 className="text-4xl font-extrabold text-[var(--text-primary)] md:text-6xl">Simple and professional.</h3>
-            <p className="text-lg text-[var(--text-secondary)]">Get up and running in less than a minute. No complex setups, just clear, honest feedback from your audience.</p>
+            <p className="text-xs font-black uppercase tracking-[0.4em] text-[var(--accent)]">Execution</p>
+            <h3 className="text-4xl font-black text-[var(--text-primary)] md:text-6xl tracking-tight">Simple and professional.</h3>
+            <p className="text-lg text-[var(--text-secondary)] font-medium leading-relaxed">Get up and running in less than a minute. No complex setups, just clear, honest feedback from your audience.</p>
           </motion.div>
 
           <motion.div 
@@ -489,41 +528,37 @@ export default function Home() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             variants={staggerContainer}
-            className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto relative"
+            className="relative z-10 grid gap-8 md:grid-cols-3 max-w-7xl mx-auto"
           >
-            {/* Connecting line for desktop */}
-            <div className="hidden md:block absolute top-12 left-[16%] right-[16%] h-0.5 bg-gradient-to-r from-transparent via-[var(--accent)]/30 to-transparent z-0" />
-            
             {STEPS.map((step, index) => (
               <motion.div 
                 key={step.title} 
                 variants={fadeUp}
-                className="relative z-10 rounded-[2.5rem] border border-[var(--border-color)] bg-[var(--bg-secondary)] p-8 shadow-xl hover:shadow-2xl transition-all hover:-translate-y-2 group overflow-hidden"
+                className="premium-card p-10 !rounded-[3rem] group"
               >
-                <div className="absolute -right-10 -top-10 h-32 w-32 rounded-full bg-[var(--accent)]/5 blur-2xl group-hover:bg-[var(--accent)]/10 transition-colors" />
-                
-                <div className="mb-8 flex h-16 w-16 items-center justify-center rounded-3xl bg-[var(--accent)]/10 text-[var(--accent)] shadow-inner">
-                  <step.icon size={28} />
+                <div className="mb-10 flex h-20 w-20 items-center justify-center rounded-[2rem] bg-[var(--bg-primary)] text-[var(--accent)] border border-[var(--border-color)] shadow-sm group-hover:scale-110 group-hover:border-[var(--accent)] transition-all duration-500">
+                  <step.icon size={32} />
                 </div>
                 
-                <h4 className="text-xl font-bold text-[var(--text-primary)] mb-3">{step.title}</h4>
-                <p className="text-sm leading-relaxed text-[var(--text-secondary)]">{step.description}</p>
+                <h4 className="text-2xl font-black text-[var(--text-primary)] mb-4 tracking-tight">{step.title}</h4>
+                <p className="text-base leading-relaxed text-[var(--text-secondary)] font-medium">{step.description}</p>
               </motion.div>
             ))}
           </motion.div>
         </section>
 
         {/* ── Pricing Section ───────────────────────────────────────────── */}
-        <section id="pricing" className="w-full px-6 pb-28 pt-10 lg:px-12 2xl:px-20">
+        <section id="pricing" className="w-full px-6 pb-32 pt-16 lg:px-12 2xl:px-20">
           <motion.div 
             initial="hidden"
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             variants={fadeUp}
-            className="text-center mb-16"
+            className="text-center mb-20 space-y-6"
           >
-            <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--accent)]">Pricing</p>
-            <h3 className="mt-4 text-4xl font-extrabold text-[var(--text-primary)] md:text-5xl">Simple plans.</h3>
+            <p className="text-xs font-black uppercase tracking-[0.4em] text-[var(--accent)]">Investment</p>
+            <h3 className="text-4xl font-black text-[var(--text-primary)] md:text-6xl tracking-tight">Simple, honest pricing.</h3>
+            <p className="text-lg text-[var(--text-secondary)] font-medium max-w-2xl mx-auto leading-relaxed">Choose the plan that fits your ambition. No hidden fees, just premium features to help you grow.</p>
           </motion.div>
 
           <motion.div 
@@ -531,41 +566,52 @@ export default function Home() {
             whileInView="show"
             viewport={{ once: true, amount: 0.2 }}
             variants={staggerContainer}
-            className="grid gap-8 md:grid-cols-3 max-w-6xl mx-auto"
+            className="grid gap-8 md:grid-cols-3 max-w-7xl mx-auto items-end"
           >
             {[
-              { id: "free", name: "Free", price: "₹0", color: "#6b7280", features: ["5 links", "All post types", "Basic dashboard"] },
-              { id: "pro", name: "Pro", price: "₹499", color: "var(--accent)", features: ["20 links", "Analytics", "Priority support"], popular: true },
-              { id: "ultra", name: "Ultra", price: "₹999", color: "#38bdf8", features: ["Unlimited links", "Custom branding", "Early access"] },
+              { id: "free", name: "Free", price: "₹0", color: "#6b7280", features: ["5 links", "All post types", "Basic dashboard"], cta: "Start for free" },
+              { id: "pro", name: "Pro", price: "₹499", color: "var(--accent)", features: ["20 links", "Analytics", "Priority support"], popular: true, cta: "Unlock Pro" },
+              { id: "ultra", name: "Ultra", price: "₹999", color: "#38bdf8", features: ["Unlimited links", "Custom branding", "Early access"], cta: "Go Ultra" },
             ].map((plan) => (
               <motion.div 
                 key={plan.id}
                 variants={fadeUp}
-                className={`relative rounded-[2.5rem] border p-8 flex flex-col gap-6 transition-all hover:shadow-2xl ${
-                  plan.popular ? "border-[var(--accent)] bg-[var(--accent)]/5 scale-105" : "border-[var(--border-color)] bg-[var(--bg-secondary)]/50"
+                className={`relative premium-card p-10 !rounded-[3rem] flex flex-col gap-8 group transition-all duration-500 ${
+                  plan.popular ? "border-2 border-[var(--accent)] shadow-2xl shadow-[var(--accent)]/15 scale-105 z-10" : "opacity-90 hover:opacity-100"
                 }`}
               >
                 {plan.popular && (
-                  <span className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-widest rounded-full">Popular</span>
+                  <div className="absolute -top-5 left-1/2 -translate-x-1/2 px-5 py-2 bg-[var(--accent)] text-white text-[10px] font-black uppercase tracking-[0.2em] rounded-full shadow-xl shadow-[var(--accent)]/30">
+                    Most Popular
+                  </div>
                 )}
+                
                 <div>
-                  <h4 className="text-2xl font-bold text-[var(--text-primary)]">{plan.name}</h4>
-                  <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-4xl font-black text-[var(--text-primary)]">{plan.price}</span>
-                    <span className="text-sm text-[var(--text-secondary)]">/mo</span>
+                  <h4 className="text-2xl font-black text-[var(--text-primary)] tracking-tight">{plan.name}</h4>
+                  <div className="mt-5 flex items-baseline gap-1">
+                    <span className="text-5xl font-black text-[var(--text-primary)] tracking-tighter">{plan.price}</span>
+                    <span className="text-sm font-bold text-[var(--text-muted)]">/month</span>
                   </div>
                 </div>
-                <ul className="space-y-4 flex-1">
+
+                <div className="h-px bg-[var(--border-color)] w-full" />
+
+                <ul className="space-y-5 flex-1">
                   {plan.features.map(f => (
-                    <li key={f} className="flex items-center gap-3 text-sm text-[var(--text-secondary)]">
-                      <Check size={18} className="text-[var(--accent)]" /> {f}
+                    <li key={f} className="flex items-center gap-3 text-base font-medium text-[var(--text-secondary)]">
+                      <div className="w-6 h-6 rounded-full bg-[var(--accent)]/10 flex items-center justify-center text-[var(--accent)] shrink-0 shadow-inner">
+                        <Check size={14} strokeWidth={3} />
+                      </div>
+                      {f}
                     </li>
                   ))}
                 </ul>
-                <Link to="/signup" className={`w-full py-4 rounded-2xl text-sm font-bold text-center transition-all ${
-                  plan.popular ? "bg-[var(--accent)] text-white" : "bg-[var(--bg-primary)] text-[var(--text-primary)] border border-[var(--border-color)]"
+                
+                <Link to="/signup" className={`btn-primary w-full !py-4 shadow-xl group-hover:scale-[1.02] transition-transform ${
+                  !plan.popular ? "btn-secondary !shadow-sm" : ""
                 }`}>
-                  Get Started
+                  {plan.cta}
+                  <ArrowRight size={18} />
                 </Link>
               </motion.div>
             ))}

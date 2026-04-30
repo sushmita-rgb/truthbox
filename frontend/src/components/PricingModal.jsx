@@ -22,8 +22,8 @@ const PLANS = [
     price: "₹0",
     priceNote: "forever",
     icon: Sparkles,
-    color: "#6b7280",
-    glow: "rgba(107,114,128,0.25)",
+    color: "var(--text-muted)",
+    glow: "rgba(148,163,184,0.1)",
     links: 5,
     features: [
       "5 feedback links",
@@ -41,8 +41,8 @@ const PLANS = [
     price: "₹499",
     priceNote: "per month",
     icon: Zap,
-    color: "#97ce23",
-    glow: "rgba(151,206,35,0.30)",
+    color: "var(--accent)",
+    glow: "rgba(59,130,246,0.15)",
     links: 20,
     badge: "Most Popular",
     features: [
@@ -63,8 +63,8 @@ const PLANS = [
     price: "₹999",
     priceNote: "per month",
     icon: Crown,
-    color: "#ffffff",
-    glow: "rgba(255,255,255,0.20)",
+    color: "var(--text-primary)",
+    glow: "rgba(15,23,42,0.1)",
     links: "Unlimited",
     badge: "Best Value",
     features: [
@@ -183,8 +183,7 @@ export default function PricingModal({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4"
-        style={{ background: "rgba(0,0,0,0.88)", backdropFilter: "blur(18px)" }}
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/80 backdrop-blur-md transition-colors duration-500"
         onClick={(e) => e.target === e.currentTarget && !loadingPlan && onClose()}
       >
         <motion.div
@@ -192,7 +191,7 @@ export default function PricingModal({
           animate={{ scale: 1, opacity: 1, y: 0 }}
           exit={{ scale: 0.92, opacity: 0, y: 20 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-          className="relative w-full max-w-4xl rounded-3xl border border-white/10 bg-[#0a0a0a] p-6 md:p-10 overflow-hidden"
+          className="relative w-full max-w-4xl rounded-3xl border border-[var(--border-color)] bg-[var(--bg-secondary)] p-6 md:p-10 overflow-hidden shadow-2xl transition-colors duration-500"
         >
           {/* Background accent glow */}
           <div
@@ -200,14 +199,19 @@ export default function PricingModal({
             style={{ background: "radial-gradient(ellipse, rgba(151,206,35,0.12) 0%, transparent 70%)" }}
           />
 
-          {/* Close button */}
-          <button
-            onClick={onClose}
-            disabled={!!loadingPlan}
-            className="absolute top-5 right-5 w-10 h-10 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-          >
-            <X size={18} />
-          </button>
+          <div className="flex justify-between items-center mb-8 border-b border-[var(--border-color)] pb-6">
+            <div>
+              <h2 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">Upgrade Plan</h2>
+              <p className="text-sm font-medium text-[var(--text-secondary)] mt-1">Choose the perfect plan for your needs.</p>
+            </div>
+            <button
+              onClick={onClose}
+              disabled={!!loadingPlan}
+              className="w-10 h-10 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all hover:scale-105 active:scale-95 disabled:opacity-40"
+            >
+              <X size={20} />
+            </button>
+          </div>
 
           {/* ── Success banner ── */}
           <AnimatePresence>
@@ -216,14 +220,14 @@ export default function PricingModal({
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0, y: -20 }}
-                className="mb-6 flex items-center gap-3 rounded-2xl border border-[#97ce23]/30 bg-[#97ce23]/10 px-5 py-4"
+                className="mb-6 flex items-center gap-3 rounded-2xl border border-[var(--accent)]/30 bg-[var(--accent)]/10 px-5 py-4"
               >
-                <CheckCircle size={20} className="text-[#97ce23] shrink-0" />
+                <CheckCircle size={20} className="text-[var(--accent)] shrink-0" />
                 <div>
-                  <p className="font-bold text-white text-sm">Payment successful! 🎉</p>
-                  <p className="text-xs text-gray-400 mt-0.5">
+                  <p className="font-bold text-[var(--text-primary)] text-sm">Payment successful! 🎉</p>
+                  <p className="text-xs text-[var(--text-secondary)] mt-0.5">
                     Your plan has been upgraded to{" "}
-                    <span className="text-[#97ce23] font-semibold">
+                    <span className="text-[var(--accent)] font-semibold">
                       {PLANS.find((p) => p.id === successPlan)?.name}
                     </span>
                     . You can now create more feedback links.
@@ -231,7 +235,7 @@ export default function PricingModal({
                 </div>
                 <button
                   onClick={onClose}
-                  className="ml-auto px-4 py-2 rounded-xl bg-[#97ce23] text-black text-xs font-bold hover:bg-[#b0e832] transition-colors shrink-0"
+                  className="ml-auto px-4 py-2 rounded-xl bg-[var(--accent)] text-white text-xs font-bold hover:opacity-90 transition-all shrink-0 shadow-lg shadow-[var(--accent)]/20"
                 >
                   Go to Dashboard
                 </button>
@@ -249,7 +253,7 @@ export default function PricingModal({
                 className="mb-5 flex items-start gap-3 rounded-2xl border border-red-500/30 bg-red-500/10 px-5 py-3"
               >
                 <X size={16} className="text-red-400 mt-0.5 shrink-0" />
-                <p className="text-sm text-red-300">{error}</p>
+                <p className="text-sm text-red-600 dark:text-red-300">{error}</p>
                 <button
                   onClick={() => setError(null)}
                   className="ml-auto text-red-400 hover:text-red-300 shrink-0"
@@ -262,40 +266,26 @@ export default function PricingModal({
 
           {/* ── Header ── */}
           {!successPlan && (
-            <div className="text-center mb-8">
+            <div className="text-center mb-10">
               <div className="inline-flex items-center gap-2 rounded-full border border-accent/20 bg-accent/10 px-4 py-1.5 text-xs font-semibold text-accent mb-4">
                 <Lock size={12} />
                 {currentPlan === "free" && used >= limit
                   ? "Link limit reached"
                   : "Upgrade your plan"}
               </div>
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
-                {currentPlan === "free" && used >= limit ? (
-                  <>
-                    You&apos;ve used <span className="text-accent">{used}</span> of{" "}
-                    <span className="text-accent">{limit}</span> free links
-                  </>
-                ) : (
-                  "Unlock more with a premium plan"
-                )}
-              </h2>
-              <p className="mt-3 text-gray-400 text-base max-w-xl mx-auto">
-                Upgrade your plan to keep creating feedback links and unlock powerful features.
-              </p>
-
+              
               {/* Usage bar */}
               {currentPlan === "free" && (
                 <div className="mt-5 mx-auto max-w-xs">
-                  <div className="h-2 w-full rounded-full bg-white/10 overflow-hidden">
+                  <div className="h-2 w-full rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${Math.min(100, (used / limit) * 100)}%` }}
                       transition={{ duration: 0.8, ease: "easeOut", delay: 0.3 }}
-                      className="h-full rounded-full"
-                      style={{ background: "linear-gradient(90deg, #97ce23, #c8f563)" }}
+                      className="h-full rounded-full bg-[var(--accent)]"
                     />
                   </div>
-                  <p className="mt-2 text-xs text-gray-500">{used} / {limit} links used</p>
+                  <p className="mt-2 text-xs font-bold text-[var(--text-muted)] tracking-widest uppercase">{used} / {limit} links used</p>
                 </div>
               )}
             </div>
@@ -318,10 +308,10 @@ export default function PricingModal({
                   transition={{ delay: 0.1 + i * 0.08, duration: 0.4, ease: "easeOut" }}
                   className={`relative rounded-2xl border p-5 flex flex-col gap-4 transition-all ${
                     isCurrent
-                      ? "border-white/10 bg-white/3"
+                      ? "border-[var(--accent)]/40 bg-[var(--accent)]/5"
                       : plan.id === "pro"
-                      ? "border-accent/40 bg-accent/5"
-                      : "border-white/10 bg-white/5 hover:border-white/20"
+                      ? "border-[var(--accent)]/40 bg-[var(--accent)]/5"
+                      : "border-[var(--border-color)] bg-[var(--bg-primary)] hover:border-[var(--border-color)]/80"
                   }`}
                   style={!isCurrent ? { boxShadow: `0 0 40px ${plan.glow}` } : {}}
                 >
@@ -344,24 +334,24 @@ export default function PricingModal({
                       <Icon size={18} style={{ color: plan.color }} />
                     </div>
                     <div>
-                      <p className="font-bold text-white text-base">{plan.name}</p>
-                      <p className="text-xs text-gray-500">{plan.links} links</p>
+                      <p className="font-bold text-[var(--text-primary)] text-base">{plan.name}</p>
+                      <p className="text-xs text-[var(--text-secondary)]">{plan.links} links</p>
                     </div>
                   </div>
 
                   {/* Price */}
                   <div className="flex items-end gap-1">
-                    <IndianRupee size={16} className="text-white mb-1 shrink-0" />
-                    <span className="text-3xl font-extrabold text-white leading-none">
+                    <IndianRupee size={16} className="text-[var(--text-primary)] mb-1 shrink-0" />
+                    <span className="text-3xl font-extrabold text-[var(--text-primary)] leading-none">
                       {plan.price.replace("₹", "")}
                     </span>
-                    <span className="text-sm text-gray-500 ml-1 mb-0.5">/{plan.priceNote}</span>
+                    <span className="text-sm text-[var(--text-secondary)] ml-1 mb-0.5">/{plan.priceNote}</span>
                   </div>
 
                   {/* Features */}
                   <ul className="space-y-2 flex-1">
                     {plan.features.map((f) => (
-                      <li key={f} className="flex items-start gap-2 text-sm text-gray-300">
+                      <li key={f} className="flex items-start gap-2 text-sm text-[var(--text-secondary)]">
                         <Check size={14} className="mt-0.5 shrink-0" style={{ color: plan.color }} />
                         {f}
                       </li>
@@ -378,18 +368,13 @@ export default function PricingModal({
                   <button
                     disabled={isCurrent || plan.ctaDisabled || anyLoading || isSuccess}
                     onClick={() => !isCurrent && !plan.ctaDisabled && !anyLoading && !isSuccess && initiatePayment(plan)}
-                    className={`w-full py-3 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
+                    className={`w-full py-3.5 rounded-xl text-sm font-bold transition-all flex items-center justify-center gap-2 ${
                       isCurrent || isSuccess
-                        ? "border border-white/10 text-gray-500 cursor-default"
+                        ? "border border-[var(--border-color)] text-[var(--text-muted)] cursor-default"
                         : plan.id === "ultra"
-                        ? "bg-white text-black hover:bg-gray-100 hover:shadow-[0_0_30px_rgba(255,255,255,0.2)] disabled:opacity-50 disabled:cursor-not-allowed"
-                        : "text-black hover:-translate-y-0.5 hover:shadow-[0_0_30px_rgba(151,206,35,0.4)] disabled:opacity-50 disabled:cursor-not-allowed"
+                        ? "bg-[var(--text-primary)] text-[var(--bg-secondary)] hover:opacity-90 shadow-lg shadow-[var(--text-primary)]/10"
+                        : "bg-[var(--accent)] text-white hover:opacity-90 shadow-lg shadow-[var(--accent)]/10"
                     }`}
-                    style={
-                      !isCurrent && !isSuccess && plan.id !== "ultra"
-                        ? { background: plan.color }
-                        : {}
-                    }
                   >
                     {isLoading ? (
                       <>
@@ -398,8 +383,8 @@ export default function PricingModal({
                       </>
                     ) : isSuccess ? (
                       <>
-                        <CheckCircle size={14} className="text-[#97ce23]" />
-                        <span className="text-[#97ce23]">Activated!</span>
+                        <CheckCircle size={14} />
+                        <span>Activated!</span>
                       </>
                     ) : isCurrent ? (
                       "Current plan"

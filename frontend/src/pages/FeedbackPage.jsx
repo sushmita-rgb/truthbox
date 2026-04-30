@@ -33,24 +33,24 @@ const getFullUrl = (url) => {
 function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
   if (!postType || postType === "text") {
     return content ? (
-      <div className="mb-6 rounded-2xl border p-5 text-sm leading-relaxed text-gray-200" style={{ background: `${accentColor}10`, borderColor: `${accentColor}26` }}>
-        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: accentColor }}>
+      <div className="mb-6 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-5 text-sm leading-relaxed text-[var(--text-primary)]" style={{ borderColor: `${accentColor}40` }}>
+        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{ color: accentColor }}>
           <FileText size={13} />
-          Post
+          Post Content
         </div>
-        <p>{content}</p>
+        <p className="font-medium">{content}</p>
       </div>
     ) : null;
   }
 
   if (postType === "url") {
     return (
-      <div className="mb-6 rounded-2xl border p-5" style={{ background: `${accentColor}10`, borderColor: `${accentColor}30` }}>
-        <div className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wide" style={{ color: accentColor }}>
+      <div className="mb-6 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-5" style={{ borderColor: `${accentColor}40` }}>
+        <div className="mb-3 flex items-center gap-2 text-xs font-bold uppercase tracking-widest" style={{ color: accentColor }}>
           <Globe size={13} />
           Shared Link
         </div>
-        <a href={content} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 break-all text-sm transition-colors hover:opacity-80" style={{ color: accentColor }}>
+        <a href={content} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 break-all text-sm font-semibold transition-all hover:opacity-70 underline underline-offset-4" style={{ color: accentColor }}>
           <ExternalLink size={14} className="shrink-0" />
           {content}
         </a>
@@ -60,12 +60,12 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
 
   if (postType === "image") {
     return (
-      <div className="mb-6 overflow-hidden rounded-2xl border border-white/10 bg-black/40 shadow-xl">
-        <div className="flex items-center gap-2 bg-white/5 p-3 text-[10px] font-bold uppercase tracking-widest text-blue-400">
+      <div className="mb-6 overflow-hidden rounded-2xl border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-lg">
+        <div className="flex items-center gap-2 bg-[var(--bg-primary)] p-3 text-[10px] font-bold uppercase tracking-widest text-[var(--accent)] border-b border-[var(--border-color)]">
           <ImageIcon size={12} />
           Shared Image
         </div>
-        <div className="relative group p-1 bg-black/20">
+        <div className="relative group p-1 bg-[var(--bg-primary)]/50">
           <img 
             src={getFullUrl(fileUrl)} 
             alt={fileName || "image"} 
@@ -73,41 +73,41 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
           />
         </div>
         {content && (
-          <div className="border-t border-white/5 bg-white/5 p-4 md:p-6">
-            <p className="text-sm md:text-base leading-relaxed text-gray-300 italic">"{content}"</p>
+          <div className="border-t border-[var(--border-color)] bg-[var(--bg-secondary)] p-4 md:p-6">
+            <p className="text-sm md:text-base leading-relaxed text-[var(--text-secondary)] italic">"{content}"</p>
           </div>
         )}
       </div>
     );
   }  if (postType === "pdf") {
     return (
-      <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
-        <div className="flex items-center gap-2 bg-white/5 p-4 text-xs font-bold uppercase tracking-widest text-orange-400">
+      <div className="mb-8 overflow-hidden rounded-3xl border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-xl">
+        <div className="flex items-center gap-2 bg-[var(--bg-primary)] p-4 text-xs font-bold uppercase tracking-widest text-orange-500 border-b border-[var(--border-color)]">
           <FileText size={14} />
           Shared PDF Document
         </div>
         
-        <div className="p-12 flex flex-col items-center justify-center bg-white/5 border-b border-white/5">
-          <div className="w-24 h-24 bg-orange-500/10 rounded-3xl flex items-center justify-center mb-6 border border-orange-500/20 shadow-inner">
-            <FileText size={48} className="text-orange-400" />
+        <div className="p-12 flex flex-col items-center justify-center bg-[var(--bg-secondary)]">
+          <div className="w-24 h-24 bg-orange-500/5 rounded-3xl flex items-center justify-center mb-6 border border-orange-500/20 shadow-sm">
+            <FileText size={48} className="text-orange-500" />
           </div>
-          <p className="text-sm font-medium text-gray-300 mb-8 truncate max-w-xs">{fileName || "document.pdf"}</p>
+          <p className="text-sm font-bold text-[var(--text-primary)] mb-8 truncate max-w-xs">{fileName || "document.pdf"}</p>
           
           <div className="flex flex-col gap-4 w-full max-w-xs">
             <a 
               href={getFullUrl(fileUrl)} 
               target="_blank" 
               rel="noopener noreferrer"
-              className="w-full py-5 rounded-2xl bg-orange-500 text-white text-center font-bold text-sm shadow-xl shadow-orange-500/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
+              className="w-full py-4 rounded-2xl bg-orange-500 text-white text-center font-bold text-sm shadow-lg shadow-orange-500/20 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3"
             >
-              <ExternalLink size={18} /> View Full Document
+              <ExternalLink size={18} /> View Document
             </a>
           </div>
         </div>
 
         {content && (
-          <div className="p-6 bg-black/20">
-            <p className="text-base leading-relaxed text-gray-300 italic">"{content}"</p>
+          <div className="p-6 bg-[var(--bg-primary)]/50 border-t border-[var(--border-color)]">
+            <p className="text-base leading-relaxed text-[var(--text-secondary)] italic">"{content}"</p>
           </div>
         )}
       </div>
@@ -116,19 +116,19 @@ function PostPreview({ postType, content, fileUrl, fileName, accentColor }) {
 
   if (postType === "video") {
     return (
-      <div className="mb-8 overflow-hidden rounded-3xl border border-white/10 bg-black shadow-2xl">
-        <div className="flex items-center gap-2 bg-white/5 p-4 text-xs font-bold uppercase tracking-widest text-purple-400">
+      <div className="mb-8 overflow-hidden rounded-3xl border border-[var(--border-color)] bg-[var(--bg-secondary)] shadow-xl">
+        <div className="flex items-center gap-2 bg-[var(--bg-primary)] p-4 text-xs font-bold uppercase tracking-widest text-purple-500 border-b border-[var(--border-color)]">
           <Film size={14} />
           Shared Video
         </div>
         <video 
           src={getFullUrl(fileUrl)} 
           controls 
-          className="w-full h-auto max-h-[70vh] block mx-auto" 
+          className="w-full h-auto max-h-[70vh] block mx-auto bg-black" 
         />
         {content && (
-          <div className="border-t border-white/5 bg-white/5 p-6">
-            <p className="text-base leading-relaxed text-gray-300 italic">"{content}"</p>
+          <div className="border-t border-[var(--border-color)] bg-[var(--bg-secondary)] p-6">
+            <p className="text-base leading-relaxed text-[var(--text-secondary)] italic">"{content}"</p>
           </div>
         )}
       </div>
@@ -220,11 +220,15 @@ export default function FeedbackPage() {
 
   return (
     <div
-      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6 text-white font-sans"
-      style={{
-        background: `radial-gradient(circle at top, ${accentColor}26, transparent 32%), linear-gradient(180deg, rgba(0,0,0,0.18), rgba(0,0,0,0.72))`,
-      }}
+      className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden p-6 text-[var(--text-primary)] font-sans transition-colors duration-500 bg-[var(--bg-primary)]"
     >
+      {/* Background Decorative Gradient */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-20 dark:opacity-40" 
+        style={{
+          background: `radial-gradient(circle at top, ${accentColor}, transparent 50%), radial-gradient(circle at bottom right, ${accentColor}44, transparent 40%)`,
+        }}
+      />
       {showTerms && <TermsModal onAccept={handleAcceptTerms} />}
       <div className="relative z-10 w-full max-w-lg">
         <Link to="/" className="mb-10 inline-block transition-transform hover:scale-105">
@@ -240,22 +244,21 @@ export default function FeedbackPage() {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0 }}
-              className="space-y-5 rounded-3xl border border-white/10 p-10 text-center"
-              style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(24px)" }}
+              className="premium-card p-10 text-center"
             >
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 0.2, type: "spring" }}
-                className="mx-auto flex h-20 w-20 items-center justify-center rounded-full"
-                style={{ background: `${accentColor}20` }}
+                className="mx-auto flex h-20 w-20 items-center justify-center rounded-full mb-6"
+                style={{ background: `${accentColor}15` }}
               >
                 <CheckCircle className="h-10 w-10" style={{ color: accentColor }} />
               </motion.div>
-              <h2 className="text-3xl font-bold font-heading">Feedback Sent!</h2>
-              <p className="text-gray-400">Your anonymous message was delivered securely.</p>
-              <Link to="/signup" className="mt-4 inline-block rounded-full bg-white/10 px-8 py-3 text-sm font-medium transition-colors hover:bg-white/20">
-                Get your own Verit →
+              <h2 className="text-3xl font-black tracking-tight text-[var(--text-primary)]">Feedback Sent!</h2>
+              <p className="text-[var(--text-secondary)] mt-3">Your anonymous message was delivered securely.</p>
+              <Link to="/signup" className="btn-primary mt-8 inline-flex items-center gap-2">
+                Get TruthBox for yourself <ExternalLink size={16} />
               </Link>
             </motion.div>
           ) : (
@@ -264,17 +267,16 @@ export default function FeedbackPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0 }}
-              className="rounded-3xl border border-white/10 p-8 md:p-10"
-              style={{ background: "rgba(255,255,255,0.04)", backdropFilter: "blur(24px)" }}
+              className="premium-card p-8 md:p-10"
             >
-              <div className="mb-6 flex w-fit items-center gap-3 rounded-full px-4 py-2" style={{ background: `${accentColor}15`, color: accentColor }}>
+              <div className="mb-8 flex w-fit items-center gap-3 rounded-full px-4 py-2 border" style={{ background: `${accentColor}05`, color: accentColor, borderColor: `${accentColor}30` }}>
                 <ShieldCheck size={16} />
-                <span className="text-sm font-semibold">100% Anonymous</span>
+                <span className="text-xs font-black uppercase tracking-widest">100% Anonymous</span>
               </div>
 
-              <h2 className="mb-2 text-2xl font-bold font-heading">{postData?.title || "Send Feedback"}</h2>
-              <p className="mb-2 text-sm text-gray-400">{postData?.description || "Be honest. The recipient will never know who you are."}</p>
-              <p className="mb-6 text-xs text-gray-500">This page is branded for the creator, but your message stays anonymous.</p>
+              <h2 className="mb-2 text-2xl font-black tracking-tight text-[var(--text-primary)]">{postData?.title || "Send Feedback"}</h2>
+              <p className="mb-2 text-sm font-medium text-[var(--text-secondary)]">{postData?.description || "Be honest. The recipient will never know who you are."}</p>
+              <p className="mb-8 text-xs text-[var(--text-muted)] font-medium">This page is branded for the creator, but your message stays anonymous.</p>
 
               {postData ? (
                 <PostPreview {...postData} accentColor={accentColor} />
@@ -294,7 +296,7 @@ export default function FeedbackPage() {
                   onChange={(e) => setMessage(e.target.value)}
                   required
                   placeholder="Write your honest thoughts here..."
-                  className="min-h-[160px] w-full resize-y rounded-2xl border border-white/10 bg-black/40 p-5 text-base text-white outline-none transition-colors placeholder:text-gray-600 focus:border-accent"
+                  className="min-h-[160px] w-full resize-y rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-5 text-base text-[var(--text-primary)] outline-none transition-colors placeholder:text-[var(--text-muted)] focus:border-[var(--accent)]"
                 />
                 {status === "error" && (
                   <div className="rounded-xl border border-red-400/20 bg-red-400/10 p-4 text-sm text-red-400">{errorMsg}</div>

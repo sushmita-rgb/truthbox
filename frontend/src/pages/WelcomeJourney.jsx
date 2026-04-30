@@ -41,7 +41,7 @@ export default function WelcomeJourney() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] flex flex-col items-center justify-center p-6 relative overflow-hidden">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col items-center justify-center p-6 relative overflow-hidden transition-colors duration-500">
       <CloudCanvas />
       
       {/* Background vignette */}
@@ -62,10 +62,10 @@ export default function WelcomeJourney() {
               </div>
               
               <div className="space-y-4">
-                <h1 className="text-4xl md:text-5xl font-black text-white tracking-tighter">
+                <h1 className="text-4xl md:text-5xl font-black text-[var(--text-primary)] tracking-tighter">
                   Welcome to <span className="text-brand">Verit.</span>
                 </h1>
-                <p className="text-gray-400 text-lg md:text-xl font-medium max-w-lg mx-auto leading-relaxed">
+                <p className="text-[var(--text-secondary)] text-lg md:text-xl font-medium max-w-lg mx-auto leading-relaxed">
                   The journey to authentic feedback starts here. We're setting up your workspace...
                 </p>
               </div>
@@ -93,13 +93,13 @@ export default function WelcomeJourney() {
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: idx * 0.2 }}
-                    className="p-6 rounded-3xl bg-white/[0.03] border border-white/5 flex items-start gap-5 text-left backdrop-blur-xl"
+                    className="p-6 rounded-3xl bg-[var(--bg-secondary)] border border-[var(--border-color)] flex items-start gap-5 text-left backdrop-blur-xl shadow-sm hover:shadow-md transition-all"
                   >
                     <div className="w-12 h-12 rounded-2xl bg-brand/10 flex items-center justify-center shrink-0 border border-brand/20">
                       <item.icon size={24} className="text-brand" />
                     </div>
                     <div>
-                      <h4 className="text-white font-bold text-lg mb-1">{item.title}</h4>
+                      <h4 className="text-[var(--text-primary)] font-bold text-lg mb-1">{item.title}</h4>
                       <p className="text-gray-500 text-sm leading-relaxed">{item.desc}</p>
                     </div>
                   </motion.div>

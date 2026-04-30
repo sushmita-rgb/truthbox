@@ -101,16 +101,14 @@ function AppShell() {
       {/* Global cloud canvas — visible on every page */}
       <CloudCanvas />
 
-      {/* Subtle dark vignette overlay so clouds don't compete with text */}
       <div className="fixed inset-0 z-[1] pointer-events-none"
         style={{
           background:
-            "radial-gradient(ellipse at 50% 0%, rgba(151,206,35,0.06) 0%, transparent 60%), " +
-            "linear-gradient(180deg, rgba(5,5,5,0.20) 0%, rgba(5,5,5,0.40) 100%)",
+            "radial-gradient(ellipse at 50% 0%, var(--accent-soft) 0%, transparent 60%)",
         }}
       />
 
-      <div className="relative z-10 min-h-screen text-white font-sans selection:bg-accent/30">
+      <div className="relative z-10 min-h-screen text-[var(--text-primary)] font-sans selection:bg-[var(--accent)]/30">
         <AnimatedRoutes />
       </div>
     </>

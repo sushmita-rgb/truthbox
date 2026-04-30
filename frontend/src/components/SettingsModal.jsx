@@ -154,13 +154,13 @@ export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
           </div>
         )}
 
-        <div className="flex justify-between items-center p-6 border-b border-[var(--border-color)]">
+        <div className="flex justify-between items-center p-8 border-b border-[var(--border-color)] bg-[var(--bg-primary)]/30">
           <div>
-            <h2 className="text-2xl font-bold text-[var(--text-primary)]">Account Settings</h2>
-            <p className="text-sm text-[var(--text-secondary)] mt-1">Update your username, profile image, and password.</p>
+            <h2 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">Account Settings</h2>
+            <p className="text-sm font-medium text-[var(--text-secondary)] mt-1">Manage your professional identity and security.</p>
           </div>
-          <button onClick={onClose} className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-colors">
-            <X size={24} />
+          <button onClick={onClose} className="w-10 h-10 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] flex items-center justify-center text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all hover:scale-105 active:scale-95">
+            <X size={20} />
           </button>
         </div>
 
@@ -226,45 +226,45 @@ export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
                     <button
                       type="button"
                       onClick={() => toggleSection("profile")}
-                      className={`rounded-2xl border px-4 py-4 text-left transition-colors ${selectedSections.profile ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]" : "border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--border-color)]"}`}
+                      className={`rounded-2xl border px-4 py-4 text-left transition-all ${selectedSections.profile ? "border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)] shadow-sm" : "border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:border-[var(--text-muted)] hover:bg-[var(--bg-secondary)]"}`}
                     >
-                      <UserCircle2 size={18} className={selectedSections.profile ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"} />
-                      <p className="mt-3 font-semibold text-[var(--text-primary)]">Profile</p>
-                      <p className="mt-1 text-xs text-[var(--text-secondary)]">Username</p>
+                      <UserCircle2 size={18} className={selectedSections.profile ? "text-[var(--accent)]" : "text-[var(--text-muted)]"} />
+                      <p className="mt-3 font-bold text-[var(--text-primary)]">Profile</p>
+                      <p className="mt-1 text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)]">Username</p>
                     </button>
                     <button
                       type="button"
                       onClick={() => toggleSection("avatar")}
-                      className={`rounded-2xl border px-4 py-4 text-left transition-colors ${selectedSections.avatar ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]" : "border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--border-color)]"}`}
+                      className={`rounded-2xl border px-4 py-4 text-left transition-all ${selectedSections.avatar ? "border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)] shadow-sm" : "border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:border-[var(--text-muted)] hover:bg-[var(--bg-secondary)]"}`}
                     >
-                      <ImageIcon size={18} className={selectedSections.avatar ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"} />
-                      <p className="mt-3 font-semibold text-[var(--text-primary)]">Photo</p>
-                      <p className="mt-1 text-xs text-[var(--text-secondary)]">Profile image</p>
+                      <ImageIcon size={18} className={selectedSections.avatar ? "text-[var(--accent)]" : "text-[var(--text-muted)]"} />
+                      <p className="mt-3 font-bold text-[var(--text-primary)]">Photo</p>
+                      <p className="mt-1 text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)]">Profile image</p>
                     </button>
                     <button
                       type="button"
                       onClick={() => toggleSection("password")}
-                      className={`rounded-2xl border px-4 py-4 text-left transition-colors ${selectedSections.password ? "border-[var(--accent)] bg-[var(--accent)]/10 text-[var(--text-primary)]" : "border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:bg-[var(--border-color)]"}`}
+                      className={`rounded-2xl border px-4 py-4 text-left transition-all ${selectedSections.password ? "border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)] shadow-sm" : "border-[var(--border-color)] bg-[var(--bg-primary)] text-[var(--text-secondary)] hover:border-[var(--text-muted)] hover:bg-[var(--bg-secondary)]"}`}
                     >
-                      <ShieldCheck size={18} className={selectedSections.password ? "text-[var(--accent)]" : "text-[var(--text-secondary)]"} />
-                      <p className="mt-3 font-semibold text-[var(--text-primary)]">Password</p>
-                      <p className="mt-1 text-xs text-[var(--text-secondary)]">Security update</p>
+                      <ShieldCheck size={18} className={selectedSections.password ? "text-[var(--accent)]" : "text-[var(--text-muted)]"} />
+                      <p className="mt-3 font-bold text-[var(--text-primary)]">Password</p>
+                      <p className="mt-1 text-[10px] uppercase font-black tracking-widest text-[var(--text-muted)]">Security update</p>
                     </button>
                   </div>
                 </div>
 
                 {selectedSections.avatar && (
-                  <div className="flex flex-col items-center rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] px-5 py-6">
-                    <div className="relative group cursor-pointer mb-3" onClick={() => fileInputRef.current?.click()}>
-                      <div className="w-24 h-24 rounded-full overflow-hidden border-2 border-dashed border-[var(--accent)] bg-[var(--bg-secondary)] flex items-center justify-center">
+                  <div className="flex flex-col items-center rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] px-5 py-8">
+                    <div className="relative group cursor-pointer mb-4" onClick={() => fileInputRef.current?.click()}>
+                      <div className="w-28 h-28 rounded-full overflow-hidden border-2 border-dashed border-[var(--accent)] bg-[var(--bg-secondary)] flex items-center justify-center p-1">
                         {avatarPreview ? (
-                          <img src={avatarPreview} alt="Avatar" className="w-full h-full object-cover" />
+                          <img src={avatarPreview} alt="Avatar" className="w-full h-full rounded-full object-cover" />
                         ) : (
-                          <span className="text-4xl font-bold text-[var(--accent)]">{formData.username?.charAt(0).toUpperCase()}</span>
+                          <span className="text-5xl font-black text-[var(--accent)]">{formData.username?.charAt(0).toUpperCase()}</span>
                         )}
                       </div>
-                      <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Upload size={24} className="text-white" />
+                      <div className="absolute inset-0 bg-black/60 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all scale-95 group-hover:scale-100">
+                        <Upload size={28} className="text-white" />
                       </div>
                       <input
                         type="file"
@@ -274,88 +274,84 @@ export default function SettingsModal({ user, onClose, onUpdate, onLogout }) {
                         onChange={handleAvatarChange}
                       />
                     </div>
-                    <p className="text-xs text-[var(--text-secondary)]">Upload a professional profile image</p>
+                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-[var(--text-muted)]">Upload profile image</p>
                   </div>
                 )}
 
                 {selectedSections.profile && (
-                  <div className="grid gap-5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-5">
+                  <div className="grid gap-5 rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-6">
                     <div>
-                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Username</label>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-2">Username</label>
                       <input
                         type="text"
                         required
-                        className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                        className="premium-input !py-3"
                         value={formData.username}
                         onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Instagram Handle (Optional)</label>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-2">Instagram Handle</label>
                       <div className="relative">
-                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-secondary)] font-bold">@</span>
+                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-[var(--text-muted)] font-black">@</span>
                         <input
                           type="text"
                           placeholder="username"
-                          className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl pl-10 pr-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                          className="premium-input !py-3 !pl-10"
                           value={formData.instagramHandle}
                           onChange={(e) => setFormData({ ...formData, instagramHandle: e.target.value.replace("@", "") })}
                         />
                       </div>
-                      <p className="text-[10px] text-[var(--text-secondary)] mt-2 italic">Used to customize your Story sharing graphics.</p>
+                      <p className="text-[10px] text-[var(--text-muted)] mt-2 font-medium">Used to customize your Story sharing graphics.</p>
                     </div>
                   </div>
                 )}
 
                 {selectedSections.password && (
-                  <div className="border border-[var(--border-color)] rounded-2xl p-5 bg-[var(--bg-primary)] space-y-4">
-                    <div className="flex items-center gap-2 text-sm text-[var(--text-primary)] font-semibold">
+                  <div className="border border-[var(--border-color)] rounded-2xl p-6 bg-[var(--bg-primary)] space-y-5">
+                    <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest text-[var(--text-primary)]">
                       <ShieldCheck size={16} className="text-[var(--accent)]" />
-                      Password Security
+                      Security Update
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Current Password</label>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-2">Current Password</label>
                       <input
                         type="password"
-                        className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                        className="premium-input !py-3"
                         value={passwordData.currentPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, currentPassword: e.target.value })}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">New Password</label>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-2">New Password</label>
                       <input
                         type="password"
-                        className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                        className="premium-input !py-3"
                         value={passwordData.newPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, newPassword: e.target.value })}
                       />
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-[var(--text-secondary)] mb-2">Confirm New Password</label>
+                      <label className="block text-[10px] font-black uppercase tracking-widest text-[var(--text-muted)] mb-2">Confirm New Password</label>
                       <input
                         type="password"
-                        className="w-full bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-[var(--accent)] transition-colors"
+                        className="premium-input !py-3"
                         value={passwordData.confirmPassword}
                         onChange={(e) => setPasswordData({ ...passwordData, confirmPassword: e.target.value })}
                       />
                     </div>
-
-                    <p className="text-xs text-[var(--text-secondary)]">
-                      Use at least 8 characters with uppercase, lowercase, a number, and a special character.
-                    </p>
                   </div>
                 )}
 
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full py-3 rounded-xl bg-[var(--accent)] text-white font-bold hover:opacity-90 flex justify-center items-center gap-2 transition-opacity disabled:opacity-50"
+                  className="btn-primary w-full !py-4"
                 >
-                  <Check size={18} /> Preview Account Changes
+                  <Check size={18} /> Preview Changes
                 </button>
               </form>
 

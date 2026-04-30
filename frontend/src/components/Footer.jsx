@@ -50,12 +50,12 @@ export default function Footer() {
         </div>
 
         <div className="pt-8 border-t border-[var(--border-color)] flex flex-col md:flex-row items-center justify-between gap-4">
-          <p className="text-[10px] text-[var(--text-secondary)] uppercase tracking-widest">
-            © 2026 TruthBox. Built with ❤️ for the anonymous web.
+          <p className="text-[10px] text-[var(--text-secondary)] uppercase tracking-[0.2em] font-bold">
+            © 2026 TruthBox. Built with passion for creators.
           </p>
           <div className="flex items-center gap-6">
-            <span className="text-[10px] text-gray-700 flex items-center gap-2">
-              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" /> All Systems Operational
+            <span className="text-[10px] text-[var(--text-secondary)] font-bold uppercase tracking-widest flex items-center gap-2">
+              <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shadow-[0_0_8px_rgba(34,197,94,0.5)]" /> All Systems Operational
             </span>
           </div>
         </div>

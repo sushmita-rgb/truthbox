@@ -1,42 +1,86 @@
 @import "tailwindcss";
 
 :root {
-  --bg-primary: #F8F9FA;
+  /* Premium SaaS Light Mode */
+  --bg-primary: #F8FAFC;
   --bg-secondary: #FFFFFF;
-  --text-primary: #111827;
-  --text-secondary: #4B5563;
-  --accent: #2563EB;
-  --accent-soft: rgba(37, 99, 235, 0.1);
-  --border-color: rgba(0, 0, 0, 0.08);
-  --glass-bg: rgba(255, 255, 255, 0.7);
+  --bg-muted: #F1F5F9;
+  --text-primary: #0F172A;
+  --text-secondary: #475569;
+  --text-muted: #94A3B8;
+  --accent: #3B82F6;
+  --accent-hover: #2563EB;
+  --accent-soft: rgba(59, 130, 246, 0.08);
+  --border-color: #E2E8F0;
+  --input-bg: #F1F5F9;
+  
+  /* Depth System */
+  --glass-bg: rgba(255, 255, 255, 0.8);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.04); /* Clean SaaS Shadow */
+  --shadow-lg: 0 16px 40px rgba(0, 0, 0, 0.06);
 }
 
 .dark {
-  --bg-primary: #0F172A;
-  --bg-secondary: #1E293B;
-  --text-primary: #F1F5F9;
-  --text-secondary: #94A3B8;
-  --accent: #3B82F6;
-  --accent-soft: rgba(59, 130, 246, 0.1);
-  --border-color: rgba(255, 255, 255, 0.05);
-  --glass-bg: rgba(15, 23, 42, 0.6);
+  /* Dark Mode - Kept as is */
+  --bg-primary: #0f172a;
+  --bg-secondary: #1e293b;
+  --bg-muted: #1e293b;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #3b82f6;
+  --accent-hover: #2563EB;
+  --accent-soft: rgba(59, 130, 246, 0.12);
+  --border-color: #334155;
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --glass-bg: rgba(15, 23, 42, 0.7);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.7);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.8);
 }
 
 @theme {
-  --font-sans: "Inter", sans-serif;
-  --font-heading: "Poppins", sans-serif;
-  --color-main: var(--bg-primary);
-  --color-accent: var(--accent);
-  --color-brand: var(--accent);
+  --font-sans: "Inter", "Outfit", sans-serif;
+  --font-heading: "Outfit", sans-serif;
+  --color-brand: #2563EB;
+  --color-main: var(--text-primary);
   --color-surface: var(--bg-secondary);
-  --shadow-glow: 0 0 20px var(--accent-soft);
-  --radius-xl: 1rem;
+}
+
+@layer base {
+  * {
+    @apply border-[var(--border-color)] transition-colors duration-300;
+  }
+  body {
+    @apply bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans antialiased selection:bg-[#3B82F6]/20;
+  }
 }
 
 @layer utilities {
+  .premium-card {
+    @apply bg-[var(--bg-secondary)] border border-[var(--border-color)] rounded-2xl shadow-[var(--shadow-md)] transition-all duration-300;
+  }
+  
+  .premium-card:hover {
+    @apply -translate-y-0.5 shadow-[var(--shadow-lg)];
+  }
+
+  .premium-input {
+    @apply w-full bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl px-5 py-3.5 text-[var(--text-primary)] focus:outline-none focus:ring-4 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)] transition-all duration-200 placeholder:text-[var(--text-muted)];
+  }
+
   .glass {
-    @apply backdrop-blur-2xl border border-white/10 shadow-2xl;
+    @apply backdrop-blur-2xl border border-[var(--border-color)] shadow-2xl;
     background: var(--glass-bg);
+  }
+
+  .btn-primary {
+    @apply bg-[var(--accent)] hover:bg-[var(--accent-hover)] text-white font-semibold rounded-xl px-6 py-3 shadow-lg shadow-[var(--accent)]/20 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200;
+  }
+
+  .btn-secondary {
+    @apply bg-[var(--bg-secondary)] hover:bg-[var(--input-bg)] text-[var(--text-primary)] border border-[var(--border-color)] font-semibold rounded-xl px-6 py-3 transition-all duration-200;
   }
 }
 

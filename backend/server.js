@@ -9,7 +9,6 @@ const paymentRoutes = require("./routes/payment");
 const cors = require("cors");
 const path = require("path");
 const helmet = require("helmet");
-const xss = require("xss-clean");
 const hpp = require("hpp");
 
 dotenv.config();
@@ -19,7 +18,7 @@ const app = express();
 app.use(helmet());
 
 // 2. Data Sanitization
-app.use(xss()); // Against XSS
+// xss-clean is removed as it's incompatible with current Node.js versions
 app.use(hpp()); // Against HTTP Parameter Pollution
 
 // Trust proxy for Railway/Vercel
@@ -52,6 +51,7 @@ const allowedOrigins = [
   "https://rit-chi.vercel.app",
   "http://localhost:5173",
   "http://localhost:5174",
+  "http://localhost:5175",
   "http://localhost:3000"
 ].filter(Boolean);
 

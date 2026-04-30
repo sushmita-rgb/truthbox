@@ -233,7 +233,7 @@ export default function Signup() {
               <div className="mt-8 space-y-6">
                 <div className="relative flex items-center justify-center">
                   <div className="absolute inset-x-0 h-px bg-[var(--border-color)]"></div>
-                  <span className="relative bg-[#1a1a1a] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] z-10 rounded-full border border-[var(--border-color)]">Or join with</span>
+                  <span className="relative bg-[var(--bg-primary)] px-4 text-[10px] font-bold uppercase tracking-widest text-[var(--text-secondary)] z-10 rounded-full border border-[var(--border-color)] transition-colors">Or join with</span>
                 </div>
                 
                 <div className="flex justify-center">

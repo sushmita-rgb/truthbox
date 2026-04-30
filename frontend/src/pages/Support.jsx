@@ -46,18 +46,18 @@ export default function Support() {
   };
 
   return (
-    <div className="min-h-screen bg-main/45 flex flex-col font-sans selection:bg-brand/30">
+    <div className="min-h-screen bg-[var(--bg-primary)] flex flex-col font-sans selection:bg-brand/30 transition-colors duration-500">
       <div className="flex-1 max-w-6xl mx-auto px-6 pt-12 pb-20 w-full">
         <Link to="/" className="inline-flex items-center gap-2 text-brand hover:gap-3 transition-all mb-12">
           <ArrowLeft size={18} /> Back to Home
         </Link>
 
         <div className="text-center mb-16">
-          <h1 className="text-5xl font-black text-white mb-4">Help & Support</h1>
-          <p className="text-gray-400 max-w-2xl mx-auto mb-2">
+          <h1 className="text-5xl font-black text-[var(--text-primary)] mb-4">Help & Support</h1>
+          <p className="text-[var(--text-secondary)] max-w-2xl mx-auto mb-2">
             Got questions? We've got answers. If you can't find what you're looking for, shoot us a message below.
           </p>
-          <p className="text-gray-400">
+          <p className="text-[var(--text-secondary)]">
             You can also email us directly at: <a href="mailto:veritnowapp@gmail.com" className="text-brand hover:underline font-medium">veritnowapp@gmail.com</a>
           </p>
         </div>
@@ -65,14 +65,14 @@ export default function Support() {
         <div className="grid lg:grid-cols-2 gap-12">
           {/* FAQ Section */}
           <div className="space-y-8">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] flex items-center gap-3">
               <HelpCircle className="text-brand" /> Frequently Asked Questions
             </h2>
             <div className="space-y-4">
               {FAQ.map((item, i) => (
-                <div key={i} className="glass p-6 rounded-2xl border-white/5 hover:border-white/10 transition-colors">
-                  <h3 className="font-bold text-white mb-2">{item.q}</h3>
-                  <p className="text-sm text-gray-400 leading-relaxed">{item.a}</p>
+                <div key={i} className="bg-[var(--bg-secondary)] p-6 rounded-2xl border border-[var(--border-color)] hover:border-[var(--accent)]/30 transition-colors shadow-sm">
+                  <h3 className="font-bold text-[var(--text-primary)] mb-2">{item.q}</h3>
+                  <p className="text-sm text-[var(--text-secondary)] leading-relaxed">{item.a}</p>
                 </div>
               ))}
             </div>
@@ -80,18 +80,18 @@ export default function Support() {
 
           {/* Contact Form Section */}
           <div className="space-y-8">
-            <h2 className="text-2xl font-bold text-white flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-[var(--text-primary)] flex items-center gap-3">
               <MessageCircle className="text-brand" /> Contact Us
             </h2>
             
-            <div className="glass p-8 rounded-[2rem] border-white/5 relative overflow-hidden">
+            <div className="bg-[var(--bg-secondary)] p-8 rounded-[2rem] border border-[var(--border-color)] relative overflow-hidden shadow-xl">
               {sent ? (
                 <div className="text-center py-10 animate-fade-in">
                   <div className="w-20 h-20 bg-brand/20 rounded-full flex items-center justify-center mx-auto mb-6">
                     <CheckCircle size={40} className="text-brand" />
                   </div>
-                  <h3 className="text-2xl font-bold text-white mb-2">Message Sent!</h3>
-                  <p className="text-gray-400 text-sm mb-8">We'll get back to you at {formData.email} as soon as possible.</p>
+                  <h3 className="text-2xl font-bold text-[var(--text-primary)] mb-2">Message Sent!</h3>
+                  <p className="text-[var(--text-secondary)] text-sm mb-8">We'll get back to you at {formData.email} as soon as possible.</p>
                   <button onClick={() => setSent(false)} className="text-brand font-bold text-sm hover:underline">Send another message</button>
                 </div>
               ) : (
@@ -103,7 +103,7 @@ export default function Support() {
                         required
                         type="text" 
                         placeholder="John Doe"
-                        className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand/50 transition-colors"
+                        className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-brand/50 transition-colors"
                         value={formData.name}
                         onChange={(e) => setFormData({...formData, name: e.target.value})}
                       />
@@ -114,7 +114,7 @@ export default function Support() {
                         required
                         type="email" 
                         placeholder="john@example.com"
-                        className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand/50 transition-colors"
+                        className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-brand/50 transition-colors"
                         value={formData.email}
                         onChange={(e) => setFormData({...formData, email: e.target.value})}
                       />
@@ -126,7 +126,7 @@ export default function Support() {
                       required
                       rows={5}
                       placeholder="How can we help you?"
-                      className="w-full bg-black/40 border border-white/5 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-brand/50 transition-colors resize-none"
+                      className="w-full bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-xl px-4 py-3 text-[var(--text-primary)] focus:outline-none focus:border-brand/50 transition-colors resize-none"
                       value={formData.message}
                       onChange={(e) => setFormData({...formData, message: e.target.value})}
                     />

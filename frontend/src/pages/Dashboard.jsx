@@ -31,7 +31,10 @@ import {
   Loader2,
   Archive,
   Home,
+  Sun,
+  Moon,
 } from "lucide-react";
+import { useTheme } from "../context/ThemeContext";
 import api, { BACKEND_URL } from "../api";
 import axios from "axios";
 import ProfileDropdown from "../components/ProfileDropdown";
@@ -113,6 +116,7 @@ const card = {
 const stagger = { show: { transition: { staggerChildren: 0.08 } } };
 
 export default function Dashboard() {
+  const { theme, toggleTheme } = useTheme();
   const [feedback, setFeedback] = useState([]);
   const [links, setLinks] = useState([]);
   const [analytics, setAnalytics] = useState(null);
@@ -618,7 +622,7 @@ export default function Dashboard() {
   };
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0F172A] text-white">
+      <div className="min-h-screen flex items-center justify-center bg-[var(--bg-primary)] text-[var(--text-primary)]">
         <div className="flex flex-col items-center gap-4">
           <div className="w-12 h-12 border-4 border-brand/30 border-t-brand rounded-full animate-spin" />
           <span className="text-[#94A3B8] font-sans">Loading your dashboard...</span>
@@ -628,16 +632,18 @@ export default function Dashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-[#0F172A] text-[#E2E8F0] font-sans flex overflow-hidden relative">
-      <div 
-        className="absolute inset-0 pointer-events-none z-0" 
-        style={{ 
-          backgroundImage: `url(${darkCloudBg})`, 
-          backgroundSize: 'cover', 
-          backgroundPosition: 'center',
-          opacity: 1 
-        }} 
-      />
+    <div className="min-h-screen bg-[var(--bg-primary)] text-[var(--text-primary)] font-sans flex overflow-hidden relative transition-colors duration-500">
+      {theme === "dark" && (
+        <div 
+          className="absolute inset-0 pointer-events-none z-0" 
+          style={{ 
+            backgroundImage: `url(${darkCloudBg})`, 
+            backgroundSize: 'cover', 
+            backgroundPosition: 'center',
+            opacity: 0.4
+          }} 
+        />
+      )}
       <CommandPalette isOpen={cmdKOpen} onClose={() => setCmdKOpen(false)} onSelect={handleCommandSelect} />
       {showTermsModal && <TermsModal onAccept={handleAcceptTerms} />}
       {showSettingsModal && user && (
@@ -678,16 +684,16 @@ export default function Dashboard() {
               animate={{ x: 0 }}
               exit={{ x: "-100%" }}
               transition={{ type: "spring", bounce: 0, duration: 0.3 }}
-              className="fixed inset-y-0 left-0 w-72 bg-[#1E293B] border-r border-[#334155] flex flex-col py-6 px-4 gap-6 z-50 shadow-2xl"
+              className="fixed inset-y-0 left-0 w-72 bg-[var(--bg-secondary)] border-r border-[var(--border-color)] flex flex-col py-6 px-4 gap-6 z-50 shadow-2xl"
             >
               <div className="px-2 flex items-center justify-between">
                 <Link to="/" className="flex items-center gap-3 group transition-opacity hover:opacity-80">
                   <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center group-hover:scale-110 transition-transform">
                     <Sparkles className="text-[#3B82F6]" size={16} />
                   </div>
-                  <span className="font-bold text-lg tracking-tight text-[#E2E8F0]">Verit</span>
+                  <span className="font-bold text-lg tracking-tight text-[var(--text-primary)]">Verit</span>
                 </Link>
-                <button onClick={() => setSidebarOpen(false)} className="p-2 text-[#94A3B8] hover:bg-[#0F172A] rounded-xl transition-colors">
+                <button onClick={() => setSidebarOpen(false)} className="p-2 text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] rounded-xl transition-colors">
                   <X size={20} />
                 </button>
               </div>
@@ -696,7 +702,7 @@ export default function Dashboard() {
               <nav className="flex flex-col gap-1 flex-1 mt-2 overflow-y-auto">
                 <Link
                   to="/"
-                  className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all font-medium text-sm text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] border border-dashed border-[#334155]/30 mb-2"
+                  className="flex items-center gap-3 px-3 py-3 rounded-xl transition-all font-medium text-sm text-[var(--text-muted)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)] border border-dashed border-[var(--border-color)] mb-2"
                 >
                   <ArrowLeft size={18} />
                   <span>Back to Website</span>
@@ -711,7 +717,9 @@ export default function Dashboard() {
                         setSidebarOpen(false);
                       }}
                       className={`relative w-full flex items-center gap-3 px-3 py-3 rounded-xl transition-all font-medium text-sm ${
-                        active ? "bg-[#3B82F6]/10 text-[#3B82F6]" : "text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A]"
+                        active 
+                          ? "bg-[var(--accent)]/10 text-[var(--accent)]" 
+                          : "text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)]"
                       }`}
                     >
                       <Icon size={18} />
@@ -724,10 +732,10 @@ export default function Dashboard() {
                 })}
               </nav>
               
-              <div className="mt-auto flex flex-col gap-2 border-t border-[#334155] pt-4">
+              <div className="mt-auto flex flex-col gap-2 border-t border-[var(--border-color)] pt-4">
                 <button 
                   onClick={() => { setShowSettingsModal(true); setSidebarOpen(false); }} 
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[#94A3B8] hover:text-[#E2E8F0] hover:bg-[#0F172A] transition-colors font-medium text-sm"
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--bg-primary)] transition-colors font-medium text-sm"
                 >
                   <Settings size={18} />
                   <span>Settings</span>
@@ -738,18 +746,18 @@ export default function Dashboard() {
                     handleLogout();
                     setSidebarOpen(false);
                   }}
-                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl border border-transparent hover:bg-[#0F172A] hover:border-[#334155] transition-colors text-left mt-2"
+                  className="w-full flex items-center gap-3 px-3 py-3 rounded-xl border border-transparent hover:bg-[var(--bg-primary)] hover:border-[var(--border-color)] transition-colors text-left mt-2"
                 >
-                  <div className="w-8 h-8 rounded-full overflow-hidden border border-[#334155] bg-[#0F172A] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 rounded-full overflow-hidden border border-[var(--border-color)] bg-[var(--bg-primary)] flex items-center justify-center shrink-0">
                     {avatarUrl ? (
                       <img src={avatarUrl} alt="Profile" className="w-full h-full object-cover" />
                     ) : (
-                      <User className="text-[#94A3B8]" size={16} />
+                      <User className="text-[var(--text-muted)]" size={16} />
                     )}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-[#E2E8F0] truncate">{user?.username || "Guest"}</p>
-                    <p className="text-xs text-[#94A3B8] truncate">Sign out</p>
+                    <p className="text-sm font-bold text-[var(--text-primary)] truncate">{user?.username || "Guest"}</p>
+                    <p className="text-xs text-[var(--text-secondary)] truncate">Sign out</p>
                   </div>
                 </button>
               </div>
@@ -763,11 +771,11 @@ export default function Dashboard() {
       <div className="flex-1 flex flex-col h-screen overflow-hidden relative z-10">
         
         {/* Top Bar */}
-        <header className="h-16 border-b border-[#334155] bg-[#1E293B] flex items-center justify-between px-6 shrink-0 z-10">
+        <header className="h-16 border-b border-[var(--border-color)] bg-[var(--bg-secondary)] flex items-center justify-between px-6 shrink-0 z-10 transition-colors duration-500">
           <div className="flex items-center gap-4 flex-1">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="w-10 h-10 rounded-xl border border-[#334155] bg-[#0F172A] hover:bg-[#334155] flex items-center justify-center transition-colors text-[#E2E8F0]"
+              className="w-10 h-10 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] hover:bg-[var(--bg-secondary)] flex items-center justify-center transition-colors text-[var(--text-primary)]"
             >
               <Menu size={18} />
             </button>
@@ -776,23 +784,30 @@ export default function Dashboard() {
               <div className="w-8 h-8 rounded-lg bg-[#3B82F6]/10 flex items-center justify-center">
                 <Sparkles className="text-[#3B82F6]" size={16} />
               </div>
-              <span className="font-bold text-base tracking-tight text-[#E2E8F0]">Verit</span>
+              <span className="font-bold text-base tracking-tight text-[var(--text-primary)]">Verit</span>
             </Link>
             
             <button 
               onClick={() => setCmdKOpen(true)} 
-              className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-[#0F172A] border border-[#334155] text-[#94A3B8] text-sm hover:border-[#475569] transition-colors w-72 text-left shadow-sm"
+              className="hidden md:flex items-center gap-3 px-4 py-2 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] text-[var(--text-secondary)] text-sm hover:border-[var(--text-muted)] transition-colors w-72 text-left shadow-sm"
             >
               <Search size={16} />
               <span className="flex-1">Search or jump to...</span>
-              <kbd className="bg-[#1E293B] px-2 py-0.5 rounded text-[10px] font-mono font-bold text-[#94A3B8] border border-[#334155] shadow-sm">⌘K</kbd>
+              <kbd className="bg-[var(--bg-secondary)] px-2 py-0.5 rounded text-[10px] font-mono font-bold text-[var(--text-secondary)] border border-[var(--border-color)] shadow-sm">⌘K</kbd>
+            </button>
+            <button
+              onClick={toggleTheme}
+              className="p-2.5 bg-[var(--bg-primary)] rounded-xl border border-[var(--border-color)] text-[var(--text-primary)] hover:bg-[var(--bg-secondary)] transition-colors shadow-sm"
+              title={`Switch to ${theme === "dark" ? "light" : "dark"} mode`}
+            >
+              {theme === "dark" ? <Sun size={18} /> : <Moon size={18} />}
             </button>
           </div>
           
           <div className="flex items-center gap-3">
              <button
                onClick={() => setShowPricingModal(true)}
-               className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-[#0F172A] bg-[#1E293B] border border-[#334155] text-[#E2E8F0] shadow-sm"
+                className="hidden md:flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all hover:bg-[var(--bg-primary)] bg-[var(--bg-secondary)] border border-[var(--border-color)] text-[var(--text-primary)] shadow-sm"
              >
                <Zap size={13} className="text-[#3B82F6]" />
                Upgrade
@@ -864,11 +879,11 @@ export default function Dashboard() {
                     className="space-y-6"
                   >
                     <div className="mb-4 md:mb-6">
-                      <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[#E2E8F0]">Dashboard</h1>
-                      <p className="text-xs md:text-sm text-[#94A3B8] mt-1">Create and manage anonymous feedback links</p>
+                      <h1 className="text-2xl md:text-3xl font-bold tracking-tight text-[var(--text-primary)]">Dashboard</h1>
+                      <p className="text-xs md:text-sm text-[var(--text-secondary)] mt-1">Create and manage anonymous feedback links</p>
                     </div>
 
-                    <div className="rounded-2xl border border-[#334155] bg-[#1E293B] shadow-sm p-4 md:p-6 space-y-4 md:space-y-6">
+                    <div className="premium-card p-4 md:p-6 space-y-4 md:space-y-6">
                       <div className="flex flex-wrap gap-2">
                         {POST_TYPES.map((type) => {
                           const Icon = type.icon;
@@ -877,8 +892,10 @@ export default function Dashboard() {
                             <button
                               key={type.id}
                               onClick={() => switchType(type.id)}
-                              className={`flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-colors ${
-                                active ? "bg-[#0F172A] text-[#E2E8F0] border border-[#334155]" : "text-[#94A3B8] hover:bg-[#0F172A] border border-transparent"
+                              className={`flex items-center gap-1.5 md:gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold transition-all ${
+                                active 
+                                  ? "bg-[var(--text-primary)] text-[var(--bg-secondary)]" 
+                                  : "text-[var(--text-secondary)] hover:bg-[var(--bg-primary)] border border-transparent"
                               }`}
                             >
                               <Icon size={12} className="md:w-[14px] md:h-[14px]" />
@@ -896,23 +913,23 @@ export default function Dashboard() {
                               onChange={(e) => setContent(e.target.value)}
                               rows={window.innerWidth < 768 ? 3 : 5}
                               placeholder="Ask a question or write something you want feedback on..."
-                              className="w-full p-3 md:p-4 rounded-xl bg-[#0F172A] border border-[#334155] text-[#E2E8F0] outline-none focus:border-[#3B82F6] transition-colors resize-none placeholder:text-[#64748B] text-sm md:text-base"
+                              className="premium-input resize-none"
                             />
-                            <div className="absolute bottom-4 right-4 text-xs text-[#64748B] font-mono">
+                            <div className="absolute bottom-4 right-4 text-xs text-[var(--text-muted)] font-mono">
                                {content.length > 0 ? `${content.length} chars` : "Ready"}
                             </div>
                           </div>
                         )}
 
                         {postType === "url" && (
-                          <div className="flex items-center gap-3 bg-[#0F172A] border border-[#334155] rounded-xl px-4 py-3 focus-within:border-[#3B82F6] transition-colors">
-                            <Globe size={20} className="text-[#64748B] shrink-0" />
+                          <div className="flex items-center gap-3 bg-[var(--input-bg)] border border-[var(--border-color)] rounded-xl px-4 py-3 focus-within:ring-4 focus-within:ring-[var(--accent)]/10 focus-within:border-[var(--accent)] transition-all">
+                            <Globe size={20} className="text-[var(--text-muted)] shrink-0" />
                             <input
                               type="url"
                               value={content}
                               onChange={(e) => setContent(e.target.value)}
                               placeholder="https://your-website.com"
-                              className="bg-transparent flex-1 focus:outline-none text-[#E2E8F0] placeholder:text-[#64748B] text-base"
+                              className="bg-transparent flex-1 focus:outline-none text-[var(--text-primary)] placeholder:text-[var(--text-muted)] text-base"
                             />
                           </div>
                         )}
@@ -921,7 +938,7 @@ export default function Dashboard() {
                           <div className="space-y-4">
                             {!file ? (
                               <label
-                                className="relative flex flex-col items-center justify-center gap-2 md:gap-3 border border-dashed border-[#475569] bg-[#0F172A] rounded-xl p-6 md:p-8 cursor-pointer transition-all hover:bg-[#1E293B] hover:border-[#64748B]"
+                                className="relative flex flex-col items-center justify-center gap-2 md:gap-3 border border-dashed border-[var(--text-muted)] bg-[var(--input-bg)] rounded-xl p-6 md:p-8 cursor-pointer transition-all hover:bg-[var(--bg-primary)] hover:border-[var(--text-secondary)]"
                               >
                                 <input
                                   ref={fileInputRef}
@@ -930,25 +947,25 @@ export default function Dashboard() {
                                   accept={postType === "image" ? "image/*" : postType === "video" ? "video/*" : ".pdf"}
                                   onChange={handleFileChange}
                                 />
-                                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[#1E293B] border border-[#334155] shadow-sm">
-                                  {postType === "image" && <ImageIcon size={20} className="text-[#94A3B8]" />}
-                                  {postType === "video" && <Film size={20} className="text-[#94A3B8]" />}
-                                  {postType === "pdf" && <FileUp size={20} className="text-[#94A3B8]" />}
+                                <div className="w-12 h-12 rounded-full flex items-center justify-center bg-[var(--bg-secondary)] border border-[var(--border-color)] shadow-sm">
+                                  {postType === "image" && <ImageIcon size={20} className="text-[var(--text-secondary)]" />}
+                                  {postType === "video" && <Film size={20} className="text-[var(--text-secondary)]" />}
+                                  {postType === "pdf" && <FileUp size={20} className="text-[var(--text-secondary)]" />}
                                 </div>
-                                <p className="font-medium text-[#94A3B8] text-sm">
+                                <p className="font-medium text-[var(--text-secondary)] text-sm">
                                   Click to upload {postType === "image" ? "an image" : postType === "video" ? "a video" : "a PDF"}
                                 </p>
                               </label>
                             ) : (
-                              <div className="rounded-xl border border-[#334155] bg-[#1E293B] p-4 flex items-start gap-4 shadow-sm">
+                              <div className="premium-card p-4 flex items-start gap-4">
                                 {postType === "image" && filePreview && <img src={filePreview} alt="Preview" className="w-16 h-16 object-cover rounded-lg" />}
-                                {postType === "video" && <div className="w-16 h-16 bg-[#0F172A] border border-[#334155] rounded-lg flex items-center justify-center"><Film size={24} className="text-[#94A3B8]" /></div>}
-                                {postType === "pdf" && <div className="w-16 h-16 bg-[#0F172A] border border-[#334155] rounded-lg flex items-center justify-center"><FileText size={24} className="text-[#94A3B8]" /></div>}
+                                {postType === "video" && <div className="w-16 h-16 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg flex items-center justify-center"><Film size={24} className="text-[var(--text-muted)]" /></div>}
+                                {postType === "pdf" && <div className="w-16 h-16 bg-[var(--bg-primary)] border border-[var(--border-color)] rounded-lg flex items-center justify-center"><FileText size={24} className="text-[var(--text-muted)]" /></div>}
                                 <div className="flex-1 min-w-0 pt-1">
-                                  <p className="font-semibold text-[#E2E8F0] text-sm truncate">{file.name}</p>
-                                  <p className="text-xs text-[#94A3B8] mt-1">{(file.size / 1048576).toFixed(2)} MB</p>
+                                  <p className="font-semibold text-[var(--text-primary)] text-sm truncate">{file.name}</p>
+                                  <p className="text-xs text-[var(--text-secondary)] mt-1">{(file.size / 1048576).toFixed(2)} MB</p>
                                 </div>
-                                <button onClick={clearFile} className="p-2 rounded-lg hover:bg-[#0F172A] text-[#94A3B8] hover:text-red-500 transition-colors">
+                                <button onClick={clearFile} className="p-2 rounded-lg hover:bg-[var(--bg-primary)] text-[var(--text-muted)] hover:text-red-500 transition-colors">
                                   <X size={16} />
                                 </button>
                               </div>
@@ -960,7 +977,7 @@ export default function Dashboard() {
                                  onChange={(e) => setContent(e.target.value)}
                                  rows={2}
                                  placeholder="Add a caption or question (optional)..."
-                                 className="w-full p-4 rounded-xl bg-[#0F172A] border border-[#334155] text-[#E2E8F0] outline-none focus:border-[#3B82F6] resize-none placeholder:text-[#64748B] text-sm"
+                                 className="premium-input resize-none"
                                />
                             </div>
                           </div>
@@ -971,11 +988,7 @@ export default function Dashboard() {
                         <button
                           disabled={submitting}
                           onClick={handleSubmit}
-                          className={`px-6 py-2.5 rounded-xl font-bold text-sm transition-all shadow-sm flex items-center gap-2 ${
-                            submitting 
-                              ? "bg-[#334155] text-[#64748B] cursor-not-allowed" 
-                              : "bg-[#3B82F6] text-white hover:bg-[#2563EB] hover:shadow-md"
-                          }`}
+                          className="btn-primary"
                         >
                           {submitting ? (
                             <>
@@ -991,11 +1004,11 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    <div className="rounded-2xl border border-[#334155] bg-[#1E293B] shadow-sm p-6 space-y-4">
+                    <div className="premium-card p-6 space-y-4">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-sm font-bold text-[#E2E8F0]">Templates</h3>
+                        <h3 className="text-sm font-bold text-[var(--text-primary)]">Templates</h3>
                         {selectedTemplate && (
-                          <button onClick={clearSelectedTemplate} className="text-xs font-semibold text-[#94A3B8] hover:text-[#E2E8F0]">
+                          <button onClick={clearSelectedTemplate} className="text-xs font-semibold text-[var(--text-secondary)] hover:text-[var(--text-primary)]">
                             Clear selection
                           </button>
                         )}
@@ -1006,16 +1019,18 @@ export default function Dashboard() {
                           <button
                             key={template.id}
                             onClick={() => applyTemplate(template)}
-                            className={`flex items-start gap-3 p-3 rounded-xl border transition-all text-left ${
-                              selectedTemplate?.id === template.id ? "border-[#3B82F6] bg-[#3B82F6]/5" : "border-[#334155] bg-[#1E293B] hover:border-[#475569] hover:bg-[#0F172A]"
+                            className={`flex items-start gap-3 p-4 rounded-xl border transition-all text-left ${
+                              selectedTemplate?.id === template.id 
+                                ? "border-[var(--accent)] bg-[var(--accent)]/5 ring-1 ring-[var(--accent)]" 
+                                : "border-[var(--border-color)] bg-[var(--bg-secondary)] hover:border-[var(--text-muted)] hover:bg-[var(--bg-primary)]"
                             }`}
                           >
-                            <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${template.accentColor}15` }}>
-                               <Sparkles size={14} style={{ color: template.accentColor }} />
+                            <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 mt-0.5" style={{ background: `${template.accentColor}15` }}>
+                               <Sparkles size={16} style={{ color: template.accentColor }} />
                             </div>
                             <div>
-                              <p className="text-sm font-semibold text-[#E2E8F0]">{template.label}</p>
-                              <p className="text-xs text-[#94A3B8] mt-0.5 leading-snug">{template.description}</p>
+                              <p className="text-sm font-semibold text-[var(--text-primary)]">{template.label}</p>
+                              <p className="text-xs text-[var(--text-secondary)] mt-0.5 leading-snug">{template.description}</p>
                             </div>
                           </button>
                         ))}
@@ -1056,8 +1071,8 @@ export default function Dashboard() {
                 {activeNav === "analytics" && (
                   <motion.div key="analytics" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                     <div className="mb-6">
-                      <h2 className="text-2xl font-bold tracking-tight text-[#E2E8F0]">Analytics</h2>
-                      <p className="text-[#94A3B8] mt-1">Monitor your feedback performance</p>
+                      <h2 className="text-2xl font-bold tracking-tight text-[var(--text-primary)]">Analytics</h2>
+                      <p className="text-[var(--text-secondary)] mt-1">Monitor your feedback performance</p>
                     </div>
                     <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
                       {[
@@ -1066,20 +1081,20 @@ export default function Dashboard() {
                         { label: "Total responses", value: analytics?.summary?.totalResponses ?? feedback.length },
                         { label: "Responses this week", value: analytics?.summary?.responsesThisWeek ?? 0 },
                       ].map((item) => (
-                        <div key={item.label} className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 shadow-sm">
-                          <p className="text-[10px] md:text-xs font-semibold text-[#94A3B8] uppercase tracking-widest">{item.label}</p>
-                          <p className="mt-2 md:mt-3 text-2xl md:text-3xl font-bold text-[#E2E8F0]">{item.value}</p>
+                        <div key={item.label} className="premium-card p-4 md:p-6">
+                          <p className="text-[10px] md:text-xs font-semibold text-[var(--text-muted)] uppercase tracking-widest">{item.label}</p>
+                          <p className="mt-2 md:mt-3 text-2xl md:text-3xl font-bold text-[var(--text-primary)]">{item.value}</p>
                         </div>
                       ))}
                     </div>
                     <div className="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-                        <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 shadow-sm">
+                        <div className="premium-card p-4 md:p-6">
                           <div className="flex items-center justify-between gap-3">
                             <div>
-                              <h3 className="text-base font-bold text-[#E2E8F0]">Response trend</h3>
-                              <p className="text-sm text-[#94A3B8]">Last 7 days</p>
+                              <h3 className="text-base font-bold text-[var(--text-primary)]">Response trend</h3>
+                              <p className="text-sm text-[var(--text-secondary)]">Last 7 days</p>
                             </div>
-                            <BarChart3 className="text-[#3B82F6]" size={20} />
+                            <BarChart3 className="text-[var(--accent)]" size={20} />
                           </div>
                           <div className="mt-8 grid grid-cols-7 gap-3 items-end h-56">
                             {(analytics?.dailyResponses || []).map((item) => {
@@ -1088,32 +1103,32 @@ export default function Dashboard() {
                               return (
                                 <div key={item.label} className="flex flex-col items-center gap-3">
                                   <div className="flex h-44 w-full items-end justify-center">
-                                    <div className="w-full max-w-10 rounded-t-lg bg-[#3B82F6]" style={{ height: `${height}%`, opacity: item.value ? 1 : 0.2 }} />
+                                    <div className="w-full max-w-10 rounded-t-lg bg-[var(--accent)]" style={{ height: `${height}%`, opacity: item.value ? 1 : 0.2 }} />
                                   </div>
-                                  <span className="text-xs font-medium text-[#94A3B8]">{item.label}</span>
+                                  <span className="text-xs font-medium text-[var(--text-muted)]">{item.label}</span>
                                 </div>
                               );
                             })}
                           </div>
                        </div>
-                        <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 space-y-4 md:space-y-5 shadow-sm">
+                        <div className="premium-card p-4 md:p-6 space-y-4 md:space-y-5">
                           <div>
-                            <h3 className="text-base font-bold text-[#E2E8F0]">Post types</h3>
-                            <p className="text-sm text-[#94A3B8]">Where the responses are coming from</p>
+                            <h3 className="text-base font-bold text-[var(--text-primary)]">Post types</h3>
+                            <p className="text-sm text-[var(--text-secondary)]">Where the responses are coming from</p>
                           </div>
                           <div className="space-y-3">
                             {POST_TYPES.map((type) => {
                               const count = analytics?.responseByType?.[type.id] || 0;
                               return (
-                                 <div key={type.id} className="rounded-xl border border-[#334155] bg-[#0F172A] p-3 md:p-4">
+                                 <div key={type.id} className="rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-3 md:p-4">
                                   <div className="flex items-center justify-between gap-4">
                                     <div className="flex items-center gap-3">
-                                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-[#334155] bg-[#1E293B]">
-                                        <type.icon size={14} className="text-[#94A3B8]" />
+                                      <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 border border-[var(--border-color)] bg-[var(--bg-secondary)]">
+                                        <type.icon size={14} className="text-[var(--text-muted)]" />
                                       </div>
-                                      <p className="text-sm font-semibold text-[#E2E8F0]">{type.label}</p>
+                                      <p className="text-sm font-semibold text-[var(--text-primary)]">{type.label}</p>
                                     </div>
-                                    <span className="text-base font-bold text-[#E2E8F0]">{count}</span>
+                                    <span className="text-base font-bold text-[var(--text-primary)]">{count}</span>
                                   </div>
                                 </div>
                               );
@@ -1127,19 +1142,19 @@ export default function Dashboard() {
                 {activeNav === "links" && (
                   <motion.div key="links" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                     {links.length === 0 ? (
-                      <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-12 text-center shadow-sm">
-                        <div className="w-16 h-16 rounded-full bg-[#0F172A] border border-[#334155] flex items-center justify-center mx-auto mb-6">
-                          <LinkIcon size={32} className="text-[#94A3B8]" />
+                      <div className="premium-card p-12 text-center">
+                        <div className="w-16 h-16 rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center mx-auto mb-6">
+                          <LinkIcon size={32} className="text-[var(--text-muted)]" />
                         </div>
-                        <h2 className="text-2xl font-bold text-[#E2E8F0] mb-2">
+                        <h2 className="text-2xl font-bold text-[var(--text-primary)] mb-2">
                           No links created yet
                         </h2>
-                        <p className="text-[#94A3B8] max-w-md mx-auto mb-8">
+                        <p className="text-[var(--text-secondary)] max-w-md mx-auto mb-8">
                           Create your first feedback link to start collecting anonymous responses from your audience.
                         </p>
                         <button 
                           onClick={() => setActiveNav("create")}
-                          className="px-6 py-2.5 rounded-xl bg-[#3B82F6] text-white font-bold text-sm hover:bg-[#2563EB] transition-all shadow-sm"
+                          className="btn-primary"
                         >
                           Create Link
                         </button>
@@ -1150,32 +1165,32 @@ export default function Dashboard() {
                           const linkColor = "#3B82F6";
                           const responseCount = link.responseCount || 0;
                           return (
-                            <div key={link._id} className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 md:p-6 shadow-sm flex flex-col justify-between transition-all hover:border-[#475569]">
+                            <div key={link._id} className="premium-card p-4 md:p-6 flex flex-col justify-between">
                               <div className="flex items-start justify-between gap-4">
                                 <div>
                                   <div className="flex items-center gap-2 flex-wrap">
                                     <span className="rounded-md px-2 py-1 text-[10px] font-bold text-white uppercase" style={{ background: linkColor }}>{link.postType}</span>
-                                    <span className="rounded-md border border-[#334155] bg-[#0F172A] px-2 py-1 text-[10px] text-[#94A3B8] flex items-center gap-1">
+                                    <span className="rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] px-2 py-1 text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
                                       <MessageSquare size={10} /> {responseCount} responses
                                     </span>
-                                    <span className="rounded-md border border-[#334155] bg-[#0F172A] px-2 py-1 text-[10px] text-[#94A3B8] flex items-center gap-1">
+                                    <span className="rounded-md border border-[var(--border-color)] bg-[var(--bg-primary)] px-2 py-1 text-[10px] text-[var(--text-secondary)] flex items-center gap-1">
                                       <BarChart3 size={10} /> {link.views || 0} views
                                     </span>
                                   </div>
-                                   <h3 className="mt-2 text-base md:text-lg font-bold text-[#E2E8F0] line-clamp-1">{link.title || link.templateKey || "Untitled link"}</h3>
-                                  <p className="mt-1 text-xs md:text-sm text-[#94A3B8] line-clamp-1 md:line-clamp-2">{link.description || "No description."}</p>
+                                   <h3 className="mt-3 text-base md:text-lg font-bold text-[var(--text-primary)] line-clamp-1">{link.title || link.templateKey || "Untitled link"}</h3>
+                                  <p className="mt-1 text-xs md:text-sm text-[var(--text-secondary)] line-clamp-1 md:line-clamp-2">{link.description || "No description."}</p>
                                 </div>
                                 <div className="h-12 w-12 rounded-xl flex items-center justify-center shrink-0" style={{ background: `${linkColor}15` }}>
                                   <LinkIcon size={20} style={{ color: linkColor }} />
                                 </div>
                               </div>
-                              <div className="mt-3 md:mt-5 rounded-xl border border-[#334155] bg-[#0F172A] p-2.5 md:p-3">
-                                <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[#64748B]">Share URL</p>
+                              <div className="mt-3 md:mt-5 rounded-xl border border-[var(--border-color)] bg-[var(--bg-primary)] p-2.5 md:p-3">
+                                <p className="text-[9px] md:text-[10px] font-bold uppercase tracking-widest text-[var(--text-muted)]">Share URL</p>
                                 <div className="mt-1.5 flex gap-1.5 md:gap-2">
-                                  <div className="flex-1 truncate rounded-lg border border-[#334155] bg-[#1E293B] px-2 py-1.5 md:px-3 md:py-2 font-mono text-[10px] md:text-xs text-[#94A3B8] flex items-center">
+                                  <div className="flex-1 truncate rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] px-2 py-1.5 md:px-3 md:py-2 font-mono text-[10px] md:text-xs text-[var(--text-secondary)] flex items-center">
                                     {window.location.origin}/feedback/{link.linkId}
                                   </div>
-                                  <button onClick={() => copyLink(link.linkId)} className="rounded-lg px-2.5 py-1.5 md:px-3 md:py-2 text-[10px] md:text-xs font-bold text-white transition-opacity hover:opacity-90" style={{ background: linkColor }}>Copy</button>
+                                  <button onClick={() => copyLink(link.linkId)} className="btn-primary !px-3 !py-1 !text-[10px] md:!text-xs">Copy</button>
                                 </div>
                               </div>
                               <div className="mt-3 md:mt-4 flex flex-wrap gap-1.5 md:gap-2">
@@ -1213,57 +1228,60 @@ export default function Dashboard() {
                     <div className="mb-2">
                       <button 
                         onClick={() => { setActiveNav("links"); setSelectedLinkDetails(null); }}
-                        className="flex items-center gap-2 text-[#94A3B8] hover:text-white transition-colors text-sm font-semibold"
+                        className="flex items-center gap-2 text-[var(--text-secondary)] hover:text-[var(--text-primary)] transition-all text-sm font-bold"
                       >
-                        <ArrowLeft size={16} /> Back
+                        <ArrowLeft size={16} /> Back to links
                       </button>
                     </div>
 
-                    <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-6 sm:p-8 shadow-sm">
-                      <div className="flex items-center justify-between mb-6">
-                        <h3 className="text-2xl font-bold text-[#E2E8F0] tracking-tight">{selectedLinkDetails.title || "Untitled link"}</h3>
-                        <span className="rounded-md px-3 py-1 text-[10px] font-bold text-white uppercase tracking-widest" style={{ background: "#3B82F6" }}>
+                    <div className="premium-card p-6 sm:p-8">
+                      <div className="flex items-center justify-between mb-8">
+                        <div>
+                          <h3 className="text-2xl font-black tracking-tight text-[var(--text-primary)]">{selectedLinkDetails.title || "Untitled link"}</h3>
+                          {selectedLinkDetails.description && (
+                            <p className="text-[var(--text-secondary)] text-sm mt-2 font-medium">{selectedLinkDetails.description}</p>
+                          )}
+                        </div>
+                        <span className="rounded-full px-4 py-1.5 text-[10px] font-black text-white uppercase tracking-widest shadow-lg shadow-[var(--accent)]/20" style={{ background: "var(--accent)" }}>
                           {selectedLinkDetails.postType}
                         </span>
                       </div>
                       
-                      {selectedLinkDetails.description && (
-                        <p className="text-[#94A3B8] text-sm mb-6 border-l-2 pl-3" style={{ borderColor: "#3B82F6" }}>{selectedLinkDetails.description}</p>
-                      )}
-
-                      <div className="rounded-2xl border border-[#334155] bg-[#0F172A] overflow-hidden relative">
+                      <div className="rounded-2xl border border-[var(--border-color)] bg-[var(--bg-primary)] overflow-hidden relative shadow-inner">
                         {selectedLinkDetails.postType === "text" && (
-                          <div className="p-8 text-xl font-medium leading-relaxed italic text-[#94A3B8]">"{selectedLinkDetails.content}"</div>
+                          <div className="p-10 text-xl font-bold leading-relaxed italic text-[var(--text-primary)] text-center">
+                            "{selectedLinkDetails.content}"
+                          </div>
                         )}
                         
                         {selectedLinkDetails.postType === "image" && selectedLinkDetails.fileUrl && (
-                          <div className="relative aspect-video max-h-[500px] w-full bg-[#334155] flex items-center justify-center group">
-                            <img src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} alt="Post media" className="max-w-full max-h-[500px] object-contain transition-transform duration-700 group-hover:scale-[1.02]" />
+                          <div className="relative aspect-video max-h-[500px] w-full bg-black/5 flex items-center justify-center group">
+                            <img src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} alt="Post media" className="max-w-full max-h-[500px] object-contain transition-transform duration-700 group-hover:scale-[1.01]" />
                             {selectedLinkDetails.content && (
-                              <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-[#0F172A]/90 via-[#0F172A]/50 to-transparent">
-                                <p className="text-white text-base font-medium">{selectedLinkDetails.content}</p>
+                              <div className="absolute bottom-0 inset-x-0 p-8 bg-gradient-to-t from-black/80 to-transparent">
+                                <p className="text-white text-base font-bold drop-shadow-md">{selectedLinkDetails.content}</p>
                               </div>
                             )}
                           </div>
                         )}
                         
                         {selectedLinkDetails.postType === "video" && selectedLinkDetails.fileUrl && (
-                          <div className="relative aspect-video max-h-[500px] w-full bg-[#334155]">
+                          <div className="relative aspect-video max-h-[500px] w-full bg-black">
                             <video src={selectedLinkDetails.fileUrl.startsWith('http') ? selectedLinkDetails.fileUrl : `${BACKEND_URL}${selectedLinkDetails.fileUrl}`} controls className="w-full h-full object-contain" />
                             {selectedLinkDetails.content && (
-                              <div className="absolute top-0 inset-x-0 p-6 bg-gradient-to-b from-[#0F172A]/90 via-[#0F172A]/50 to-transparent">
-                                <p className="text-white text-base font-medium drop-shadow-lg">{selectedLinkDetails.content}</p>
+                              <div className="absolute top-0 inset-x-0 p-8 bg-gradient-to-b from-black/80 to-transparent">
+                                <p className="text-white text-base font-bold drop-shadow-md">{selectedLinkDetails.content}</p>
                               </div>
                             )}
                           </div>
                         )}
 
                         {selectedLinkDetails.postType === "url" && (
-                          <div className="p-10 flex flex-col items-center justify-center gap-6">
-                            <div className="p-4 rounded-full bg-[#3B82F6]/10 border border-[#3B82F6]/20 text-[#3B82F6]">
+                          <div className="p-16 flex flex-col items-center justify-center gap-6">
+                            <div className="p-5 rounded-3xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 text-[var(--accent)] shadow-xl">
                               <Globe size={48} />
                             </div>
-                            <a href={selectedLinkDetails.content} target="_blank" rel="noreferrer" className="text-xl font-bold text-[#E2E8F0] hover:text-[#3B82F6] transition-colors text-center break-all underline decoration-[#3B82F6]/30 underline-offset-8">
+                            <a href={selectedLinkDetails.content} target="_blank" rel="noreferrer" className="text-xl font-black text-[var(--accent)] hover:opacity-80 transition-all text-center break-all underline decoration-2 underline-offset-8">
                               {selectedLinkDetails.content}
                             </a>
                           </div>
@@ -1271,17 +1289,21 @@ export default function Dashboard() {
                       </div>
                     </div>
 
-                    <div className="pt-6">
-                      <div className="flex items-center gap-3 mb-6">
-                        <MessageSquare size={20} className="text-[#3B82F6]" />
-                        <h3 className="text-xl font-bold text-[#E2E8F0]">Responses on this post</h3>
+                    <div className="pt-8">
+                      <div className="flex items-center gap-3 mb-8 border-l-4 border-[var(--accent)] pl-4">
+                        <h3 className="text-xl font-black tracking-tight text-[var(--text-primary)]">Public Responses</h3>
+                        <span className="bg-[var(--accent)]/10 text-[var(--accent)] text-xs font-bold px-2 py-0.5 rounded-md">
+                          {feedback.filter(f => f.linkId === selectedLinkDetails.linkId).length}
+                        </span>
                       </div>
                       
                       {feedback.filter(f => f.linkId === selectedLinkDetails.linkId).length === 0 ? (
-                        <div className="p-12 rounded-2xl border border-[#334155] bg-[#1E293B] text-center shadow-sm">
-                          <MessageSquare size={48} className="mx-auto mb-5 text-[#64748B]" />
-                          <p className="text-[#E2E8F0] font-bold text-lg">No responses yet</p>
-                          <p className="text-[#94A3B8] text-sm mt-2">Share this specific link to get anonymous thoughts.</p>
+                        <div className="premium-card p-16 text-center">
+                          <div className="w-20 h-20 bg-[var(--bg-primary)] rounded-full flex items-center justify-center mx-auto mb-6 border-2 border-dashed border-[var(--border-color)]">
+                            <MessageSquare size={32} className="text-[var(--text-muted)]" />
+                          </div>
+                          <p className="text-[var(--text-primary)] font-black text-xl">No responses yet</p>
+                          <p className="text-[var(--text-secondary)] text-sm mt-2 max-w-xs mx-auto">Once people start sharing their thoughts, they'll appear here beautifully.</p>
                         </div>
                       ) : (
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -1290,35 +1312,32 @@ export default function Dashboard() {
                             const showBlur = message.isToxic && !isRevealed;
 
                             return (
-                              <div key={message._id} className="group rounded-2xl p-6 relative overflow-hidden border border-[#334155] bg-[#1E293B] shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-[#3B82F6]'} transition-all duration-500`} />
-                                <div className="absolute -top-6 -right-6 text-[#0F172A] transform rotate-12 group-hover:scale-110 transition-transform duration-500 pointer-events-none">
-                                  <MessageSquare size={100} />
-                                </div>
-                                
-                                <div className="flex-1 relative z-10 pt-2">
+                              <div key={message._id} className="group premium-card p-6 flex flex-col hover:border-[var(--accent)]/50 transition-all">
+                                <div className="flex-1 relative">
                                   {showBlur && (
-                                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[#1E293B]/80 backdrop-blur-md rounded-xl border border-red-100">
-                                      <span className="text-3xl mb-3">⚠️</span>
-                                      <p className="text-xs text-red-600 font-bold tracking-widest uppercase mb-4">Toxic Hidden</p>
+                                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-[var(--bg-secondary)]/90 backdrop-blur-md rounded-xl border-2 border-red-500/20">
+                                      <div className="w-12 h-12 bg-red-500/10 rounded-full flex items-center justify-center mb-4">
+                                        <AlertTriangle size={20} className="text-red-500" />
+                                      </div>
+                                      <p className="text-[10px] text-red-600 font-black tracking-widest uppercase mb-4">Toxic Content</p>
                                       <button 
                                         onClick={() => setRevealedMessages(prev => [...prev, message._id])}
-                                        className="px-5 py-2 rounded-xl bg-red-50 text-red-600 text-xs font-bold border border-red-200 hover:bg-red-100 transition-colors"
+                                        className="px-5 py-2 rounded-xl bg-red-500 text-white text-xs font-bold shadow-lg shadow-red-500/20 hover:scale-105 transition-all"
                                       >
                                         Reveal Response
                                       </button>
                                     </div>
                                   )}
-                                  <p className={`text-[#E2E8F0] text-sm font-medium leading-relaxed pl-3 ${showBlur ? 'opacity-20 blur-[4px] select-none' : ''}`}>
+                                  <p className={`text-[var(--text-primary)] text-sm font-medium leading-relaxed ${showBlur ? 'opacity-10 blur-[6px] select-none' : ''}`}>
                                     "{message.message}"
                                   </p>
                                 </div>
-
-                                <div className="flex items-center justify-between gap-3 mt-8 pl-3 relative z-10 border-t border-[#334155] pt-4">
-                                  <span className="text-[10px] font-bold tracking-wider uppercase text-[#64748B]">{new Date(message.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                
+                                <div className="flex items-center justify-between gap-3 mt-8 pt-4 border-t border-[var(--border-color)]">
+                                  <span className="text-[10px] font-black tracking-widest uppercase text-[var(--text-muted)]">{new Date(message.createdAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
                                   <button 
                                     onClick={() => deleteFeedback(message._id)}
-                                    className="p-2 rounded-lg text-[#94A3B8] hover:text-red-500 hover:bg-red-50 transition-colors"
+                                    className="w-8 h-8 rounded-lg flex items-center justify-center text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 transition-all"
                                   >
                                     <Trash2 size={14} />
                                   </button>
@@ -1344,15 +1363,15 @@ export default function Dashboard() {
                       </div>
                     ) : (
                       <>
-                        <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-4 shadow-sm">
+                        <div className="premium-card p-4">
                            <div className="grid gap-3 lg:grid-cols-[1fr_auto_auto]">
-                             <input value={feedbackSearch} onChange={(e) => setFeedbackSearch(e.target.value)} placeholder="Search feedback text..." className="rounded-xl border border-[#334155] bg-[#0F172A] px-4 py-2 text-sm text-[#E2E8F0] outline-none focus:border-[#3B82F6] transition-colors placeholder:text-[#64748B]" />
-                             <select value={feedbackRange} onChange={(e) => setFeedbackRange(e.target.value)} className="rounded-xl border border-[#334155] bg-[#0F172A] px-4 py-2 text-sm text-[#E2E8F0] outline-none focus:border-[#3B82F6] transition-colors cursor-pointer">
-                               <option value="all">All time</option>
-                               <option value="7d">Last 7 days</option>
-                               <option value="30d">Last 30 days</option>
+                             <input value={feedbackSearch} onChange={(e) => setFeedbackSearch(e.target.value)} placeholder="Search feedback text..." className="premium-input !py-2 !text-sm" />
+                             <select value={feedbackRange} onChange={(e) => setFeedbackRange(e.target.value)} className="rounded-xl border border-[var(--border-color)] bg-[var(--input-bg)] px-4 py-2 text-sm text-[var(--text-primary)] outline-none focus:ring-4 focus:ring-[var(--accent)]/10 focus:border-[var(--accent)] transition-all cursor-pointer">
+                                <option value="all">All time</option>
+                                <option value="7d">Last 7 days</option>
+                                <option value="30d">Last 30 days</option>
                              </select>
-                             <button onClick={exportFeedbackCsv} className="rounded-xl bg-[#1E293B] border border-[#334155] px-4 py-2 text-sm font-semibold text-[#E2E8F0] hover:bg-[#0F172A] transition-colors">Export CSV</button>
+                             <button onClick={exportFeedbackCsv} className="btn-secondary !py-2 !text-sm">Export CSV</button>
                            </div>
                         </div>
                         <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-5">
@@ -1362,14 +1381,14 @@ export default function Dashboard() {
                             const showBlur = message.isToxic && !isRevealed;
 
                             return (
-                              <div key={message._id} className="rounded-2xl p-5 md:p-6 relative overflow-hidden border border-[#334155] bg-[#1E293B] shadow-sm hover:shadow-md transition-shadow flex flex-col">
-                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-[#3B82F6]'} rounded-l-2xl`} />
+                              <div key={message._id} className="premium-card p-5 md:p-6 relative overflow-hidden flex flex-col">
+                                <div className={`absolute top-0 left-0 w-1 h-full ${message.isToxic ? 'bg-red-500' : 'bg-[var(--accent)]'} rounded-l-2xl`} />
                                 
                                 <div className="flex-1 relative">
                                   {showBlur && (
-                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[#1E293B]/80 backdrop-blur-md rounded-xl border border-red-100">
+                                    <div className="absolute inset-0 z-10 flex flex-col items-center justify-center bg-[var(--bg-secondary)]/80 backdrop-blur-md rounded-xl border border-red-100">
                                       <span className="text-xl mb-2">⚠️</span>
-                                      <p className="text-xs text-red-600 font-bold tracking-wider uppercase mb-3">Toxic Content Hidden</p>
+                                      <p className="text-xs text-red-600 font-bold tracking-wider uppercase mb-3">Toxic Hidden</p>
                                       <button 
                                         onClick={() => setRevealedMessages(prev => [...prev, message._id])}
                                         className="px-4 py-1.5 rounded-lg bg-red-50 text-red-600 border border-red-200 text-xs font-semibold hover:bg-red-100 transition-colors"
@@ -1378,22 +1397,22 @@ export default function Dashboard() {
                                       </button>
                                     </div>
                                   )}
-                                  <p className={`text-[#E2E8F0] text-sm leading-relaxed pl-2 ${showBlur ? 'opacity-20 blur-[2px] select-none' : ''}`}>
+                                  <p className={`text-[var(--text-primary)] text-sm leading-relaxed pl-2 ${showBlur ? 'opacity-20 blur-[2px] select-none' : ''}`}>
                                     {message.message}
                                   </p>
                                 </div>
 
                                 <div className="flex items-center justify-between gap-3 mt-5 pl-2">
                                   <div className="flex items-center gap-2">
-                                    <span className="text-[10px] bg-[#0F172A] border border-[#334155] px-2 py-1 rounded-md text-[#94A3B8] truncate max-w-[120px]">{linkTitle}</span>
+                                    <span className="text-[10px] bg-[var(--bg-primary)] border border-[var(--border-color)] px-2 py-1 rounded-md text-[var(--text-secondary)] truncate max-w-[120px]">{linkTitle}</span>
                                     <button 
                                       onClick={() => deleteFeedback(message._id)}
-                                      className="p-1.5 rounded-lg text-[#94A3B8] hover:text-red-500 hover:bg-red-50 transition-colors"
+                                      className="p-1.5 rounded-lg text-[var(--text-muted)] hover:text-red-500 hover:bg-red-50 transition-colors"
                                     >
                                       <Trash2 size={14} />
                                     </button>
                                   </div>
-                                  <span className="text-[10px] text-[#64748B] font-medium">{new Date(message.createdAt).toLocaleDateString()}</span>
+                                  <span className="text-[10px] text-[var(--text-muted)] font-medium">{new Date(message.createdAt).toLocaleDateString()}</span>
                                 </div>
                               </div>
                             );
@@ -1474,29 +1493,29 @@ export default function Dashboard() {
                         <p className="text-[#94A3B8] mt-1">Manage your usage and subscription</p>
                       </div>
 
-                      <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-6 shadow-sm flex flex-col md:flex-row md:items-center gap-6">
+                       <div className="premium-card p-6 flex flex-col md:flex-row md:items-center gap-6">
                         <div className="flex items-center gap-4 flex-1">
-                          <div className="w-14 h-14 rounded-2xl bg-[#0F172A] border border-[#334155] flex items-center justify-center">
-                            <Zap size={24} className="text-[#3B82F6]" />
+                          <div className="w-14 h-14 rounded-2xl bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-center">
+                            <Zap size={24} className="text-[var(--accent)]" />
                           </div>
                           <div>
-                            <p className="text-xs font-semibold uppercase tracking-widest text-[#94A3B8]">Current Plan</p>
-                            <p className="text-xl font-bold text-[#E2E8F0] mt-1">{usage.plan.toUpperCase()}</p>
+                            <p className="text-xs font-semibold uppercase tracking-widest text-[var(--text-muted)]">Current Plan</p>
+                            <p className="text-xl font-bold text-[var(--text-primary)] mt-1">{usage.plan.toUpperCase()}</p>
                           </div>
                         </div>
                         <div className="flex-1">
-                          <div className="h-2 w-full rounded-full bg-[#0F172A] border border-[#334155] overflow-hidden">
-                            <motion.div initial={{ width: 0 }} animate={{ width: `${usage.percentage ?? 0}%` }} className="h-full rounded-full bg-[#3B82F6]" />
+                          <div className="h-2 w-full rounded-full bg-[var(--bg-primary)] border border-[var(--border-color)] overflow-hidden">
+                            <motion.div initial={{ width: 0 }} animate={{ width: `${usage.percentage ?? 0}%` }} className="h-full rounded-full bg-[var(--accent)]" />
                           </div>
-                          <p className="text-xs font-medium text-[#94A3B8] mt-2 text-right">{usage.used} / {usage.limit ?? "∞"} links used</p>
+                          <p className="text-xs font-medium text-[var(--text-secondary)] mt-2 text-right">{usage.used} / {usage.limit ?? "∞"} links used</p>
                         </div>
                       </div>
                       
                       <div className="grid gap-5 md:grid-cols-3">
                          {["free", "pro", "ultra"].map(planId => (
-                            <div key={planId} className={`rounded-2xl border ${usage.plan === planId ? 'border-[#3B82F6] bg-[#3B82F6]/5' : 'border-[#334155] bg-[#1E293B]'} p-6 shadow-sm`}>
-                               <p className="text-lg font-bold text-[#E2E8F0] capitalize">{planId}</p>
-                               <button onClick={() => setShowPricingModal(true)} className="w-full mt-4 py-2.5 rounded-xl border border-[#334155] bg-[#1E293B] text-[#E2E8F0] text-sm font-semibold hover:bg-[#0F172A] transition-colors shadow-sm">View details</button>
+                            <div key={planId} className={`premium-card p-6 ${usage.plan === planId ? 'ring-2 ring-[var(--accent)] bg-[var(--accent)]/5' : ''}`}>
+                               <p className="text-lg font-bold text-[var(--text-primary)] capitalize">{planId}</p>
+                               <button onClick={() => setShowPricingModal(true)} className="btn-secondary w-full mt-4 !py-2 !text-sm">View details</button>
                             </div>
                          ))}
                       </div>
@@ -1507,31 +1526,31 @@ export default function Dashboard() {
 
             {/* The Insights Grid (Right side) */}
             <div className="xl:col-span-1 space-y-6 hidden xl:block">
-              <div className="rounded-2xl border border-[#334155] bg-[#1E293B] p-6 shadow-sm">
-                <h3 className="text-xs font-bold text-[#94A3B8] mb-4 uppercase tracking-widest">Insights Overview</h3>
+              <div className="premium-card p-6">
+                <h3 className="text-xs font-bold text-[var(--text-muted)] mb-4 uppercase tracking-widest">Insights Overview</h3>
                 <div className="space-y-3">
-                  <div className="p-4 rounded-xl bg-[#0F172A] border border-[#334155] flex items-center justify-between">
-                    <p className="text-sm text-[#94A3B8] font-medium">Total Feedback</p>
-                    <p className="text-xl font-bold text-[#E2E8F0]">{analytics?.summary?.totalResponses ?? feedback.length}</p>
+                  <div className="p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-between">
+                    <p className="text-sm text-[var(--text-secondary)] font-medium">Total Feedback</p>
+                    <p className="text-xl font-bold text-[var(--text-primary)]">{analytics?.summary?.totalResponses ?? feedback.length}</p>
                   </div>
-                  <div className="p-4 rounded-xl bg-[#0F172A] border border-[#334155] flex items-center justify-between">
-                    <p className="text-sm text-[#94A3B8] font-medium">Active Links</p>
-                    <p className="text-xl font-bold text-[#E2E8F0]">{analytics?.summary?.activeLinks ?? 0}</p>
+                  <div className="p-4 rounded-xl bg-[var(--bg-primary)] border border-[var(--border-color)] flex items-center justify-between">
+                    <p className="text-sm text-[var(--text-secondary)] font-medium">Active Links</p>
+                    <p className="text-xl font-bold text-[var(--text-primary)]">{analytics?.summary?.activeLinks ?? 0}</p>
                   </div>
-                  <div className="p-4 rounded-xl bg-[#3B82F6]/10 border border-[#3B82F6]/20 flex items-center justify-between">
-                    <p className="text-sm text-[#3B82F6] font-bold">Responses (7d)</p>
-                    <p className="text-xl font-bold text-[#3B82F6]">{analytics?.summary?.responsesThisWeek ?? 0}</p>
+                  <div className="p-4 rounded-xl bg-[var(--accent)]/10 border border-[var(--accent)]/20 flex items-center justify-between">
+                    <p className="text-sm text-[var(--accent)] font-bold">Responses (7d)</p>
+                    <p className="text-xl font-bold text-[var(--accent)]">{analytics?.summary?.responsesThisWeek ?? 0}</p>
                   </div>
                 </div>
               </div>
 
-              <div className="rounded-2xl border border-[#334155] bg-[#0F172A] p-6">
+              <div className="premium-card p-6 bg-[var(--text-primary)] text-[var(--bg-secondary)] border-none">
                 <div className="flex items-center gap-2 mb-3">
-                  <Zap size={16} className="text-[#3B82F6]" />
-                  <h3 className="text-xs font-bold text-[#E2E8F0] uppercase tracking-widest">Pro Tip</h3>
+                  <Zap size={16} className="text-[var(--accent)]" />
+                  <h3 className="text-xs font-bold uppercase tracking-widest opacity-80">Pro Tip</h3>
                 </div>
-                <p className="text-sm text-[#94A3B8] leading-relaxed">
-                  Use <kbd className="bg-[#1E293B] px-1.5 py-0.5 rounded text-xs font-mono text-[#E2E8F0] border border-[#334155] shadow-sm">Cmd+K</kbd> to quickly jump between views, create new links, or access your account settings from anywhere.
+                <p className="text-sm opacity-90 leading-relaxed">
+                  Use <kbd className="bg-white/10 px-1.5 py-0.5 rounded text-xs font-mono border border-white/20">Cmd+K</kbd> to quickly jump between views, create new links, or access settings.
                 </p>
               </div>
             </div>
